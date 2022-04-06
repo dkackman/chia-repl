@@ -1,0 +1,15 @@
+{
+  "name": "ws-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-browserify": "^3.12.0",
+    "ws": "^8.5.0"
+  }
+}
