@@ -5,7 +5,7 @@ const repl = require('repl');
 const os = require("os");
 
 const options = {
-  host: "chiapas",
+  host: "localhost",
   port: 55400,
   key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
   cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt'
