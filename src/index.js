@@ -3,7 +3,7 @@ import { Chia } from './chia.js';
 
 const replServer = start({ prompt: '> ', useColors: true });
 replServer.context.options = {
-    host: 'chiapas',
+    host: 'localhost',
     port: 55400,
     key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
     cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
@@ -24,8 +24,7 @@ replServer.defineCommand('connect', {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Already connected. Use .disconnect first');
             replServer.displayPrompt();
-        }
-        else {
+        } else {
             const chiaServer = new Chia(replServer.context.options);
             chiaServer.connect(() => {
                 console.log('done');
@@ -56,7 +55,7 @@ replServer.defineCommand('disconnect', {
             replServer.context.harvester = undefined;
             replServer.context.crawler = undefined;
         } else {
-            console.log('not connected');
+            console.log('Not connected');
             replServer.displayPrompt();
         }
     }
