@@ -6,8 +6,8 @@ import { homedir } from 'os';
 class Chia {
     constructor(options) {
         this.options = options;
-        this.outgoing = {}; // outgoing messages awaiting a response
-        this.incoming = {}; // incoming responses 
+        this.outgoing = new Map(); // outgoing messages awaiting a response
+        this.incoming = new Map(); // incoming responses 
     }
 
     connect(callback) {
@@ -32,9 +32,9 @@ class Chia {
         ws.on('message', (data) => {
             const msg = JSON.parse(data);
 
-            if (this.outgoing[msg.request_id] !== undefined) {
-                this.outgoing[msg.request_id] = undefined;
-                this.incoming[msg.request_id] = msg;
+            if (this.outgoing.has(msg.request_id)) {
+                this.outgoing.delete(msg.request_id);
+                this.incoming.set(msg.request_id, msg);
             } else if (callback !== undefined && msg.command === 'register_service') {
                 callback(); //a little bit hacky way to do a callback on first connection
             }
@@ -69,14 +69,15 @@ class Chia {
         }
 
         const outgoingMsg = formatMessage(destination, command, data);
-        const id = outgoingMsg.request_id;
-        this.outgoing[id] = outgoingMsg;
 
+        this.outgoing.set(outgoingMsg.request_id, outgoingMsg);
         this.ws.send(JSON.stringify(outgoingMsg));
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
         const start = Date.now();
-        while (this.incoming[id] === undefined) {
+
+        // wait here until an incoming response shows up
+        while (!this.incoming.has(outgoingMsg.request_id)) {
             await timer(100);
             const elapsed = Date.now() - start;
             if (elapsed / 1000 > this.options.timeout_seconds) {
@@ -84,8 +85,8 @@ class Chia {
             }
         }
 
-        const incomingMsg = this.incoming[id];
-        this.incoming[id] = undefined;
+        const incomingMsg = this.incoming.get(outgoingMsg.request_id);
+        this.incoming.delete(outgoingMsg.request_id);
         const incomingData = incomingMsg.data;
         if (incomingData.success === false) {
             throw new Error(incomingData.error);

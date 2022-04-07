@@ -3,7 +3,7 @@ import { Chia } from './chia.js';
 
 const replServer = start({ prompt: '> ', useColors: true });
 replServer.context.options = {
-    host: 'localhost',
+    host: 'chiapas',
     port: 55400,
     key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
     cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
