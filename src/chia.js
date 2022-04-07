@@ -68,8 +68,13 @@ class Chia {
     this.ws.send(JSON.stringify(outgoingMsg));
 
     const timer = ms => new Promise(res => setTimeout(res, ms));
+    const start = Date.now();
     while (this.incoming[id] === undefined) {
-      await timer(500);
+      await timer(100);
+      const elapsed = Date.now() - start;
+      if (elapsed / 1000 > this.options.timeout_seconds) {
+        throw new Error("Timeout elapsed");
+      }
     }
 
     const incomingMsg = this.incoming[id];
