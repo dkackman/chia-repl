@@ -23,6 +23,7 @@ replServer.defineCommand('connect', {
   action() {
     if (replServer.context.chiaServer !== undefined) {
       console.log("Already connected. Use .disconnect first");
+      replServer.displayPrompt();
     }
     else {
       const chiaServer = new chia.Chia(replServer.context.options);
@@ -32,7 +33,11 @@ replServer.defineCommand('connect', {
       });
       replServer.context.chiaServer = chiaServer;
       replServer.context.daemon = async (command, data) => chiaServer.sendCommand("daemon", command, data);
-      replServer.context.full_node = async (command, data) => chiaServer.sendCommand("full_node", command, data);
+      replServer.context.full_node = async (command, data) => chiaServer.sendCommand("chia_full_node", command, data);
+      replServer.context.wallet = async (command, data) => chiaServer.sendCommand("chia_wallet", command, data);
+      replServer.context.farmer = async (command, data) => chiaServer.sendCommand("chia_farmer", command, data);
+      replServer.context.harvester = async (command, data) => chiaServer.sendCommand("chia_harvester", command, data);
+      replServer.context.crawler = async (command, data) => chiaServer.sendCommand("chia_crawler", command, data);
     }
   }
 });
@@ -43,10 +48,16 @@ replServer.defineCommand('disconnect', {
     if (replServer.context.chiaServer !== undefined) {
       replServer.context.chiaServer.disconnect();
       replServer.context.chiaServer = undefined;
+      // clear all these out so they aren't avaialbe in the repl when not connected
       replServer.context.daemon = undefined;
       replServer.context.full_node = undefined;
+      replServer.context.wallet = undefined;
+      replServer.context.farmer = undefined;
+      replServer.context.harvester = undefined;
+      replServer.context.crawler = undefined;
     } else {
       console.log("not connected");
+      replServer.displayPrompt();
     }
   }
 });
