@@ -1,18 +1,12 @@
 import { start } from 'repl';
 import { Chia } from './chia.js';
-import { getSetting, saveSetting } from './settings.js';
+import { getSetting, saveSetting, defaultOptions } from './settings.js';
 
 const replServer = start({ prompt: '> ', useColors: true });
 initializeContext();
 
 function initializeContext() {
-    replServer.context.options = getSetting('.options', {
-        host: 'localhost',
-        port: 55400,
-        key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
-        cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
-        timeout_seconds: 30,
-    });
+    replServer.context.options = getSetting('.options', defaultOptions);
 }
 
 replServer.on('reset', () => {
@@ -55,8 +49,8 @@ replServer.defineCommand('disconnect', {
     action() {
         if (replServer.context.chiaServer !== undefined) {
             replServer.context.chiaServer.disconnect();
-            replServer.context.chiaServer = undefined;
             // clear all these out so they aren't avaialbe in the repl when not connected
+            replServer.context.chiaServer = undefined;
             replServer.context.daemon = undefined;
             replServer.context.full_node = undefined;
             replServer.context.wallet = undefined;
@@ -71,7 +65,7 @@ replServer.defineCommand('disconnect', {
 });
 
 replServer.defineCommand('save-options', {
-    help: 'Saves the options and they will be reloaded at startup',
+    help: 'Saves the options',
     action() {
         saveSetting('.options', replServer.context.options);
     }

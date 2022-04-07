@@ -36,7 +36,7 @@ class Chia {
                 this.outgoing.delete(msg.request_id);
                 this.incoming.set(msg.request_id, msg);
             } else if (callback !== undefined && msg.command === 'register_service') {
-                callback(); //a little bit hacky way to do a callback on first connection
+                callback(); //a little bit hacky way to callback after register service finishes
             }
         });
 
@@ -61,6 +61,8 @@ class Chia {
 
         this.ws.close();
         this.ws = undefined;
+        this.incoming.clear();
+        this.outgoing.clear();
     }
 
     async sendCommand(destination, command, data) {
@@ -81,6 +83,13 @@ class Chia {
             await timer(100);
             const elapsed = Date.now() - start;
             if (elapsed / 1000 > this.options.timeout_seconds) {
+                //clean up anything lingering for this message
+                if (this.outgoing.has(outgoingMsg.request_id)) {
+                    this.outgoing.delete(outgoingMsg.request_id);
+                }
+                if (this.incoming.has(outgoingMsg.request_id)) {
+                    this.incoming.delete(outgoingMsg.request_id);
+                }
                 throw new Error('Timeout expired');
             }
         }

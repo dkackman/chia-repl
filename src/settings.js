@@ -4,6 +4,14 @@ import { homedir } from 'os';
 
 const settingsDir = path.join(homedir(), '.chia-repl');
 
+export let defaultOptions = {
+    host: 'localhost',
+    port: 55400,
+    key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
+    cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
+    timeout_seconds: 30,
+};
+
 export function getSetting(name, def) {
     try {
         const json = fs.readFileSync(path.join(settingsDir, name));
