@@ -8,7 +8,7 @@ class Chia {
   constructor(options) {
     this.options = options;
     this.outgoing = {}; // outgoing messages awaiting a response
-    this.incoming = {}; // incoming messages 
+    this.incoming = {}; // incoming responses 
   }
 
   connect(callback) {
@@ -81,7 +81,7 @@ class Chia {
       await timer(100);
       const elapsed = Date.now() - start;
       if (elapsed / 1000 > this.options.timeout_seconds) {
-        throw new Error("Timeout elapsed");
+        throw new Error("Timeout expired");
       }
     }
 
