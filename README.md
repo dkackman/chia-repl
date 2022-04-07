@@ -18,8 +18,10 @@ npm start
 
 ## Example
 
-The global `options` context object has the host, port and path to cert files. These properties can be set inside the repl with `options.host = "my-host"`.
+The global `options` context object has the host, port, and path to cert files. These properties can be set inside the repl with `options.host = "my-host"` etc.
 Once connected to the `daemon` each of the service endpoints becomes availalbe as an awaitable context function.
+
+Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work.
 
 ```bash
 > .connect
