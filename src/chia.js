@@ -15,15 +15,17 @@ class Chia {
     if (this.ws !== undefined) {
       throw new Error("Already connected");
     }
-    const options = {
+
+    const wsOptions = {
       rejectUnauthorized: false,
       key: readFileSync(this.options.key_path.replace("~", homedir())),
       cert: readFileSync(this.options.cert_path.replace("~", homedir())),
     };
-    const host = `wss://${this.options.host}:${this.options.port}`;
-    const ws = new WebSocket(host, options);
-    ws.on('open', function open() {
-      console.log(`Connecting to ${host}...`);
+    const address = `wss://${this.options.host}:${this.options.port}`;
+    const ws = new WebSocket(address, wsOptions);
+
+    ws.on('open', () => {
+      console.log(`Connecting to ${address}...`);
       const msg = formatMessage("daemon", "register_service", { service: "chia_repl" });
       ws.send(JSON.stringify(msg));
     });
@@ -39,12 +41,17 @@ class Chia {
       }
     });
 
-    ws.on('close', function message(data) {
+    ws.on('error', (e) => {
+      console.log(e);
+    });
+
+    ws.on('close', () => {
       console.log("Disconnecting...");
       if (callback !== undefined) {
         callback();
       }
     });
+
     this.ws = ws;
   }
 
@@ -52,6 +59,7 @@ class Chia {
     if (this.ws === undefined) {
       throw new Error("Not connected");
     }
+
     this.ws.close();
     this.ws = undefined;
   }
