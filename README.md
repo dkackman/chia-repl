@@ -16,14 +16,16 @@ cd src
 npm start
 ```
 
-## Example
+## Examples
 
 The global `options` context object has the host, port, and path to cert files. These properties can be set inside the repl with `options.host = "my-host"` etc.
 Once connected to the `daemon` each of the service endpoints becomes availalbe as an awaitable context function.
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work.
 
-```bash
+### Connecting and Calling a Node Function
+
+```javascript
 > .connect
 Connecting to wss://localhost:55400...
 done
@@ -32,7 +34,27 @@ done
 >
 ```
 
-```powershell
+### Chaining calls
+
+```javascript
+> await full_node("get_blockchain_state")
+blockchain_state: {
+  ...
+}
+> _.blockchain_state.peak.header_hash
+'0x098b7fd5768174776eb4a29cedcabffb21c487b592c73f72ac33bc4ffecf6c38'
+> await full_node("get_block", { header_hash: _ })
+{
+  block: {
+    ...
+  }
+}
+>
+```
+
+### Help and Options
+
+```javascript
 PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
 
 > ws-client@1.0.0 start
@@ -41,8 +63,7 @@ PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
 > .help
 .break        Sometimes you get stuck, this gets you out
 .clear        Break, and also clear the local context
-.connect      Opens the websocket connection to the chia daemon. 
-              Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
+.connect      Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
 .disconnect   Closes the websocket connection to the chia daemon
 .editor       Enter editor mode
 .exit         Exit the REPL
