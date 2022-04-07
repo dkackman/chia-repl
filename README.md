@@ -23,17 +23,14 @@ The global `options` context object has the host, port and path to cert files. T
 
 ```shell
 PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
-Debugger attached.
 
-> ws-client@1.0.0 start C:\Users\dkack\src\github\dkackman\chia-repl\src
+> ws-client@1.0.0 start
 > node index.js
 
-Debugger attached.
 > .help
 .break        Sometimes you get stuck, this gets you out
 .clear        Break, and also clear the local context
 .connect      Opens the websocket connection to the chia daemon
-.daemon       Sends a command to the chia daemon
 .disconnect   Closes the websocket connection to the chia daemon
 .editor       Enter editor mode
 .exit         Exit the REPL
@@ -50,30 +47,11 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
   cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt'
 }
 > .connect
-Connecting...
-{
-  "ack": true,
-  "command": "register_service",
-  "data": {
-    "success": true
-  },
-  "destination": "chia_repl",
-  "origin": "daemon",
-  "request_id": "293579bcedd5ab377bbd9a514fcd2012af6d2b2c4c17ee6f563018cfb43b3be9"
-}
-> .daemon is_keyring_locked
-{
-  "ack": true,
-  "command": "is_keyring_locked",
-  "data": {
-    "is_keyring_locked": false,
-    "success": true
-  },
-  "destination": "chia_repl",
-  "origin": "daemon",
-  "request_id": "bc797093c3cf89d2456e3b3e3f68f8c9f2ead4c85e9aca53624aa3f3c6423154"
-}
+Connecting to wss://localhost:55400...
+done
+> await daemon("is_running", { service: "wallet" })
+{ is_running: false, service_name: 'wallet', success: true }
 > .disconnect
-Disconnected...
->
+Disconnecting...
+done
 ```

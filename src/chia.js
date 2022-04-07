@@ -7,12 +7,11 @@ const os = require("os");
 class Chia {
   constructor(options) {
     this.options = options;
-    this.outgoing = {};
-    this.incoming = {};
+    this.outgoing = {}; // outgoing messages awaiting a response
+    this.incoming = {}; // incoming messages 
   }
 
-  // await chia.daemon("is_running", { service: "farmer" })
-  connect() {
+  connect(cb) {
     if (this.ws !== undefined) {
       throw new Error("Already connected");
     }
@@ -21,23 +20,30 @@ class Chia {
       key: fs.readFileSync(this.options.key_path.replace("~", os.homedir())),
       cert: fs.readFileSync(this.options.cert_path.replace("~", os.homedir())),
     };
-    const ws = new wslib.WebSocket(`wss://${this.options.host}:${this.options.port}`, options);
+    const host = `wss://${this.options.host}:${this.options.port}`;
+    const ws = new wslib.WebSocket(host, options);
     ws.on('open', function open() {
-      console.log("Connecting...");
+      console.log(`Connecting to ${host}...`);
       const msg = formatMessage("daemon", "register_service", { service: "chia_repl" });
       ws.send(JSON.stringify(msg));
     });
 
     ws.on('message', (data) => {
       const msg = JSON.parse(data);
+
       if (this.outgoing[msg.request_id] !== undefined) {
         this.outgoing[msg.request_id] = undefined;
         this.incoming[msg.request_id] = msg;
+      } else if (cb !== undefined && msg.command == "register_service") {
+        cb(); //a little bit hacky way to do a callback on first connection
       }
     });
 
     ws.on('close', function message(data) {
-      console.log("Disconnected...");
+      console.log("Disconnecting...");
+      if (cb !== undefined) {
+        cb();
+      }
     });
     this.ws = ws;
   }
@@ -77,15 +83,14 @@ class Chia {
 }
 
 function formatMessage(destination, command, data = {}) {
-  var message = {};
-  message.command = command;
-  message.origin = "chia_repl";
-  message.destination = destination;
-  message.ack = false;
-  message.request_id = cb.randomBytes(32).toString('hex');
-  message.data = data;
-
-  return message;
+  return {
+    command: command,
+    origin: "chia_repl",
+    destination: destination,
+    ack: false,
+    request_id: cb.randomBytes(32).toString('hex'),
+    data: data,
+  };
 }
 
 module.exports.Chia = Chia;

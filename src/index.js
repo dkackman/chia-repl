@@ -25,11 +25,14 @@ replServer.defineCommand('connect', {
     }
     else {
       const chiaServer = new chia.Chia(replServer.context.options);
-      chiaServer.connect();
+      chiaServer.connect(() => {
+        console.log("done");
+        replServer.displayPrompt();
+      });
       replServer.context.chiaServer = chiaServer;
       replServer.context.daemon = async (command, data) => chiaServer.sendCommand("daemon", command, data);
+      replServer.context.full_node = async (command, data) => chiaServer.sendCommand("full_node", command, data);
     }
-    replServer.displayPrompt();
   }
 });
 
@@ -40,9 +43,9 @@ replServer.defineCommand('disconnect', {
       replServer.context.chiaServer.disconnect();
       replServer.context.chiaServer = undefined;
       replServer.context.daemon = undefined;
+      replServer.context.full_node = undefined;
     } else {
       console.log("not connected");
     }
-    replServer.displayPrompt();
   }
 });
