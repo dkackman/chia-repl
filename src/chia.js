@@ -11,7 +11,7 @@ class Chia {
     this.incoming = {}; // incoming messages 
   }
 
-  connect(cb) {
+  connect(callback) {
     if (this.ws !== undefined) {
       throw new Error("Already connected");
     }
@@ -34,15 +34,15 @@ class Chia {
       if (this.outgoing[msg.request_id] !== undefined) {
         this.outgoing[msg.request_id] = undefined;
         this.incoming[msg.request_id] = msg;
-      } else if (cb !== undefined && msg.command == "register_service") {
-        cb(); //a little bit hacky way to do a callback on first connection
+      } else if (callback !== undefined && msg.command == "register_service") {
+        callback(); //a little bit hacky way to do a callback on first connection
       }
     });
 
     ws.on('close', function message(data) {
       console.log("Disconnecting...");
-      if (cb !== undefined) {
-        cb();
+      if (callback !== undefined) {
+        callback();
       }
     });
     this.ws = ws;
