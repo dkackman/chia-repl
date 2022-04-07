@@ -36,6 +36,8 @@ done
 
 ### Chaining calls
 
+The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can be used to chain function calls.
+
 ```javascript
 > await full_node("get_blockchain_state")
 blockchain_state: {
