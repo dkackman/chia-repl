@@ -1,7 +1,7 @@
-const cb = require('crypto-browserify');
-const wslib = require('ws');
-const fs = require('fs');
-const os = require("os");
+import { randomBytes } from 'crypto-browserify';
+import { WebSocket } from 'ws';
+import { readFileSync } from 'fs';
+import { homedir } from "os";
 
 'use strict';
 class Chia {
@@ -17,11 +17,11 @@ class Chia {
     }
     const options = {
       rejectUnauthorized: false,
-      key: fs.readFileSync(this.options.key_path.replace("~", os.homedir())),
-      cert: fs.readFileSync(this.options.cert_path.replace("~", os.homedir())),
+      key: readFileSync(this.options.key_path.replace("~", homedir())),
+      cert: readFileSync(this.options.cert_path.replace("~", homedir())),
     };
     const host = `wss://${this.options.host}:${this.options.port}`;
-    const ws = new wslib.WebSocket(host, options);
+    const ws = new WebSocket(host, options);
     ws.on('open', function open() {
       console.log(`Connecting to ${host}...`);
       const msg = formatMessage("daemon", "register_service", { service: "chia_repl" });
@@ -93,9 +93,10 @@ function formatMessage(destination, command, data = {}) {
     origin: "chia_repl",
     destination: destination,
     ack: false,
-    request_id: cb.randomBytes(32).toString('hex'),
+    request_id: randomBytes(32).toString('hex'),
     data: data,
   };
 }
 
-module.exports.Chia = Chia;
+const _Chia = Chia;
+export { _Chia as Chia };

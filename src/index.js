@@ -1,7 +1,7 @@
-const repl = require('repl');
-const chia = require("./chia");
+import { start } from 'repl';
+import { Chia } from "./chia.js";
 
-const replServer = repl.start({ prompt: '> ', useColors: true });
+const replServer = start({ prompt: '> ', useColors: true });
 replServer.context.options = {
   host: "localhost",
   port: 55400,
@@ -26,7 +26,7 @@ replServer.defineCommand('connect', {
       replServer.displayPrompt();
     }
     else {
-      const chiaServer = new chia.Chia(replServer.context.options);
+      const chiaServer = new Chia(replServer.context.options);
       chiaServer.connect(() => {
         console.log("done");
         replServer.displayPrompt();
