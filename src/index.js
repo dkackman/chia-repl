@@ -19,7 +19,7 @@ replServer.on('exit', () => {
 });
 
 replServer.defineCommand('connect', {
-  help: 'Opens the websocket connection to the chia daemon',
+  help: 'Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet',
   action() {
     if (replServer.context.chiaServer !== undefined) {
       console.log("Already connected. Use .disconnect first");
@@ -43,7 +43,7 @@ replServer.defineCommand('connect', {
 });
 
 replServer.defineCommand('disconnect', {
-  help: 'Closes the websocket connection to the chia daemon',
+  help: 'Closes the websocket connection to the chia daemon.',
   action() {
     if (replServer.context.chiaServer !== undefined) {
       replServer.context.chiaServer.disconnect();
