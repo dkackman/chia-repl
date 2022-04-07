@@ -49,8 +49,8 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 > .connect
 Connecting to wss://localhost:55400...
 done
-> await daemon("is_running", { service: "wallet" })
-{ is_running: false, service_name: 'wallet', success: true }
+> await daemon("is_running", { service: "chia_wallet" })
+{ is_running: true, service_name: 'chia_wallet', success: true }
 > .disconnect
 Disconnecting...
 done
