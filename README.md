@@ -1,6 +1,6 @@
 # chia-repl
 
-A REPL tool for Chia
+A REPL tool for Chia and clvm_tools
 
 ## Install
 
@@ -22,6 +22,18 @@ The global `options` context object has the host, port, and path to cert files. 
 Once connected to the `daemon` each of the service endpoints becomes availalbe as an awaitable context function.
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
+
+### cvm_tools
+
+Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
+
+```lisp
+> run("(mod ARGUMENT (+ ARGUMENT 3))")
+'(+ 1 (q . 3))'
+> brun(_, '1')
+'4'
+>
+```
 
 ### Connecting and Calling a Node Function
 
