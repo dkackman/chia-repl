@@ -23,7 +23,7 @@ Once connected to the `daemon` each of the service endpoints becomes availalbe a
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
 
-### cvm_tools
+### clvm_tools
 
 Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 
