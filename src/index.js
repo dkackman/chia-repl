@@ -2,7 +2,7 @@ import { start } from 'repl';
 import { Chia } from './chia.js';
 import { getSetting, saveSetting, defaultOptions } from './settings.js';
 import * as clvm_tools from 'clvm_tools';
-import utils from 'chia-utils';
+import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 
 const replServer = start({ prompt: '> ', useColors: true });
 
@@ -31,7 +31,7 @@ function initializeContext() {
     replServer.context.opc = (...args) => do_clvm('opc', ...args);
     replServer.context.read_ir = (...args) => do_clvm('read_ir', ...args);
     replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
-    replServer.context.puzzle_hash_to_address = (hash) => utils.puzzle_hash_to_address(hash);
+    replServer.context.puzzle_hash_to_address = (hash, prefix = 'xch') => utils.puzzle_hash_to_address(hash, prefix);
 }
 
 function clearContext() {
