@@ -12,12 +12,16 @@ export let defaultOptions = {
     timeout_seconds: 30,
 };
 
+export function settingExists(name) {
+    return fs.existsSync(path.join(settingsDir, name));
+}
+
 export function getSetting(name, def) {
     try {
         const json = fs.readFileSync(path.join(settingsDir, name));
         return JSON.parse(json);
     } catch (e) {
-        console.log(`Could not load settings ${name}`);
+        // console.log(`Could not load settings ${name}`);
     }
 
     return def;

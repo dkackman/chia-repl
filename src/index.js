@@ -1,6 +1,6 @@
 import { start } from 'repl';
 import { Chia } from './chia.js';
-import { getSetting, saveSetting, defaultOptions } from './settings.js';
+import { getSetting, saveSetting, defaultOptions, settingExists } from './settings.js';
 import * as clvm_tools from 'clvm_tools';
 import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 
@@ -24,7 +24,8 @@ function do_clvm(command, ...args) {
 initializeContext();
 
 function initializeContext() {
-    replServer.context.options = getSetting('.options', defaultOptions);
+    const lastOptionName = getSetting('.lastOptionName', '');
+    replServer.context.options = getSetting(`${lastOptionName}.options`, defaultOptions);
     replServer.context.run = (...args) => do_clvm('run', ...args);
     replServer.context.brun = (...args) => do_clvm('brun', ...args);
     replServer.context.opd = (...args) => do_clvm('opd', ...args);
@@ -46,27 +47,22 @@ function clearContext() {
 }
 
 function connect() {
-    try {
-        const chiaServer = new Chia(replServer.context.options);
-        chiaServer.connect(() => {
-            console.log('done');
-            replServer.displayPrompt();
-        },
-            () => {
-                clearContext();
-                replServer.displayPrompt();
-            });
-        replServer.context.chiaServer = chiaServer;
-        replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
-        replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
-        replServer.context.wallet = async (command, data) => chiaServer.sendCommand('chia_wallet', command, data);
-        replServer.context.farmer = async (command, data) => chiaServer.sendCommand('chia_farmer', command, data);
-        replServer.context.harvester = async (command, data) => chiaServer.sendCommand('chia_harvester', command, data);
-        replServer.context.crawler = async (command, data) => chiaServer.sendCommand('chia_crawler', command, data);
-    } catch (e) {
-        clearContext();
+    const chiaServer = new Chia(replServer.context.options);
+    chiaServer.connect(() => {
+        console.log('done');
         replServer.displayPrompt();
-    }
+    },
+        () => {
+            clearContext();
+            replServer.displayPrompt();
+        });
+    replServer.context.chiaServer = chiaServer;
+    replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
+    replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
+    replServer.context.wallet = async (command, data) => chiaServer.sendCommand('chia_wallet', command, data);
+    replServer.context.farmer = async (command, data) => chiaServer.sendCommand('chia_farmer', command, data);
+    replServer.context.harvester = async (command, data) => chiaServer.sendCommand('chia_harvester', command, data);
+    replServer.context.crawler = async (command, data) => chiaServer.sendCommand('chia_crawler', command, data);
 }
 
 function disconnect() {
@@ -112,8 +108,25 @@ replServer.defineCommand('disconnect', {
 
 replServer.defineCommand('save-options', {
     help: 'Saves the options',
-    action() {
-        saveSetting('.options', replServer.context.options);
+    action(name) {
+        saveSetting(`${name}.options`, replServer.context.options);
+        saveSetting('.lastOptionName', name);
+        replServer.displayPrompt();
+    }
+});
+
+replServer.defineCommand('load-options', {
+    help: 'Loads the named the options',
+    action(name) {
+        if (replServer.context.chiaServer !== undefined) {
+            console.log('Already connected. Use .disconnect first');
+        } else if (name !== undefined && !settingExists(name)) {
+            console.log(`No options with name ${name} found`);
+        } else {
+            saveSetting('.lastOptionName', name);
+            initializeContext();
+        }
+
         replServer.displayPrompt();
     }
 });
