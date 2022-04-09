@@ -27,6 +27,8 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 
 Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 
+#### Compile a Simple Program
+
 ```lisp
 > run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
@@ -34,6 +36,8 @@ Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 '4'
 >
 ```
+
+#### Compile a Simple Program From a File
 
 ```lisp
 > run('../examples/factorial.clsp')
@@ -43,9 +47,15 @@ Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 >
 ```
 
+#### Get the Puzzle Hash and Address of a Program
+
 ```lisp
 > run('../examples/piggybank.clsp', '-i../examples/include')
 '(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))'
+> opc('-H', _)
+'86c0adb167db77cf87c0a2d8eb9c733a35c392c91d1ea7f63d947728de17ed27'
+> puzzle_hash_to_address(_)
+'xch1smq2mvt8mdmulp7q5tvwh8rn8g6u8ykfr5020a3aj3mj3hsha5nsuu5zqx'
 ```
 
 ### Connecting and Calling a Node Function

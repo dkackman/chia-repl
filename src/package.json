@@ -10,6 +10,7 @@
   "license": "Apache 2",
   "type": "module",
   "dependencies": {
+    "chia-utils": "^1.0.9",
     "clvm_tools": "^0.9.5",
     "crypto-browserify": "^3.12.0",
     "ws": "^8.5.0"

@@ -2,6 +2,7 @@ import { start } from 'repl';
 import { Chia } from './chia.js';
 import { getSetting, saveSetting, defaultOptions } from './settings.js';
 import * as clvm_tools from 'clvm_tools';
+import utils from 'chia-utils';
 
 const replServer = start({ prompt: '> ', useColors: true });
 
@@ -29,6 +30,8 @@ function initializeContext() {
     replServer.context.opd = (...args) => do_clvm('opd', ...args);
     replServer.context.opc = (...args) => do_clvm('opc', ...args);
     replServer.context.read_ir = (...args) => do_clvm('read_ir', ...args);
+    replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
+    replServer.context.puzzle_hash_to_address = (hash) => utils.puzzle_hash_to_address(hash);
 }
 
 function clearContext() {
@@ -49,10 +52,10 @@ function connect() {
             console.log('done');
             replServer.displayPrompt();
         },
-        () => {
-            clearContext();
-            replServer.displayPrompt();
-        });
+            () => {
+                clearContext();
+                replServer.displayPrompt();
+            });
         replServer.context.chiaServer = chiaServer;
         replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
         replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
