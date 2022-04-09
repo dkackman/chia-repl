@@ -10,7 +10,7 @@ class Chia {
         this.incoming = new Map(); // incoming responses 
     }
 
-    connect(callback) {
+    connect(success, error) {
         if (this.ws !== undefined) {
             throw new Error('Already connected');
         }
@@ -35,19 +35,22 @@ class Chia {
             if (this.outgoing.has(msg.request_id)) {
                 this.outgoing.delete(msg.request_id);
                 this.incoming.set(msg.request_id, msg);
-            } else if (callback !== undefined && msg.command === 'register_service') {
-                callback(); //a little bit hacky way to callback after register service finishes
+            } else if (success !== undefined && msg.command === 'register_service') {
+                success(); //a little bit hacky way to callback after register service finishes
             }
         });
 
         ws.on('error', (e) => {
             console.log(e);
+            if (error !== undefined) {
+                error();
+            }
         });
 
         ws.on('close', () => {
             console.log('Disconnecting...');
-            if (callback !== undefined) {
-                callback();
+            if (success !== undefined) {
+                success();
             }
         });
 

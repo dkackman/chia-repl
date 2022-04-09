@@ -21,43 +21,55 @@ function do_clvm(command, ...args) {
 }
 
 initializeContext();
-replServer.displayPrompt();
 
 function initializeContext() {
     replServer.context.options = getSetting('.options', defaultOptions);
     replServer.context.run = (...args) => do_clvm('run', ...args);
     replServer.context.brun = (...args) => do_clvm('brun', ...args);
     replServer.context.opd = (...args) => do_clvm('opd', ...args);
-    replServer.context.opc = (...args) => do_clvm('opc', ...args);            
-    replServer.context.read_ir = (...args) => do_clvm('read_ir', ...args);            
+    replServer.context.opc = (...args) => do_clvm('opc', ...args);
+    replServer.context.read_ir = (...args) => do_clvm('read_ir', ...args);
+}
+
+function clearContext() {
+    // clear all these out so they aren't available in the repl when not connected
+    replServer.context.chiaServer = undefined;
+    replServer.context.daemon = undefined;
+    replServer.context.full_node = undefined;
+    replServer.context.wallet = undefined;
+    replServer.context.farmer = undefined;
+    replServer.context.harvester = undefined;
+    replServer.context.crawler = undefined;
 }
 
 function connect() {
-    const chiaServer = new Chia(replServer.context.options);
-    chiaServer.connect(() => {
-        console.log('done');
+    try {
+        const chiaServer = new Chia(replServer.context.options);
+        chiaServer.connect(() => {
+            console.log('done');
+            replServer.displayPrompt();
+        },
+        () => {
+            clearContext();
+            replServer.displayPrompt();
+        });
+        replServer.context.chiaServer = chiaServer;
+        replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
+        replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
+        replServer.context.wallet = async (command, data) => chiaServer.sendCommand('chia_wallet', command, data);
+        replServer.context.farmer = async (command, data) => chiaServer.sendCommand('chia_farmer', command, data);
+        replServer.context.harvester = async (command, data) => chiaServer.sendCommand('chia_harvester', command, data);
+        replServer.context.crawler = async (command, data) => chiaServer.sendCommand('chia_crawler', command, data);
+    } catch (e) {
+        clearContext();
         replServer.displayPrompt();
-    });
-    replServer.context.chiaServer = chiaServer;
-    replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
-    replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
-    replServer.context.wallet = async (command, data) => chiaServer.sendCommand('chia_wallet', command, data);
-    replServer.context.farmer = async (command, data) => chiaServer.sendCommand('chia_farmer', command, data);
-    replServer.context.harvester = async (command, data) => chiaServer.sendCommand('chia_harvester', command, data);
-    replServer.context.crawler = async (command, data) => chiaServer.sendCommand('chia_crawler', command, data);
+    }
 }
 
 function disconnect() {
     if (replServer.context.chiaServer !== undefined) {
         replServer.context.chiaServer.disconnect();
-        // clear all these out so they aren't available in the repl when not connected
-        replServer.context.chiaServer = undefined;
-        replServer.context.daemon = undefined;
-        replServer.context.full_node = undefined;
-        replServer.context.wallet = undefined;
-        replServer.context.farmer = undefined;
-        replServer.context.harvester = undefined;
-        replServer.context.crawler = undefined;
+        clearContext();
     }
 }
 
