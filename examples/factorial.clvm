@@ -1,0 +1,4 @@
+(mod (INDEX)
+     (defun factorial (VALUE) (if (= VALUE 1) 1 (* VALUE (factorial (- VALUE 1)))))
+     (factorial INDEX)
+     )
