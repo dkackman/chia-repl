@@ -1,0 +1,44 @@
+(mod ( 
+    ; define arguments
+    my_amount
+    new_amount
+    my_puzzlehash	
+  )
+  
+  ; include op codes
+  (include condition_codes.clib)
+
+  ; define constants
+  (defconstant TARGET_AMOUNT 500)
+  (defconstant CASH_OUT_PUZZLE_HASH 0xcafef00d)
+  
+  ; define function to cash out piggy bank when target is reached & recreate new empty piggybank
+  (defun-inline cash_out (CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+    (list
+      (list CREATE_COIN CASH_OUT_PUZZLE_HASH new_amount)
+      (list CREATE_COIN my_puzzlehash 0)
+    )
+  )
+
+  ; define function to accept deposit and recreate piggybank with new balance
+  (defun-inline recreate_self (my_amount new_amount my_puzzlehash)
+    (list 
+      (list CREATE_COIN my_puzzlehash new_amount)
+    )
+  )
+
+; main control flow
+
+; first check if transaction is a deposit
+(if (> new_amount my_amount) 
+  ; if yes, evaluate if savings target is reached
+  (if (> new_amount TARGET_AMOUNT) 
+     ; if yes, cash out
+    (cash_out CASH_OUT_PUZZLE_HASH my_amount new_amount my_puzzlehash)
+    ; if no, accept deposit
+    (recreate_self my_amount new_amount my_puzzlehash) 
+  )
+  ; if transaction is not a deposit, abort
+  (x) 
+  )
+)

@@ -35,6 +35,19 @@ Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 >
 ```
 
+```lisp
+> run('../examples/factorial.clsp')
+'(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
+> brun(_, '(5)')
+'120'
+>
+```
+
+```lisp
+> run('../examples/piggybank.clsp', '-i../examples/include')
+'(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))'
+```
+
 ### Connecting and Calling a Node Function
 
 ```javascript
