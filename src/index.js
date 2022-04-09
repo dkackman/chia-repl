@@ -21,6 +21,7 @@ function do_clvm(command, ...args) {
 }
 
 initializeContext();
+replServer.displayPrompt();
 
 function initializeContext() {
     replServer.context.options = getSetting('.options', defaultOptions);
@@ -98,5 +99,6 @@ replServer.defineCommand('save-options', {
     help: 'Saves the options',
     action() {
         saveSetting('.options', replServer.context.options);
+        replServer.displayPrompt();
     }
 });
