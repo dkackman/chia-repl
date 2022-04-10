@@ -3,13 +3,8 @@ import { Chia } from './chia.js';
 import { getSetting, saveSetting, defaultOptions, settingExists } from './settings.js';
 import * as compiler from './compiler.js';
 import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
-import * as clvm_tools from 'clvm_tools';
 
 const replServer = start({ prompt: '> ', useColors: true });
-
-/* jshint ignore:start */
-await clvm_tools.initialize();
-/* jshint ignore:end */
 
 initializeContext();
 
@@ -17,11 +12,7 @@ function initializeContext() {
     const lastOptionName = getSetting('.lastOptionName', '');
     replServer.context.options = getSetting(`${lastOptionName}.options`, defaultOptions);
     // these are the various helper functions that don't require other state
-    replServer.context.run = (...args) => compiler.do_clvm('run', ...args);
-    replServer.context.brun = (...args) => compiler.do_clvm('brun', ...args);
-    replServer.context.opd = (...args) => compiler.do_clvm('opd', ...args);
-    replServer.context.opc = (...args) => compiler.do_clvm('opc', ...args);
-    replServer.context.read_ir = (...args) => compiler.do_clvm('read_ir', ...args);
+    replServer.context.clvm_tools = compiler.clvm_tools;
     replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
     replServer.context.puzzle_hash_to_address = (hash, prefix) => utils.puzzle_hash_to_address(hash, prefix !== undefined ? prefix : replServer.context.options.prefix);
     replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.options.prefix, ...args);

@@ -1,6 +1,18 @@
-import * as clvm_tools from 'clvm_tools';
+import * as _clvm_tools from 'clvm_tools';
 import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 import * as fs from 'fs';
+
+/* jshint ignore:start */
+await _clvm_tools.initialize();
+/* jshint ignore:end */
+
+export let clvm_tools = {
+    run: (...args) => do_clvm('run', ...args),
+    brun: (...args) => do_clvm('brun', ...args),
+    opd: (...args) => do_clvm('opd', ...args),
+    opc: (...args) => do_clvm('opc', ...args),
+    read_ir: (...args) => do_clvm('read_ir', ...args),
+};
 
 export function compile(chiaLisp, prefix, ...args) {
     const clvm = do_clvm("run", chiaLisp, ...args);
@@ -30,10 +42,10 @@ export function test(chiaLisp, compileArgs = [], programArgs = []) {
 // this lifts the last clvm_tools result form a parameter 
 // to a return value so the repl can access it
 let last_clvm_result;
-clvm_tools.setPrintFunction((message) => last_clvm_result = message);
+_clvm_tools.setPrintFunction((message) => last_clvm_result = message);
 
 export function do_clvm(command, ...args) {
-    clvm_tools.go(command, ...args);
+    _clvm_tools.go(command, ...args);
 
     return last_clvm_result;
 }
