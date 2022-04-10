@@ -107,7 +107,7 @@ replServer.defineCommand('disconnect', {
 });
 
 replServer.defineCommand('save-options', {
-    help: 'Saves the options',
+    help: 'Saves the options (name is optional)',
     action(name) {
         saveSetting(`${name}.options`, replServer.context.options);
         saveSetting('.lastOptionName', name);
@@ -116,11 +116,11 @@ replServer.defineCommand('save-options', {
 });
 
 replServer.defineCommand('load-options', {
-    help: 'Loads the named the options',
+    help: 'Loads options (name is optional)',
     action(name) {
         if (replServer.context.chiaServer !== undefined) {
-            console.log('Already connected. Use .disconnect first');
-        } else if (name !== undefined && !settingExists(name)) {
+            console.log('Currently connected. Use .disconnect first');
+        } else if (name !== undefined && !settingExists(`${name}.options`)) {
             console.log(`No options with name ${name} found`);
         } else {
             saveSetting('.lastOptionName', name);
