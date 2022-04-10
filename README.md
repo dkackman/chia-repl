@@ -50,12 +50,13 @@ Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 #### Get the Puzzle Hash and Address of a Program
 
 ```lisp
-> run('../examples/piggybank.clsp', '-i../examples/include')
-'(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))'
-> opc('-H', _)
-'86c0adb167db77cf87c0a2d8eb9c733a35c392c91d1ea7f63d947728de17ed27'
-> puzzle_hash_to_address(_, 'txch')
-'txch1smq2mvt8mdmulp7q5tvwh8rn8g6u8ykfr5020a3aj3mj3hsha5ns3mn5p4'
+> compile('../examples/piggybank.clsp', 'tcxh', '-i../examples/include')
+{
+  address: 'tcxh1smq2mvt8mdmulp7q5tvwh8rn8g6u8ykfr5020a3aj3mj3hsha5ns3zea78',
+  clvm: '(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))', 
+  puzzle: 'ff02ffff01ff02ffff03ffff15ff0bff0580ffff01ff02ffff03ffff15ff0bff0e80ffff01ff04ffff04ff0affff04ff04ffff04ff0bff80808080ffff04ffff04ff0affff04ff17ffff01ff80808080ff808080ffff01ff04ffff04ff0affff04ff17ffff04ff0bff80808080ff808080ff0180ffff01ff088080ff0180ffff04ffff01ff84cafef00dff338201f4ff018080',
+  puzzle_hash: '86c0adb167db77cf87c0a2d8eb9c733a35c392c91d1ea7f63d947728de17ed27'
+}
 ```
 
 ### Connecting and Calling a Node Function
