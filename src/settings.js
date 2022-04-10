@@ -10,6 +10,7 @@ export let defaultOptions = {
     key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
     cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
     timeout_seconds: 30,
+    prefix: "xch",
 };
 
 export function settingExists(name) {

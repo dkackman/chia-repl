@@ -22,6 +22,11 @@ export function compile(chiaLisp, prefix, ...args) {
     };
 }
 
+export function test(chiaLisp, compileArgs = [], programArgs = []) {
+    const clvm = do_clvm("run", chiaLisp, ...compileArgs);
+    return do_clvm('brun', clvm, ...programArgs);
+}
+
 // this lifts the last clvm_tools result form a parameter 
 // to a return value so the repl can access it
 let last_clvm_result;

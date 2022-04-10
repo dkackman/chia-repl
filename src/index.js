@@ -23,8 +23,9 @@ function initializeContext() {
     replServer.context.opc = (...args) => compiler.do_clvm('opc', ...args);
     replServer.context.read_ir = (...args) => compiler.do_clvm('read_ir', ...args);
     replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
-    replServer.context.puzzle_hash_to_address = (hash, prefix = 'xch') => utils.puzzle_hash_to_address(hash, prefix);
-    replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix, ...args);
+    replServer.context.puzzle_hash_to_address = (hash, prefix) => utils.puzzle_hash_to_address(hash, prefix !== undefined ? prefix : replServer.context.options.prefix);
+    replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.options.prefix, ...args);
+    replServer.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 }
 
 function clearContext() {
