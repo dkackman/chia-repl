@@ -22,12 +22,7 @@ function initializeContext() {
 function clearContext() {
     // clear all these out so they aren't available in the repl when not connected
     replServer.context.chiaServer = undefined;
-    replServer.context.daemon = undefined;
-    replServer.context.full_node = undefined;
-    replServer.context.wallet = undefined;
-    replServer.context.farmer = undefined;
-    replServer.context.harvester = undefined;
-    replServer.context.crawler = undefined;
+    replServer.context.chia = undefined;
 }
 
 function connect() {
@@ -41,12 +36,7 @@ function connect() {
             replServer.displayPrompt();
         });
     replServer.context.chiaServer = chiaServer;
-    replServer.context.daemon = async (command, data) => chiaServer.sendCommand('daemon', command, data);
-    replServer.context.full_node = async (command, data) => chiaServer.sendCommand('chia_full_node', command, data);
-    replServer.context.wallet = async (command, data) => chiaServer.sendCommand('chia_wallet', command, data);
-    replServer.context.farmer = async (command, data) => chiaServer.sendCommand('chia_farmer', command, data);
-    replServer.context.harvester = async (command, data) => chiaServer.sendCommand('chia_harvester', command, data);
-    replServer.context.crawler = async (command, data) => chiaServer.sendCommand('chia_crawler', command, data);
+    replServer.context.chia = chiaServer.endpoints;
 }
 
 function disconnect() {

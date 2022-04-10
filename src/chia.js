@@ -10,6 +10,17 @@ class Chia {
         this.incoming = new Map(); // incoming responses 
     }
 
+    get endpoints() {
+        return {
+            daemon: async (command, data) => this.sendCommand('daemon', command, data),
+            full_node: async (command, data) => this.sendCommand('chia_full_node', command, data),
+            wallet: async (command, data) => this.sendCommand('chia_wallet', command, data),
+            farmer: async (command, data) => this.sendCommand('chia_farmer', command, data),
+            harvester: async (command, data) => this.sendCommand('chia_harvester', command, data),
+            crawler: async (command, data) => this.sendCommand('chia_crawler', command, data),
+        }
+    }
+
     connect(success, error) {
         if (this.ws !== undefined) {
             throw new Error('Already connected');

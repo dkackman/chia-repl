@@ -16,6 +16,14 @@ cd src
 npm start
 ```
 
+## Tools
+
+Integrates:
+
+- [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
+- [chia-utils](https://github.com/CMEONE/chia-utils)
+- [Chia RPC](https://dkackman.github.io/chia-api/)
+
 ## Examples
 
 The global `options` context object has the host, port, and path to cert files. These properties can be set inside the repl with `options.host = "my-host"` etc.
@@ -23,31 +31,27 @@ Once connected to the `daemon` each of the service endpoints becomes availalbe a
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
 
-### clvm_tools
-
-Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
-
-#### Compile a Simple Program
+### Compile a Simple Program
 
 ```lisp
-> run("(mod ARGUMENT (+ ARGUMENT 3))")
+> clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
-> brun(_, '1')
+> clvm_tools.brun(_, '1')
 '4'
 >
 ```
 
-#### Compile a Simple Program From a File
+### Compile a Simple Program From a File
 
 ```lisp
-> run('../examples/factorial.clsp')
+> clvm_tools.run('../examples/factorial.clsp')
 '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
-> brun(_, '(5)')
+> clvm_tools.brun(_, '(5)')
 '120'
 >
 ```
 
-#### Compile a ChiaLisp Program
+### Compile a ChiaLisp Program
 
 ```lisp
 > compile('../examples/piggybank.clsp', '-i../examples/include')
@@ -72,7 +76,7 @@ Integrates [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 > .connect
 Connecting to wss://localhost:55400...
 done
-> await full_node("get_network_info")
+> await chia.full_node("get_network_info")
 { network_name: 'testnet10', network_prefix: 'txch', success: true }
 >
 ```
@@ -82,13 +86,13 @@ done
 The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can be used to chain function calls.
 
 ```javascript
-> await full_node("get_blockchain_state")
+> await chia.full_node("get_blockchain_state")
 blockchain_state: {
   ...
 }
 > _.blockchain_state.peak.header_hash
 '0x098b7fd5768174776eb4a29cedcabffb21c487b592c73f72ac33bc4ffecf6c38'
-> await full_node("get_block", { header_hash: _ })
+> await chia.full_node("get_block", { header_hash: _ })
 {
   block: {
     ...
@@ -131,7 +135,7 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 > .connect
 Connecting to wss://localhost:55400...
 done
-> await daemon("is_running", { service: "chia_wallet" })
+> await chia.daemon("is_running", { service: "chia_wallet" })
 { is_running: true, service_name: 'chia_wallet', success: true }
 > .disconnect
 Disconnecting...
