@@ -1,5 +1,5 @@
 import * as _clvm_tools from 'clvm_tools';
-import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
+import _utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 
 /* jshint ignore:start */
 await _clvm_tools.initialize();
@@ -13,11 +13,17 @@ export let clvm_tools = {
     read_ir: (...args) => do_clvm('read_ir', ...args),
 };
 
+export let utils = {
+    puzzle_hash_to_address: (hash, prefix) => utils.puzzle_hash_to_address(hash, prefix !== undefined ? prefix : replServer.context.options.prefix),
+    address_to_puzzle_hash: (address) => utils.address_to_puzzle_hash(address),
+};
+
+
 export function compile(chiaLisp, prefix, ...args) {
     const clvm = do_clvm("run", chiaLisp, ...args);
     const hash = do_clvm("opc", '-H', clvm);
     const puzzle = do_clvm("opc", clvm);
-    const address = utils.puzzle_hash_to_address(hash, prefix);
+    const address = _utils.puzzle_hash_to_address(hash, prefix);
 
     return {
         address: address,

@@ -39,6 +39,7 @@ export function saveSetting(name, setting) {
     }
 }
 
+// this is to upgrade settings that might changed from earlier serialized versions
 export function fixup(settings, name, defaultValue, msg) {
     if (settings[name] === undefined) {
         settings[name] = defaultValue;

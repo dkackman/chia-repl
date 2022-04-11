@@ -2,7 +2,6 @@ import { start } from 'repl';
 import { Chia } from './chia.js';
 import * as settings from './settings.js';
 import * as compiler from './compiler.js';
-import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 
 const replServer = start({ prompt: '> ', useColors: true });
 
@@ -10,15 +9,12 @@ initializeContext();
 
 function initializeContext() {
     const lastOptionName = settings.getSetting('.lastOptionName', '');
-    const options = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
-    settings.fixup(options, 'prefix', 'xch', 'Options prefix not set. Setting to "xch". Double check the options\' properties and .save-options.');
-
-    replServer.context.options = options;
+    replServer.context.optionss = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
+    settings.fixup(replServer.context.options, 'prefix', 'xch', 'Options prefix not set. Setting to "xch". Double check the options\' properties and .save-options.');
 
     // these are the various helper functions that don't require other state
     replServer.context.clvm_tools = compiler.clvm_tools;
-    replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
-    replServer.context.puzzle_hash_to_address = (hash, prefix) => utils.puzzle_hash_to_address(hash, prefix !== undefined ? prefix : replServer.context.options.prefix);
+    replServer.context.utils = compiler.utils;
     replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.options.prefix, ...args);
     replServer.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 }
