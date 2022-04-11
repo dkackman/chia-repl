@@ -1,6 +1,6 @@
 import { start } from 'repl';
 import { Chia } from './chia.js';
-import { getSetting, saveSetting, defaultOptions, settingExists } from './settings.js';
+import * as settings from './settings.js';
 import * as compiler from './compiler.js';
 import utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
 
@@ -9,12 +9,10 @@ const replServer = start({ prompt: '> ', useColors: true });
 initializeContext();
 
 function initializeContext() {
-    const lastOptionName = getSetting('.lastOptionName', '');
-    const options = getSetting(`${lastOptionName}.options`, defaultOptions);
-    if (options.prefix === undefined) {
-        options.prefix = 'xch';
-        console.log('Options prefix not set. Setting to "xch". Double check the options properties and .save-options.');
-    }
+    const lastOptionName = settings.getSetting('.lastOptionName', '');
+    const options = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
+    settings.fixup(options, 'prefix', 'xch', 'Options prefix not set. Setting to "xch". Double check the options\' properties and .save-options.');
+
     replServer.context.options = options;
 
     // these are the various helper functions that don't require other state
@@ -89,8 +87,8 @@ replServer.defineCommand('disconnect', {
 replServer.defineCommand('save-options', {
     help: 'Saves the options (name is optional)',
     action(name) {
-        saveSetting(`${name}.options`, replServer.context.options);
-        saveSetting('.lastOptionName', name);
+        settings.saveSetting(`${name}.options`, replServer.context.options);
+        settings.saveSetting('.lastOptionName', name);
         replServer.displayPrompt();
     }
 });
@@ -103,7 +101,7 @@ replServer.defineCommand('load-options', {
         } else if (name !== undefined && !settingExists(`${name}.options`)) {
             console.log(`No options with name ${name} found`);
         } else {
-            saveSetting('.lastOptionName', name);
+            settings.saveSetting('.lastOptionName', name);
             initializeContext();
         }
 

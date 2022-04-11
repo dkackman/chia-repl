@@ -38,3 +38,12 @@ export function saveSetting(name, setting) {
         console.log(e);
     }
 }
+
+export function fixup(settings, name, defaultValue, msg) {
+    if (settings[name] === undefined) {
+        settings[name] = defaultValue;
+        if (msg !== undefined) {
+            console.log(msg);
+        }
+    }
+}
