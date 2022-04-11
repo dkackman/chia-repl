@@ -10,7 +10,13 @@ initializeContext();
 
 function initializeContext() {
     const lastOptionName = getSetting('.lastOptionName', '');
-    replServer.context.options = getSetting(`${lastOptionName}.options`, defaultOptions);
+    const options = getSetting(`${lastOptionName}.options`, defaultOptions);
+    if (options.prefix === undefined) {
+        options.prefix = 'xch';
+        console.log('Options prefix not set. Setting to "xch". Double check the options properties and .save-options.');
+    }
+    replServer.context.options = options;
+
     // these are the various helper functions that don't require other state
     replServer.context.clvm_tools = compiler.clvm_tools;
     replServer.context.address_to_puzzle_hash = (address) => utils.address_to_puzzle_hash(address);
