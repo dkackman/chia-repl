@@ -9,7 +9,7 @@ initializeContext();
 
 function initializeContext() {
     const lastOptionName = settings.getSetting('.lastOptionName', '');
-    replServer.context.optionss = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
+    replServer.context.options = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
     settings.fixup(replServer.context.options, 'prefix', 'xch', 'Options prefix not set. Setting to "xch". Double check the options\' properties and .save-options.');
 
     // these are the various helper functions that don't require other state
