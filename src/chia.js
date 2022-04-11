@@ -18,7 +18,7 @@ class Chia {
             farmer: async (command, data) => this.sendCommand('chia_farmer', command, data),
             harvester: async (command, data) => this.sendCommand('chia_harvester', command, data),
             crawler: async (command, data) => this.sendCommand('chia_crawler', command, data),
-        }
+        };
     }
 
     connect(success, error) {
