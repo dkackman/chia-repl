@@ -31,10 +31,10 @@ function connect() {
         console.log('done');
         replServer.displayPrompt();
     },
-        () => {
-            clearContext();
-            replServer.displayPrompt();
-        });
+    () => {
+        clearContext();
+        replServer.displayPrompt();
+    });
     replServer.context.chiaServer = chiaServer;
     replServer.context.chia = chiaServer.endpoints;
 }
@@ -94,7 +94,7 @@ replServer.defineCommand('load-options', {
     action(name) {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Currently connected. Use .disconnect first');
-        } else if (name !== undefined && !settingExists(`${name}.options`)) {
+        } else if (name !== undefined && !settings.settingExists(`${name}.options`)) {
             console.log(`No options with name ${name} found`);
         } else {
             settings.saveSetting('.lastOptionName', name);

@@ -15,6 +15,7 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
+    "eslint": "^8.13.0",
     "jshint": "^2.13.4"
   }
 }
