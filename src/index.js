@@ -8,14 +8,14 @@ const replServer = start({ prompt: '> ', useColors: true });
 initializeContext();
 
 function initializeContext() {
-    const lastOptionName = settings.getSetting('.lastOptionName', '');
-    replServer.context.options = settings.getSetting(`${lastOptionName}.options`, settings.defaultOptions);
-    settings.fixup(replServer.context.options, 'prefix', 'xch', 'Options prefix not set. Setting to "xch". Double check the options\' properties and .save-options.');
+    const lastConnectionName = settings.getSetting('.lastConnectionName', '');
+    replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, settings.defaultConnection);
+    settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\' properties and .save-connection.');
 
     // these are the various helper functions that don't require other state
     replServer.context.clvm_tools = compiler.clvm_tools;
     replServer.context.utils = compiler.utils;
-    replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.options.prefix, ...args);
+    replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.connection.prefix, ...args);
     replServer.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 }
 
@@ -26,7 +26,7 @@ function clearContext() {
 }
 
 function connect() {
-    const chiaServer = new Chia(replServer.context.options);
+    const chiaServer = new Chia(replServer.context.connection);
     chiaServer.connect(() => {
         console.log('done');
         replServer.displayPrompt();
@@ -80,24 +80,24 @@ replServer.defineCommand('disconnect', {
     }
 });
 
-replServer.defineCommand('save-options', {
-    help: 'Saves the options (name is optional)',
+replServer.defineCommand('save-connection', {
+    help: 'Saves the connection (name is optional)',
     action(name) {
-        settings.saveSetting(`${name}.options`, replServer.context.options);
-        settings.saveSetting('.lastOptionName', name);
+        settings.saveSetting(`${name}.connection`, replServer.context.connection);
+        settings.saveSetting('.lastConnectionName', name);
         replServer.displayPrompt();
     }
 });
 
-replServer.defineCommand('load-options', {
-    help: 'Loads options (name is optional)',
+replServer.defineCommand('load-connection', {
+    help: 'Loads a saved connection (name is optional)',
     action(name) {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Currently connected. Use .disconnect first');
-        } else if (name !== undefined && !settings.settingExists(`${name}.options`)) {
-            console.log(`No options with name ${name} found`);
+        } else if (name !== undefined && !settings.settingExists(`${name}.connection`)) {
+            console.log(`No connection named ${name} found`);
         } else {
-            settings.saveSetting('.lastOptionName', name);
+            settings.saveSetting('.lastConnectionName', name);
             initializeContext();
         }
 

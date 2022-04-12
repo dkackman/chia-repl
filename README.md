@@ -26,7 +26,7 @@ Integrates:
 
 ## Examples
 
-The global `options` context object has the host, port, and path to cert files. These properties can be set inside the repl with `options.host = "my-host"` etc.
+The global `connection` context object has the host, port, and path to cert files. These properties can be set inside the repl with `connection.host = "my-host"` etc.
 Once connected to the `daemon` each of the service endpoints becomes availalbe as an awaitable context function.
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
@@ -101,7 +101,7 @@ blockchain_state: {
 >
 ```
 
-### Help and Options
+### Help and Connection Details
 
 ```javascript
 PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
@@ -110,20 +110,20 @@ PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
 > node index.js
 
 > .help
-.break          Sometimes you get stuck, this gets you out
-.clear          Break, and also clear the local context
-.connect        Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
-.disconnect     Closes the websocket connection to the chia daemon
-.editor         Enter editor mode
-.exit           Exit the REPL
-.help           Print this help message
-.load           Load JS from a file into the REPL session
-.load-options   Loads options (name is optional)
-.save           Save all evaluated commands in this REPL session to a file
-.save-options   Saves the options (name is optional)
+.break             Sometimes you get stuck, this gets you out
+.clear             Break, and also clear the local context
+.connect           Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
+.disconnect        Closes the websocket connection to the chia daemon
+.editor            Enter editor mode
+.exit              Exit the REPL
+.help              Print this help message
+.load              Load JS from a file into the REPL session
+.load-connection   Loads connection (name is optional)
+.save              Save all evaluated commands in this REPL session to a file
+.save-connection   Saves the connection (name is optional)
 
 Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
-> options
+> connection
 {
   host: 'localhost',
   port: 55400,

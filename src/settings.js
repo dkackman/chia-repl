@@ -4,7 +4,7 @@ import { homedir } from 'os';
 
 const settingsDir = path.join(homedir(), '.chia-repl');
 
-export let defaultOptions = {
+export let defaultConnection = {
     host: 'localhost',
     port: 55400,
     key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',

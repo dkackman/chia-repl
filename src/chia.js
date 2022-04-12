@@ -4,8 +4,8 @@ import { readFileSync } from 'fs';
 import { homedir } from 'os';
 
 class Chia {
-    constructor(options) {
-        this.options = options;
+    constructor(connection) {
+        this.connection = connection;
         this.outgoing = new Map(); // outgoing messages awaiting a response
         this.incoming = new Map(); // incoming responses 
     }
@@ -26,13 +26,12 @@ class Chia {
             throw new Error('Already connected');
         }
 
-        const wsOptions = {
+        const address = `wss://${this.connection.host}:${this.connection.port}`;
+        const ws = new WebSocket(address, {
             rejectUnauthorized: false,
-            key: readFileSync(this.options.key_path.replace('~', homedir())),
-            cert: readFileSync(this.options.cert_path.replace('~', homedir())),
-        };
-        const address = `wss://${this.options.host}:${this.options.port}`;
-        const ws = new WebSocket(address, wsOptions);
+            key: readFileSync(this.connection.key_path.replace('~', homedir())),
+            cert: readFileSync(this.connection.cert_path.replace('~', homedir())),
+        });
 
         ws.on('open', () => {
             console.log(`Connecting to ${address}...`);
@@ -96,7 +95,7 @@ class Chia {
         while (!this.incoming.has(outgoingMsg.request_id)) {
             await timer(100);
             const elapsed = Date.now() - start;
-            if (elapsed / 1000 > this.options.timeout_seconds) {
+            if (elapsed / 1000 > this.connection.timeout_seconds) {
                 //clean up anything lingering for this message
                 if (this.outgoing.has(outgoingMsg.request_id)) {
                     this.outgoing.delete(outgoingMsg.request_id);
