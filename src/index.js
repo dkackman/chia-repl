@@ -10,7 +10,7 @@ initializeContext();
 function initializeContext() {
     const lastConnectionName = settings.getSetting('.lastConnectionName', '');
     replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, settings.defaultConnection);
-    settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\' properties and .save-connection.');
+    settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
 
     // these are the various helper functions that don't require other state
     replServer.context.clvm_tools = compiler.clvm_tools;
@@ -26,13 +26,16 @@ function clearContext() {
 }
 
 function connect() {
+    const address = `wss://${replServer.context.connection.host}:${replServer.context.connection.port}`;
+    console.log(`Connecting to ${address}...`);
     const chiaServer = new Chia(replServer.context.connection);
-    chiaServer.connect(() => {
-        console.log('done');
+    chiaServer.connect((msg) => {
+        console.log(msg);
         replServer.displayPrompt();
     },
-    () => {
+    (e) => {
         clearContext();
+        console.log(e);
         replServer.displayPrompt();
     });
     replServer.context.chiaServer = chiaServer;

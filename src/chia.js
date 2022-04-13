@@ -21,7 +21,7 @@ class Chia {
         };
     }
 
-    connect(success, error) {
+    connect(status, error) {
         if (this.ws !== undefined) {
             throw new Error('Already connected');
         }
@@ -34,7 +34,6 @@ class Chia {
         });
 
         ws.on('open', () => {
-            console.log(`Connecting to ${address}...`);
             const msg = formatMessage('daemon', 'register_service', { service: 'chia_repl' });
             ws.send(JSON.stringify(msg));
         });
@@ -45,22 +44,20 @@ class Chia {
             if (this.outgoing.has(msg.request_id)) {
                 this.outgoing.delete(msg.request_id);
                 this.incoming.set(msg.request_id, msg);
-            } else if (success !== undefined && msg.command === 'register_service') {
-                success(); //a little bit hacky way to callback after register service finishes
+            } else if (status !== undefined && msg.command === 'register_service') {
+                status('Connected'); //a little bit hacky way to callback after register service finishes
             }
         });
 
         ws.on('error', (e) => {
-            console.log(e);
             if (error !== undefined) {
-                error();
+                error(e);
             }
         });
 
         ws.on('close', () => {
-            console.log('Disconnecting...');
-            if (success !== undefined) {
-                success();
+            if (status !== undefined) {
+                status('Disconnected');
             }
         });
 
