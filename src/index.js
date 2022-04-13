@@ -1,5 +1,5 @@
 import { start } from 'repl';
-import { Chia } from './chia.js';
+import { Chia, defaultConnection } from './chia.js';
 import * as settings from './settings.js';
 import * as compiler from './compiler.js';
 
@@ -9,7 +9,7 @@ initializeContext();
 
 function initializeContext() {
     const lastConnectionName = settings.getSetting('.lastConnectionName', '');
-    replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, settings.defaultConnection);
+    replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, defaultConnection);
     settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
 
     // these are the various helper functions that don't require other state

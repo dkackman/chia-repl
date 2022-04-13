@@ -3,6 +3,15 @@ import { WebSocket } from 'ws';
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
 
+export let defaultConnection = {
+    host: 'localhost',
+    port: 55400,
+    key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
+    cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
+    timeout_seconds: 30,
+    prefix: 'xch',
+};
+
 class Chia {
     constructor(connection) {
         this.connection = connection;
