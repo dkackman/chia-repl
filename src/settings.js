@@ -39,3 +39,7 @@ export function fixup(settings, name, defaultValue, msg) {
         }
     }
 }
+
+export function listSettings() {
+    return fs.readdirSync(settingsDir);
+}

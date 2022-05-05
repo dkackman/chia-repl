@@ -107,3 +107,16 @@ replServer.defineCommand('load-connection', {
         replServer.displayPrompt();
     }
 });
+
+replServer.defineCommand('list-connections', {
+    help: 'Displays a list of saved connection names',
+    action() {
+        settings.listSettings().forEach(file => {
+            if (file.endsWith('.connection')) {
+                console.log(file.replace('.connection', ''));
+                console.log(settings.getSetting(file));
+            }
+        });
+        replServer.displayPrompt();
+    }
+});
