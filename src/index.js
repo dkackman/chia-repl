@@ -3,7 +3,7 @@ import { Chia, defaultConnection } from './chia.js';
 import * as settings from './settings.js';
 import * as compiler from './compiler.js';
 
-const replServer = start({ prompt: '> ', useColors: true });
+const replServer = start({ prompt: '🌿 ', useColors: true });
 
 initializeContext();
 
@@ -60,7 +60,7 @@ replServer.on('exit', () => {
 });
 
 replServer.defineCommand('connect', {
-    help: 'Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet',
+    help: 'Opens the websocket connection to the chia daemon. Enables these awaitable chia functions: crawler, daemon, farmer, full_node, harvester, wallet',
     action() {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Already connected. Use .disconnect first');
