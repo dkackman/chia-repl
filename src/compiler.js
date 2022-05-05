@@ -18,8 +18,8 @@ export let utils = {
     address_to_puzzle_hash: (address) => utils.address_to_puzzle_hash(address),
 };
 
-export function compile(chiaLisp, prefix, ...args) {
-    const clvm = do_clvm('run', chiaLisp, ...args);
+export function compile(chiaLisp, prefix, ...compileArgs) {
+    const clvm = do_clvm('run', chiaLisp, ...compileArgs);
     const hash = do_clvm('opc', '-H', clvm);
     const puzzle = do_clvm('opc', clvm);
     const address = _utils.puzzle_hash_to_address(hash, prefix);
