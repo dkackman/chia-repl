@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto-browserify';
+import { randomBytes } from 'crypto';
 import { WebSocket } from 'ws';
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
