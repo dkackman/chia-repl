@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { WebSocket } from 'ws';
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
+import { createRpcProxy } from './rpc_proxy.js';
 
 export let defaultConnection = {
     host: 'localhost',
@@ -21,12 +22,12 @@ class Chia {
 
     get endpoints() {
         return {
-            daemon: async (command, data) => this.sendCommand('daemon', command, data),
-            full_node: async (command, data) => this.sendCommand('chia_full_node', command, data),
-            wallet: async (command, data) => this.sendCommand('chia_wallet', command, data),
-            farmer: async (command, data) => this.sendCommand('chia_farmer', command, data),
-            harvester: async (command, data) => this.sendCommand('chia_harvester', command, data),
-            crawler: async (command, data) => this.sendCommand('chia_crawler', command, data),
+            daemon: createRpcProxy({}, this, 'daemon'),
+            full_node: createRpcProxy({}, this, 'chia_full_node'),
+            wallet: createRpcProxy({}, this, 'chia_wallet'),
+            farmer: createRpcProxy({}, this, 'chia_farmer'),
+            harvester: createRpcProxy({}, this, 'chia_harvester'),
+            crawler: createRpcProxy({}, this, 'chia_crawler'),
         };
     }
 

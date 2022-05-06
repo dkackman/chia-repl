@@ -76,7 +76,7 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 > .connect
 Connecting to wss://localhost:55400...
 done
-> await chia.full_node("get_network_info")
+> await chia.full_node.get_network_info()
 { network_name: 'testnet10', network_prefix: 'txch', success: true }
 >
 ```
@@ -86,13 +86,13 @@ done
 The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can be used to chain function calls.
 
 ```javascript
-> await chia.full_node("get_blockchain_state")
+> await chia.full_node.get_blockchain_state()
 blockchain_state: {
   ...
 }
 > _.blockchain_state.peak.header_hash
 '0x098b7fd5768174776eb4a29cedcabffb21c487b592c73f72ac33bc4ffecf6c38'
-> await chia.full_node("get_block", { header_hash: _ })
+> await chia.full_node.get_block({ header_hash: _ })
 {
   block: {
     ...
@@ -135,7 +135,7 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 > .connect
 Connecting to wss://localhost:55400...
 done
-> await chia.daemon("is_running", { service: "chia_wallet" })
+> await chia.daemon.is_running({ service: "chia_wallet" })
 { is_running: true, service_name: 'chia_wallet', success: true }
 > .disconnect
 Disconnecting...
