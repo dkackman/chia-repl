@@ -16,6 +16,8 @@ cd src
 npm start
 ```
 
+Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
+
 ## Tools
 
 Integrates:
