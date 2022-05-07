@@ -3,18 +3,18 @@
 // assuing the invoked method is an endpoint on the rpc server, it will be invoked
 //
 // so we can do something like:
-// const full_node = createRpcProxy({}, chiaServer, "chia_full_node");
+// const full_node = createRpcProxy(chiaServer, "chia_full_node");
 // const state = await full_node.get_blocchain_state();
 //
-export function createRpcProxy(theTarget, chia, endpoint) {
+export function createRpcProxy(chia, endpoint) {
     // create a proxy around `theTarget` that will intrecept
     // any method call that doesn't exist and turn it into an RPC invocation
-    return new Proxy(theTarget, {
+    return new Proxy({}, {
         get(target, functionName) {
             if (typeof target[functionName] === 'undefined') {
                 // here, since 'name' does not exist on the object, we are
                 // going to assume it is an rpc endpoint name on endpoint
-                return async (data) => {
+                return async (data) => { // here we call back into the chia server to do the RPC
                     return await chia.sendCommand(endpoint, functionName, data);
                 };
             } else if (typeof target[functionName] === 'function') {

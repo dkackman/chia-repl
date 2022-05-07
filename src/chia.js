@@ -22,12 +22,12 @@ class Chia {
 
     get endpoints() {
         return {
-            daemon: createRpcProxy({}, this, 'daemon'),
-            full_node: createRpcProxy({}, this, 'chia_full_node'),
-            wallet: createRpcProxy({}, this, 'chia_wallet'),
-            farmer: createRpcProxy({}, this, 'chia_farmer'),
-            harvester: createRpcProxy({}, this, 'chia_harvester'),
-            crawler: createRpcProxy({}, this, 'chia_crawler'),
+            daemon: createRpcProxy(this, 'daemon'),
+            full_node: createRpcProxy(this, 'chia_full_node'),
+            wallet: createRpcProxy(this, 'chia_wallet'),
+            farmer: createRpcProxy(this, 'chia_farmer'),
+            harvester: createRpcProxy(this, 'chia_harvester'),
+            crawler: createRpcProxy(this, 'chia_crawler'),
         };
     }
 

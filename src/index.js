@@ -2,8 +2,11 @@ import { start } from 'repl';
 import { Chia, defaultConnection } from './chia.js';
 import * as settings from './settings.js';
 import * as compiler from './compiler.js';
+import { createCompleterProxy, loadCompletions } from './completer.js';
 
+loadCompletions();
 const replServer = start({ prompt: '🌿 ', useColors: true });
+replServer.completer = createCompleterProxy(replServer.completer);
 
 initializeContext();
 
@@ -33,11 +36,11 @@ function connect() {
         console.log(msg);
         replServer.displayPrompt();
     },
-    (e) => {
-        clearContext();
-        console.log(e);
-        replServer.displayPrompt();
-    });
+        (e) => {
+            clearContext();
+            console.log(e);
+            replServer.displayPrompt();
+        });
     replServer.context.chiaServer = chiaServer;
     replServer.context.chia = chiaServer.endpoints;
 }
