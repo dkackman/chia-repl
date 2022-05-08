@@ -1,16 +1,26 @@
 {
   "name": "chia-repl",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.9.1",
+  "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "",
+  "bin": {
+    "chia-repl": "index.js"
+  },
+  "author": "dkackman",
   "license": "Apache License 2.0",
   "type": "module",
+  "keywords": [
+    "chia",
+    "repl",
+    "cli",
+    "crypto"
+  ],
   "dependencies": {
     "@noble/bls12-381": "^1.2.0",
+    "chalk": "^5.0.1",
     "clvm_tools": "^0.9.5",
     "lodash": "^4.17.21",
     "ws": "^8.5.0"

@@ -1,24 +1,32 @@
 # chia-repl
 
-A REPL tool for Chia that incorpates various chia and crypto utilities in a single interactive node environent.
+A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
 
 - [Chia RPC](https://dkackman.github.io/chia-api/)
 - [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 - [chia-utils](https://github.com/CMEONE/chia-utils)
 - [noble-bls12-381](https://github.com/paulmillr/noble-bls12-381)
 
-## Install
+## From Source
 
 ```shell
 cd src
 npm install
+npm start
+> chia-repl@0.9.1 start
+> node index.js
+
+🌿 Welcome to Chia!
+🌿 
 ```
 
-## Run
+## Packaged
 
 ```shell
-cd src
-npm start
+npm install -g chia-repl
+chia-repl
+🌿 Welcome to Chia!
+🌿 
 ```
 
 Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
@@ -33,27 +41,27 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program
 
 ```lisp
-> clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
+🌿 clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
-> clvm_tools.brun(_, '1')
+🌿 clvm_tools.brun(_, '1')
 '4'
->
+🌿
 ```
 
 ### Compile a Simple Program From a File
 
 ```lisp
-> clvm_tools.run('../examples/factorial.clsp')
+🌿 clvm_tools.run('../examples/factorial.clsp')
 '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
-> clvm_tools.brun(_, '(5)')
+🌿 clvm_tools.brun(_, '(5)')
 '120'
->
+🌿
 ```
 
 ### Compile a ChiaLisp Program
 
 ```lisp
-> compile('../examples/piggybank.clsp', '-i../examples/include')
+🌿 compile('../examples/piggybank.clsp', '-i../examples/include')
 {
   address: 'tcxh1smq2mvt8mdmulp7q5tvwh8rn8g6u8ykfr5020a3aj3mj3hsha5ns3zea78',
   clvm: '(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))', 
@@ -65,19 +73,19 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Test a ChiaLisp Program
 
 ```lisp
-> test('(mod ARGUMENT (+ ARGUMENT 3))', [], [ '15' ])
+🌿 test('(mod ARGUMENT (+ ARGUMENT 3))', [], [ '15' ])
 '18'
 ```
 
 ### Connecting and Calling a Node Function
 
 ```javascript
-> .connect
+🌿 .connect
 Connecting to wss://localhost:55400...
 done
-> await chia.full_node.get_network_info()
+🌿 await chia.full_node.get_network_info()
 { network_name: 'testnet10', network_prefix: 'txch', success: true }
->
+🌿
 ```
 
 ### Chaining calls
@@ -85,19 +93,19 @@ done
 The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can be used to chain function calls.
 
 ```javascript
-> await chia.full_node.get_blockchain_state()
+🌿 await chia.full_node.get_blockchain_state()
 blockchain_state: {
   ...
 }
-> _.blockchain_state.peak.header_hash
+🌿 _.blockchain_state.peak.header_hash
 '0x098b7fd5768174776eb4a29cedcabffb21c487b592c73f72ac33bc4ffecf6c38'
-> await chia.full_node.get_block({ header_hash: _ })
+🌿 await chia.full_node.get_block({ header_hash: _ })
 {
   block: {
     ...
   }
 }
->
+🌿
 ```
 
 ### Help and Connection Details
@@ -105,10 +113,9 @@ blockchain_state: {
 ```javascript
 PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
 
-> ws-client@1.0.0 start
-> node index.js
+🌿 node index.js
 
-> .help
+🌿 .help
 .break             Sometimes you get stuck, this gets you out
 .clear             Break, and also clear the local context
 .connect           Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
@@ -122,7 +129,7 @@ PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
 .save-connection   Saves the connection (name is optional)
 
 Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
-> connection
+🌿 connection
 {
   host: 'localhost',
   port: 55400,
@@ -131,12 +138,12 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
   timeout_seconds: 30,
   prefix: "xch"
 }
-> .connect
+🌿 .connect
 Connecting to wss://localhost:55400...
 done
-> await chia.daemon.is_running({ service: "chia_wallet" })
+🌿 await chia.daemon.is_running({ service: "chia_wallet" })
 { is_running: true, service_name: 'chia_wallet', success: true }
-> .disconnect
+🌿 .disconnect
 Disconnecting...
 done
 ```
