@@ -1,6 +1,11 @@
 # chia-repl
 
-A REPL tool for Chia and clvm_tools
+A REPL tool for Chia that incorpates various chia and crypto utilities in a single interactive node environent.
+
+- [Chia RPC](https://dkackman.github.io/chia-api/)
+- [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
+- [chia-utils](https://github.com/CMEONE/chia-utils)
+- [noble-bls12-381](https://github.com/paulmillr/noble-bls12-381)
 
 ## Install
 
@@ -17,14 +22,6 @@ npm start
 ```
 
 Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
-
-## Tools
-
-Integrates:
-
-- [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
-- [chia-utils](https://github.com/CMEONE/chia-utils)
-- [Chia RPC](https://dkackman.github.io/chia-api/)
 
 ## Examples
 

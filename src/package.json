@@ -10,6 +10,7 @@
   "license": "Apache License 2.0",
   "type": "module",
   "dependencies": {
+    "@noble/bls12-381": "^1.2.0",
     "clvm_tools": "^0.9.5",
     "lodash": "^4.17.21",
     "ws": "^8.5.0"

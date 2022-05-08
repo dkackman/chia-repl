@@ -1,5 +1,6 @@
 import { start } from 'repl';
 import { Chia, defaultConnection } from './chia.js';
+import * as bls from '@noble/bls12-381';
 import * as settings from './settings.js';
 import * as compiler from './compiler.js';
 import { createCompleterProxy, loadCompletions } from './completer.js';
@@ -16,6 +17,7 @@ function initializeContext() {
     settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
 
     // these are the various helper functions that don't require other state
+    replServer.context.bls = bls;
     replServer.context.clvm_tools = compiler.clvm_tools;
     replServer.context.utils = compiler.utils;
     replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.connection.prefix, ...args);
