@@ -1,13 +1,19 @@
-// this here will allow us to call an arbitray method like thing on any object
-// and transform it into an rpc method though we don't know the endpoint name until runtime
-// assuing the invoked method is an endpoint on the rpc server, it will be invoked
+// This might be evil and generally abuiseive of the javascript type system but...
+// This here will allow us to call an arbitray method-like thing on any object
+// and transform it into an rpc invocation though we don't know the endpoint name until runtime.
+// If the invoked method is an endpoint on the rpc server, it will be invoked as such.
 //
 // so we can do something like:
-// const full_node = createRpcProxy(chiaServer, "chia_full_node");
+// const full_node = createRpcProxy(chiaServer, 'chia_full_node');
 // const state = await full_node.get_blocchain_state();
 //
+/**
+ * [createRpcProxy Returns a proxy object that transforms any method into an RPC invocation]
+ * @param  {Chia} chia The chia daemon service that will execute the RPC
+ * @param  {string} endpoint The name of the chia endpoint service
+ */
 export function createRpcProxy(chia, endpoint) {
-    // create a proxy around `theTarget` that will intrecept
+    // create a proxy around a new empty object that will intrecept
     // any method call that doesn't exist and turn it into an RPC invocation
     return new Proxy({}, {
         get(target, functionName) {
