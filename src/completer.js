@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import _ from 'lodash';
 
+// wrap the regular completer in a proxy so we can synthesize completions
 export function createCompleterProxy(completer) {
     return new Proxy(completer, handler);
 }
@@ -11,9 +12,10 @@ const handler = {
             const line = argumentsList[0].replace('await ', '');
             const hits = completions.filter(function (c) { return c.indexOf(line) == 0; });
 
-            if (hits.length > 0) { // in here we do custom completion to get rpc endpoints and functions
+            if (hits.length > 0) { 
+                // in here we do custom completion to get rpc endpoints and their functions
                 argumentsList[1](false, [hits, line]);
-                return;
+                return; // exit so we don't call the default completer
             }
         }
         target(...argumentsList);
