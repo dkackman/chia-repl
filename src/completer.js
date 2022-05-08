@@ -10,7 +10,7 @@ const handler = {
     apply: function (target, thisArg, argumentsList) {
         if (_.get(thisArg, 'context.chia') !== undefined) {
             const line = argumentsList[0].replace('await ', '');
-            const hits = completions.filter(function (c) { return c.indexOf(line) == 0; });
+            const hits = completions.filter((c) => c.indexOf(line) == 0);
 
             if (hits.length > 0) { 
                 // in here we do custom completion to get rpc endpoints and their functions
@@ -24,8 +24,8 @@ const handler = {
 
 export function loadCompletions() {
     const data = readFileSync('./completions.json', 'utf8');
-
     const c = JSON.parse(data);
+
     completions.push(...c);
 }
 
