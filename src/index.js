@@ -76,7 +76,7 @@ replServer.on('exit', () => {
 });
 
 replServer.defineCommand('connect', {
-    help: 'Opens the websocket connection to the chia daemon. Enables: crawler, daemon, farmer, full_node, harvester, wallet endpoints',
+    help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
     action() {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Already connected. Use .disconnect first');
@@ -100,7 +100,7 @@ replServer.defineCommand('disconnect', {
 });
 
 replServer.defineCommand('save-connection', {
-    help: 'Saves the connection with an optional name',
+    help: 'Saves the current connection with an optional name',
     action(name) {
         settings.saveSetting(`${name}.connection`, replServer.context.connection);
         settings.saveSetting('.lastConnectionName', name);
