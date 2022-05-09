@@ -3,25 +3,32 @@ import { start } from 'repl';
 import { Chia, defaultConnection } from './chia.js';
 import * as bls from '@noble/bls12-381';
 import * as settings from './settings.js';
+import * as _options from './options.js';
 import * as compiler from './compiler.js';
-import { createCompleterProxy, loadCompletions } from './completer.js';
+import { createCompleterProxy } from './completer.js';
 import chalk from 'chalk';
 
-loadCompletions();
-const replServer = start({ prompt: '🌿 ', useColors: true });
+const options = settings.getSetting('.options', _options.defaultOptions);
+const replServer = start({ prompt: options.cursor, useColors: true });
 replServer.completer = createCompleterProxy(replServer.completer);
 
 initializeContext();
 console.log(chalk.green('Welcome to Chia!'));
-replServer.displayPrompt();
+if (options.autoConnect) {
+    connect();
+}
+else {
+    replServer.displayPrompt();
+}
 
 function initializeContext() {
     const lastConnectionName = settings.getSetting('.lastConnectionName', '');
     replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, defaultConnection);
     settings.fixup(replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
 
-    // these are the various helper functions that don't require other state
+    // these are the various helper modules that don't require other state
     replServer.context.bls = bls;
+    replServer.context.options = options;
     replServer.context.clvm_tools = compiler.clvm_tools;
     replServer.context.utils = compiler.utils;
     replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.connection.prefix, ...args);
@@ -69,7 +76,7 @@ replServer.on('exit', () => {
 });
 
 replServer.defineCommand('connect', {
-    help: 'Opens the websocket connection to the chia daemon. Enables these awaitable chia functions: crawler, daemon, farmer, full_node, harvester, wallet',
+    help: 'Opens the websocket connection to the chia daemon. Enables: crawler, daemon, farmer, full_node, harvester, wallet endpoints',
     action() {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Already connected. Use .disconnect first');
@@ -93,7 +100,7 @@ replServer.defineCommand('disconnect', {
 });
 
 replServer.defineCommand('save-connection', {
-    help: 'Saves the connection (name is optional)',
+    help: 'Saves the connection with an optional name',
     action(name) {
         settings.saveSetting(`${name}.connection`, replServer.context.connection);
         settings.saveSetting('.lastConnectionName', name);
@@ -102,7 +109,7 @@ replServer.defineCommand('save-connection', {
 });
 
 replServer.defineCommand('load-connection', {
-    help: 'Loads a saved connection (name is optional)',
+    help: 'Loads a saved connection with an optional name',
     action(name) {
         if (replServer.context.chiaServer !== undefined) {
             console.log('Currently connected. Use .disconnect first');
@@ -126,6 +133,14 @@ replServer.defineCommand('list-connections', {
                 console.log(settings.getSetting(file));
             }
         });
+        replServer.displayPrompt();
+    }
+});
+
+replServer.defineCommand('save-options', {
+    help: 'Saves the options',
+    action() {
+        settings.saveSetting('.options', replServer.context.options);
         replServer.displayPrompt();
     }
 });
