@@ -14,6 +14,10 @@ replServer.completer = createCompleterProxy(replServer.completer);
 
 initializeContext();
 console.log(chalk.green('Welcome to Chia!'));
+if (options.verbosity !== 'quiet') {
+    console.log(chalk.gray('Type .help for commands'));
+}
+
 if (options.autoConnect) {
     connect();
 }
