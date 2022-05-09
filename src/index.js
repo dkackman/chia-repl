@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import { start } from 'repl';
 import { Chia, defaultConnection } from './chia.js';
-import * as bls from '@noble/bls12-381';
+import * as bls from '@rigidity/bls-signatures';
 import * as settings from './settings.js';
 import * as _options from './options.js';
 import * as compiler from './compiler.js';

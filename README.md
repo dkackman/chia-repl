@@ -5,7 +5,7 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 - [Chia RPC](https://dkackman.github.io/chia-api/)
 - [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
 - [chia-utils](https://github.com/CMEONE/chia-utils)
-- [noble-bls12-381](https://github.com/paulmillr/noble-bls12-381)
+- [@rigidity/bls-signatures](https://github.com/Rigidity/bls-signatures)
 
 ## From Source
 
@@ -104,6 +104,22 @@ blockchain_state: {
   block: {
     ...
   }
+}
+🌿
+```
+
+### BLS Support
+
+```javascript
+🌿 var seed = Uint8Array.from([
+...   0,  50, 6,  244, 24,  199, 1,  25,  52,  88,  192,
+...   19, 18, 12, 89,  6,   220, 18, 102, 58,  209, 82,
+...   12, 62, 89, 110, 182, 9,   44, 20,  254, 22
+... ]);
+undefined
+🌿 bls.AugSchemeMPL.keyGen(seed)
+$38c91b9e16a98741$export$8f54525b330fd87b {
+  value: 25076100791286022435148702897030204761993316905161740767284798605189048279853n
 }
 🌿
 ```

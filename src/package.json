@@ -19,7 +19,7 @@
     "crypto"
   ],
   "dependencies": {
-    "@noble/bls12-381": "^1.2.0",
+    "@rigidity/bls-signatures": "^2.0.3",
     "chalk": "^5.0.1",
     "clvm_tools": "^0.9.5",
     "lodash": "^4.17.21",
