@@ -18,17 +18,14 @@ export function createRpcProxy(chia, endpoint) {
     return new Proxy({}, {
         get(target, functionName) {
             if (typeof target[functionName] === 'undefined') {
-                // here, since 'name' does not exist on the object, we are
-                // going to assume it is an rpc endpoint name on endpoint
-                return async (data) => { // here we call back into the chia server to do the RPC
-                    return await chia.sendCommand(endpoint, functionName, data);
-                };
+                // here, since 'functionName' does not exist on the object, we are
+                // going to assume it is an rpc function name on endpoint
+                // here we call back into the chia server to do the RPC
+                return async (data) => await chia.sendCommand(endpoint, functionName, data);
             } else if (typeof target[functionName] === 'function') {
                 // here the function exists so just reflect apply to invoke
                 return new Proxy(target[functionName], {
-                    apply: (target, thisArg, argumentsList) => {
-                        return Reflect.apply(target, thisArg, argumentsList);
-                    }
+                    apply: (target, thisArg, argumentsList) => Reflect.apply(target, thisArg, argumentsList)
                 });
             } else {
                 // here the property is a value - reflect return it
