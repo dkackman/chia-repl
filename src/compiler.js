@@ -1,5 +1,5 @@
 import * as _clvm_tools from 'clvm_tools';
-import _utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged
+import _utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged and published
 
 /* jshint ignore:start */
 await _clvm_tools.initialize();
