@@ -1,8 +1,10 @@
 import { readFileSync } from 'fs';
 import _ from 'lodash';
+import { __dirname } from './settings.js';
+import path from 'path';
 
 const completions = ['chia.crawler', 'chia.daemon', 'chia.farmer', 'chia.full_node', 'chia.harvester', 'chia.wallet'];
-loadCompletions();
+loadCompletions(__dirname);
 
 // wrap the regular completer in a proxy so we can synthesize completions
 export function createCompleterProxy(completer) {
@@ -26,9 +28,9 @@ const handler = {
     }
 };
 
-function loadCompletions() {
+function loadCompletions(rootDir) {
     try {
-        const data = readFileSync('./resources/completions.json', 'utf8');
+        const data = readFileSync(path.join(rootDir, 'resources/completions.json'), 'utf8');
         const c = JSON.parse(data);
 
         completions.push(...c);
