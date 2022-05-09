@@ -5,6 +5,7 @@ import * as bls from '@rigidity/bls-signatures';
 import * as settings from './settings.js';
 import * as _options from './options.js';
 import * as compiler from './compiler.js';
+import _utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged and published
 import { createCompleterProxy } from './completer.js';
 import chalk from 'chalk';
 
@@ -15,7 +16,7 @@ replServer.completer = createCompleterProxy(replServer.completer);
 initializeContext();
 console.log(chalk.green('Welcome to Chia!'));
 if (options.verbosity !== 'quiet') {
-    console.log(chalk.gray('Type .help for commands'));
+    console.log(chalk.gray('Type .help or .more-help to get started'));
 }
 
 if (options.autoConnect) {
@@ -33,8 +34,8 @@ function initializeContext() {
     // these are the various helper modules that don't require other state
     replServer.context.bls = bls;
     replServer.context.options = options;
-    replServer.context.clvm_tools = compiler.clvm_tools;
-    replServer.context.utils = compiler.utils;
+    replServer.context.clvm = compiler.clvm_tools;
+    replServer.context.utils = _utils;
     replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : replServer.context.connection.prefix, ...args);
     replServer.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 }
@@ -145,6 +146,28 @@ replServer.defineCommand('save-options', {
     help: 'Saves the options',
     action() {
         settings.saveSetting('.options', replServer.context.options);
+        replServer.displayPrompt();
+    }
+});
+
+replServer.defineCommand('more-help', {
+    help: 'Shows more help about using the environment',
+    action() {
+        console.log('These global objects are available within the REPL environment');
+        console.log(`${chalk.green('bls')}\t\tBLS signature functions`);
+        console.log(`${chalk.green('chia')}\t\tChia node rpc endpoints. This object is only availble after a successful .connect`);
+        console.log('\t\tAll functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet');
+        console.log(`${chalk.green('clvm')}\t\tCLVM functions (run, brun, opc, opd, read_ir)`);
+        console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);
+        console.log(`${chalk.green('connection')}\tProperties of the current connection`);
+        console.log(`${chalk.green('options')}\t\tConfigurable REPl options`);
+
+        console.log('\nThese global functions are invocable within the REPL environment');
+        console.log(`${chalk.green('compile')}${chalk.gray('(chiaLisp, prefix, ...compileArgs)')}`);
+        console.log('\t\tCompiles a chialisp program into its address, clvm, puzzle, and puzzle_hash');
+        console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
+        console.log('\t\tRuns a chialisp program and displays its output');
+
         replServer.displayPrompt();
     }
 });

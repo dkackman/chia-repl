@@ -7,6 +7,15 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 - [chia-utils](https://github.com/CMEONE/chia-utils)
 - [@rigidity/bls-signatures](https://github.com/Rigidity/bls-signatures)
 
+## Packaged
+
+```shell
+npm install -g chia-repl
+chia-repl
+🌿 Welcome to Chia!
+🌿 
+```
+
 ## From Source
 
 ```shell
@@ -20,16 +29,54 @@ npm start
 🌿 
 ```
 
-## Packaged
+Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
 
-```shell
-npm install -g chia-repl
-chia-repl
-🌿 Welcome to Chia!
-🌿 
+## Commands
+
+REPL commands always start with `.` and are lsited with `.help`.
+
+```bash
+🌿 .help
+.break              Sometimes you get stuck, this gets you out
+.clear              Break, and also clear the local context
+.connect            Opens the websocket connection to the chia daemon using the currently loaded connection
+.disconnect         Closes the websocket connection to the chia daemon
+.editor             Enter editor mode
+.exit               Exit the REPL
+.help               Print this help message
+.list-connections   Displays a list of saved connection names
+.load               Load JS from a file into the REPL session
+.load-connection    Loads a saved connection with an optional name
+.more-help          Shows more help about using the environment
+.save               Save all evaluated commands in this REPL session to a file
+.save-connection    Saves the current connection with an optional name
+.save-options       Saves the options
+
+Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
+🌿
 ```
 
-Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
+## Globals
+
+Various global objects and functions are available within the REPL environment. These configure the connection and REPL options as well enable interaction with the chia and clvm.
+
+```bash
+🌿 .more-help
+These global objects are available within the REPL environment
+bls             BLS signature functions
+chia            Chia node rpc endpoints. This object is only availble after a successful .connect
+                All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
+clvm            CLVM functions (run, brun, opc, opd, read_ir)
+utils           Chia-utils (bech32m and other helpers)
+connection      Properties of the current connection
+options         Configurable REPl options
+
+These global functions are invocable within the REPL environment
+compile(chiaLisp, prefix, ...compileArgs)
+                Compiles a chialisp program into its address, clvm, puzzle, and puzzle_hash
+test(chiaLisp, compileArgs = [], programArgs = []))
+                Runs a chialisp program and displays its output
+```
 
 ## Examples
 
@@ -41,9 +88,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program
 
 ```lisp
-🌿 clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
+🌿 clvm.run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
-🌿 clvm_tools.brun(_, '1')
+🌿 clvm.brun(_, '1')
 '4'
 🌿
 ```
@@ -51,9 +98,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program From a File
 
 ```lisp
-🌿 clvm_tools.run('../examples/factorial.clsp')
+🌿 clvm.run('../examples/factorial.clsp')
 '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
-🌿 clvm_tools.brun(_, '(5)')
+🌿 clvm.brun(_, '(5)')
 '120'
 🌿
 ```
@@ -122,44 +169,4 @@ $38c91b9e16a98741$export$8f54525b330fd87b {
   value: 25076100791286022435148702897030204761993316905161740767284798605189048279853n
 }
 🌿
-```
-
-### Help and Connection Details
-
-```javascript
-PS C:\Users\dkack\src\github\dkackman\chia-repl\src> npm start
-
-🌿 node index.js
-
-🌿 .help
-.break             Sometimes you get stuck, this gets you out
-.clear             Break, and also clear the local context
-.connect           Opens the websocket connection to the chia daemon. Enables these awaitable functions: crawler, daemon, farmer, full_node, harvester, wallet
-.disconnect        Closes the websocket connection to the chia daemon
-.editor            Enter editor mode
-.exit              Exit the REPL
-.help              Print this help message
-.load              Load JS from a file into the REPL session
-.load-connection   Loads connection (name is optional)
-.save              Save all evaluated commands in this REPL session to a file
-.save-connection   Saves the connection (name is optional)
-
-Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
-🌿 connection
-{
-  host: 'localhost',
-  port: 55400,
-  key_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.key',
-  cert_path: '~/.chia/mainnet/config/ssl/daemon/private_daemon.crt',
-  timeout_seconds: 30,
-  prefix: "xch"
-}
-🌿 .connect
-Connecting to wss://localhost:55400...
-done
-🌿 await chia.daemon.is_running({ service: "chia_wallet" })
-{ is_running: true, service_name: 'chia_wallet', success: true }
-🌿 .disconnect
-Disconnecting...
-done
 ```

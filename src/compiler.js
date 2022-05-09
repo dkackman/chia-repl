@@ -13,11 +13,6 @@ export let clvm_tools = {
     read_ir: (...args) => do_clvm('read_ir', ...args),
 };
 
-export let utils = {
-    puzzle_hash_to_address: (hash, prefix) => utils.puzzle_hash_to_address(hash, prefix),
-    address_to_puzzle_hash: (address) => utils.address_to_puzzle_hash(address),
-};
-
 export function compile(chiaLisp, prefix, ...compileArgs) {
     const clvm = do_clvm('run', chiaLisp, ...compileArgs);
     const hash = do_clvm('opc', '-H', clvm);
