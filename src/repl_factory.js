@@ -1,25 +1,25 @@
 import { start } from 'repl';
 import { createCompleterProxy } from './completer.js';
 import * as settings from './settings.js';
-import * as context_manager from './context_manager.js';
-import * as connection_manager from './connection_manager.js';
 import chalk from 'chalk';
+import { ChiaRepl } from './chia_repl.js';
 
 export function createRepl(options) {
     const replServer = start({ prompt: options.cursor, useColors: true });
+    const chiaRepl = new ChiaRepl(replServer, options);
+
     replServer.completer = createCompleterProxy(replServer.completer);
-    context_manager.initializeContext(replServer, options);
-    
+
     replServer.on('reset', () => {
-        connection_manager.disconnect(replServer);
-        context_manager.initializeContext(replServer, options);
+        chiaRepl.disconnect(replServer);
+        chiaRepl.initializeContext(options);
     });
-    
+
     replServer.on('exit', () => {
-        connection_manager.disconnect(replServer);
+        chiaRepl.disconnect();
         process.exit();
     });
-    
+
     replServer.defineCommand('connect', {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
         action() {
@@ -27,7 +27,7 @@ export function createRepl(options) {
                 console.log('Already connected. Use .disconnect first');
                 replServer.displayPrompt();
             } else {
-                connection_manager.connect(replServer);
+                chiaRepl.connect();
             }
         }
     });
@@ -39,7 +39,7 @@ export function createRepl(options) {
                 console.log('Not connected');
                 replServer.displayPrompt();
             } else {
-                connection_manager.disconnect(replServer);
+                chiaRepl.disconnect();
             }
         }
     });
@@ -53,7 +53,7 @@ export function createRepl(options) {
                 console.log(`No connection named ${name} found`);
             } else {
                 settings.saveSetting('.lastConnectionName', name);
-                context_manager.initializeContext(replServer, options);
+                chiaRepl.initializeContext();
             }
     
             replServer.displayPrompt();
@@ -113,5 +113,5 @@ export function createRepl(options) {
         }
     });
     
-    return replServer;
+    return chiaRepl;
 }
