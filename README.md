@@ -1,5 +1,7 @@
 # chia-repl
 
+[![NPM](https://nodei.co/npm/chia-repl.png?mini=true)](https://npmjs.org/package/chia-repl)
+
 A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
 
 - [Chia RPC](https://dkackman.github.io/chia-api/)
