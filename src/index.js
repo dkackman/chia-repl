@@ -5,7 +5,7 @@ import * as bls from '@rigidity/bls-signatures';
 import * as settings from './settings.js';
 import * as _options from './options.js';
 import * as compiler from './compiler.js';
-import _utils from './chia-utils/chia-utils.js'; // temp fork unitl https://github.com/CMEONE/chia-utils/pull/7 is merged and published
+import _utils from 'chia-utils'; 
 import { createCompleterProxy } from './completer.js';
 import chalk from 'chalk';
 
