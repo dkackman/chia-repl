@@ -70,6 +70,10 @@ class ChiaRepl {
         this.replServer.context.chiaDeamon = undefined;
         this.replServer.context.chia = undefined;
     }
+
+    exit() {
+        process.exit();
+    }
 }
 
 const _ChiaRepl = ChiaRepl;

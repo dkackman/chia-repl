@@ -4,7 +4,8 @@
   "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node index.js test"
   },
   "bin": {
     "chia-repl": "index.js"
