@@ -1,7 +1,7 @@
 # chia-repl
 
 [![CodeQL](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml)
-
+[![Node.js CI](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml)
 [![NPM](https://nodei.co/npm/chia-repl.png?mini=true)](https://npmjs.org/package/chia-repl)
 
 A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
