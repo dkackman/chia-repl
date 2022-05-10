@@ -2,20 +2,21 @@ import { start } from 'repl';
 import { createCompleterProxy } from './completer.js';
 import * as settings from './settings.js';
 import * as context_manager from './context_manager.js';
+import * as connection_manager from './connection_manager.js';
 import chalk from 'chalk';
 
-export function createRepl(options, connection_manager) {
+export function createRepl(options) {
     const replServer = start({ prompt: options.cursor, useColors: true });
     replServer.completer = createCompleterProxy(replServer.completer);
     context_manager.initializeContext(replServer, options);
     
     replServer.on('reset', () => {
-        connection_manager.disconnect();
+        connection_manager.disconnect(replServer);
         context_manager.initializeContext(replServer, options);
     });
     
     replServer.on('exit', () => {
-        connection_manager.disconnect();
+        connection_manager.disconnect(replServer);
         process.exit();
     });
     
@@ -26,7 +27,7 @@ export function createRepl(options, connection_manager) {
                 console.log('Already connected. Use .disconnect first');
                 replServer.displayPrompt();
             } else {
-                connection_manager.connect();
+                connection_manager.connect(replServer);
             }
         }
     });
@@ -38,7 +39,7 @@ export function createRepl(options, connection_manager) {
                 console.log('Not connected');
                 replServer.displayPrompt();
             } else {
-                connection_manager.disconnect();
+                connection_manager.disconnect(replServer);
             }
         }
     });
