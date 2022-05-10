@@ -5,49 +5,49 @@ import chalk from 'chalk';
 import { ChiaRepl } from './chia_repl.js';
 
 export function createRepl(options) {
-    const replServer = start({ prompt: options.cursor, useColors: true });
-    const chiaRepl = new ChiaRepl(replServer, options);
+    const repl = start({ prompt: options.cursor, useColors: true });
+    const chiaRepl = new ChiaRepl(repl, options);
 
-    replServer.completer = createCompleterProxy(replServer.completer);
+    repl.completer = createCompleterProxy(repl.completer);
 
-    replServer.on('reset', () => {
-        chiaRepl.disconnect(replServer);
+    repl.on('reset', () => {
+        chiaRepl.disconnect(repl);
         chiaRepl.initializeContext();
     });
 
-    replServer.on('exit', () => {
+    repl.on('exit', () => {
         chiaRepl.disconnect();
         process.exit();
     });
 
-    replServer.defineCommand('connect', {
+    repl.defineCommand('connect', {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
         action() {
-            if (replServer.context.chiaDeamon !== undefined) {
+            if (repl.context.chiaDeamon !== undefined) {
                 console.log('Already connected. Use .disconnect first');
-                replServer.displayPrompt();
+                repl.displayPrompt();
             } else {
                 chiaRepl.connect();
             }
         }
     });
     
-    replServer.defineCommand('disconnect', {
+    repl.defineCommand('disconnect', {
         help: 'Closes the websocket connection to the chia daemon',
         action() {
-            if (replServer.context.chiaDeamon === undefined) {
+            if (repl.context.chiaDeamon === undefined) {
                 console.log('Not connected');
-                replServer.displayPrompt();
+                repl.displayPrompt();
             } else {
                 chiaRepl.disconnect();
             }
         }
     });
     
-    replServer.defineCommand('load-connection', {
+    repl.defineCommand('load-connection', {
         help: 'Loads a saved connection with an optional name',
         action(name) {
-            if (replServer.context.chiaDeamon !== undefined) {
+            if (repl.context.chiaDeamon !== undefined) {
                 console.log('Currently connected. Use .disconnect first');
             } else if (name !== undefined && !settings.settingExists(`${name}.connection`)) {
                 console.log(`No connection named ${name} found`);
@@ -56,11 +56,11 @@ export function createRepl(options) {
                 chiaRepl.initializeContext();
             }
     
-            replServer.displayPrompt();
+            repl.displayPrompt();
         }
     });
     
-    replServer.defineCommand('list-connections', {
+    repl.defineCommand('list-connections', {
         help: 'Displays a list of saved connection names',
         action() {
             settings.listSettings().forEach(file => {
@@ -69,28 +69,28 @@ export function createRepl(options) {
                     console.log(settings.getSetting(file));
                 }
             });
-            replServer.displayPrompt();
+            repl.displayPrompt();
         }
     });
     
-    replServer.defineCommand('save-options', {
+    repl.defineCommand('save-options', {
         help: 'Saves the options',
         action() {
-            settings.saveSetting('.options', replServer.context.options);
-            replServer.displayPrompt();
+            settings.saveSetting('.options', repl.context.options);
+            repl.displayPrompt();
         }
     });
     
-    replServer.defineCommand('save-connection', {
+    repl.defineCommand('save-connection', {
         help: 'Saves the current connection with an optional name',
         action(name) {
-            settings.saveSetting(`${name}.connection`, replServer.context.connection);
+            settings.saveSetting(`${name}.connection`, repl.context.connection);
             settings.saveSetting('.lastConnectionName', name);
-            replServer.displayPrompt();
+            repl.displayPrompt();
         }
     });
 
-    replServer.defineCommand('more-help', {
+    repl.defineCommand('more-help', {
         help: 'Shows more help about using the environment',
         action() {
             console.log('These global objects are available within the REPL environment');
@@ -109,7 +109,7 @@ export function createRepl(options) {
             console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
             console.log('\t\tRuns a chialisp program and displays its output');
     
-            replServer.displayPrompt();
+            repl.displayPrompt();
         }
     });
     
