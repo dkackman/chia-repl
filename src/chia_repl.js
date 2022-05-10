@@ -10,7 +10,7 @@ class ChiaRepl {
     constructor(replServer, options) {
         this.replServer = replServer;
         this.options = options;
-        this.initializeContext(options);
+        this.initializeContext();
     }
 
     ready() {
@@ -51,14 +51,14 @@ class ChiaRepl {
         }
     }
 
-    initializeContext(options) {
+    initializeContext() {
         const lastConnectionName = settings.getSetting('.lastConnectionName', '');
         this.replServer.context.connection = settings.getSetting(`${lastConnectionName}.connection`, defaultConnection);
         settings.fixup(this.replServer.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
 
         // these are the various helper modules that don't require other state
         this.replServer.context.bls = bls;
-        this.replServer.context.options = options;
+        this.replServer.context.options = this.options;
         this.replServer.context.clvm = compiler.clvm_tools;
         this.replServer.context.utils = _utils;
         this.replServer.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.replServer.context.connection.prefix, ...args);

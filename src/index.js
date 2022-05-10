@@ -8,7 +8,8 @@ const options = settings.getSetting('.options', _options.defaultOptions);
 const chiaRepl = createRepl(options);
 chiaRepl.ready();
 
-// this is used by the test script to see if we can start cleanly and exit
+// this is used by the test script to see if we can start cleanly 
+// and exit from the CI build. 
 if (_.last(process.argv) === 'test') {
     chiaRepl.exit();
 }

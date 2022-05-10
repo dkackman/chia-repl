@@ -12,7 +12,7 @@ export function createRepl(options) {
 
     replServer.on('reset', () => {
         chiaRepl.disconnect(replServer);
-        chiaRepl.initializeContext(options);
+        chiaRepl.initializeContext();
     });
 
     replServer.on('exit', () => {
