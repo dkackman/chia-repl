@@ -29,7 +29,7 @@ npm start
 🌿 
 ```
 
-Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's. Also include tab completions for the endpoints and their functions.
+Uses the [node repl](https://nodejs.org/api/repl.html) so the CLI works like node's.
 
 ## Commands
 
@@ -58,7 +58,8 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 
 ## Globals
 
-Various global objects and functions are available within the REPL environment. These configure the connection and REPL options as well enable interaction with the chia and clvm.
+Various global objects and functions are available within the REPL environment.
+These configure the connection and REPL options as well enable interaction with the chia node and clvm.
 
 ```bash
 🌿 .more-help
@@ -69,7 +70,9 @@ chia            Chia node rpc endpoints. This object is only availble after a su
 clvm            CLVM functions (run, brun, opc, opd, read_ir)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
-options         Configurable REPl options
+options         Configurable REPL options
+repl.builtinModules
+                Show other available builtin node modules
 
 These global functions are invocable within the REPL environment
 compile(chiaLisp, prefix, ...compileArgs)
@@ -108,7 +111,7 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a ChiaLisp Program
 
 ```lisp
-🌿 compile('../examples/piggybank.clsp', '-i../examples/include')
+🌿 compile('../examples/piggybank.clsp', 'xch', '-i../examples/include')
 {
   address: 'tcxh1smq2mvt8mdmulp7q5tvwh8rn8g6u8ykfr5020a3aj3mj3hsha5ns3zea78',
   clvm: '(a (q 2 (i (> 11 5) (q 2 (i (> 11 14) (q 4 (c 10 (c 4 (c 11 ()))) (c (c 10 (c 23 (q ()))) ())) (q 4 (c 10 (c 23 (c 11 ()))) ())) 1) (q 8)) 1) (c (q 0xcafef00d 51 . 500) 1))', 
@@ -137,7 +140,7 @@ done
 
 ### Chaining calls
 
-The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can be used to chain function calls.
+Since it is a javascript environment, variables can be defined and set, and are preserved through. The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can also be used to chain function calls.
 
 ```javascript
 🌿 await chia.full_node.get_blockchain_state()

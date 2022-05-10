@@ -3,8 +3,9 @@ import path from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
+/* jshint ignore:start */
+export const __dirname = path.dirname(fileURLToPath(import.meta.url));
+/* jshint ignore:end */
 
 const settingsDir = path.join(homedir(), '.chia-repl');
 
