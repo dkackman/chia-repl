@@ -1,6 +1,6 @@
-import { Chia } from './chia.js';
+import { ChiaDaemon } from './chia_daemon.js';
 import * as settings from './settings.js';
-import { defaultConnection } from './chia.js';
+import { defaultConnection } from './chia_daemon.js';
 import * as bls from '@rigidity/bls-signatures';
 import * as compiler from './compiler.js';
 import _utils from 'chia-utils';
@@ -30,8 +30,8 @@ class ChiaRepl {
     connect() {
         const address = `wss://${this.replServer.context.connection.host}:${this.replServer.context.connection.port}`;
         console.log(`Connecting to ${address}...`);
-        const chiaServer = new Chia(this.replServer.context.connection);
-        chiaServer.connect((msg) => {
+        const chiaDeamon = new ChiaDaemon(this.replServer.context.connection);
+        chiaDeamon.connect((msg) => {
             console.log(msg);
             this.replServer.displayPrompt();
         },
@@ -40,13 +40,13 @@ class ChiaRepl {
             console.log(e);
             this.replServer.displayPrompt();
         });
-        this.replServer.context.chiaServer = chiaServer;
-        this.replServer.context.chia = chiaServer.endpoints;
+        this.replServer.context.chiaDeamon = chiaDeamon;
+        this.replServer.context.chia = chiaDeamon.endpoints;
     }
 
     disconnect() {
-        if (this.replServer.context.chiaServer !== undefined) {
-            this.replServer.context.chiaServer.disconnect();
+        if (this.replServer.context.chiaDeamon !== undefined) {
+            this.replServer.context.chiaDeamon.disconnect();
             this.clearContext();
         }
     }
@@ -67,7 +67,7 @@ class ChiaRepl {
 
     clearContext() {
         // clear all these out so they aren't available in the repl when not connected
-        this.replServer.context.chiaServer = undefined;
+        this.replServer.context.chiaDeamon = undefined;
         this.replServer.context.chia = undefined;
     }
 }

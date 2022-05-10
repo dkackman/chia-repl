@@ -4,7 +4,7 @@
 // If the invoked method is an endpoint on the rpc server, it will be invoked as such.
 //
 // so we can do something like:
-// const full_node = createRpcProxy(chiaServer, 'chia_full_node');
+// const full_node = createRpcProxy(chiaDeamon, 'chia_full_node');
 // const state = await full_node.get_blocchain_state();
 //
 /**

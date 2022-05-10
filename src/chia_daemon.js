@@ -13,7 +13,7 @@ export let defaultConnection = {
     prefix: 'xch',
 };
 
-class Chia {
+class ChiaDaemon {
     constructor(connection) {
         this.connection = connection;
         this.outgoing = new Map(); // outgoing messages awaiting a response
@@ -135,5 +135,5 @@ function formatMessage(destination, command, data = {}) {
     };
 }
 
-const _Chia = Chia;
-export { _Chia as Chia };
+const _Chia = ChiaDaemon;
+export { _Chia as ChiaDaemon };

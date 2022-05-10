@@ -23,7 +23,7 @@ export function createRepl(options) {
     replServer.defineCommand('connect', {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
         action() {
-            if (replServer.context.chiaServer !== undefined) {
+            if (replServer.context.chiaDeamon !== undefined) {
                 console.log('Already connected. Use .disconnect first');
                 replServer.displayPrompt();
             } else {
@@ -35,7 +35,7 @@ export function createRepl(options) {
     replServer.defineCommand('disconnect', {
         help: 'Closes the websocket connection to the chia daemon',
         action() {
-            if (replServer.context.chiaServer === undefined) {
+            if (replServer.context.chiaDeamon === undefined) {
                 console.log('Not connected');
                 replServer.displayPrompt();
             } else {
@@ -47,7 +47,7 @@ export function createRepl(options) {
     replServer.defineCommand('load-connection', {
         help: 'Loads a saved connection with an optional name',
         action(name) {
-            if (replServer.context.chiaServer !== undefined) {
+            if (replServer.context.chiaDeamon !== undefined) {
                 console.log('Currently connected. Use .disconnect first');
             } else if (name !== undefined && !settings.settingExists(`${name}.connection`)) {
                 console.log(`No connection named ${name} found`);
