@@ -58,8 +58,8 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 
 ## Globals
 
-Various global objects and functions are available within the REPL environment.
-These configure the connection and REPL options as well enable interaction with the chia node and clvm.
+Various global objects and functions are available within the REPL environment and can be listed with `.more-help`.
+Some of these configure the connection and REPL options, while other enable interaction with the chia node, utility functions, and the clvm.
 
 ```bash
 🌿 .more-help
