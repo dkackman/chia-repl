@@ -177,3 +177,7 @@ $38c91b9e16a98741$export$8f54525b330fd87b {
 }
 🌿
 ```
+
+___
+
+_chia and its logo are the registered trademark or trademark of Chia Network, Inc. in the United States and worldwide._
