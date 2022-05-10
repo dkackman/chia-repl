@@ -1,6 +1,6 @@
 {
   "name": "chia-repl",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.",
   "main": "index.js",
   "scripts": {
@@ -31,5 +31,14 @@
   "devDependencies": {
     "eslint": "^8.13.0",
     "jshint": "^2.13.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dkackman/chia-repl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dkackman/chia-repl/issues"
+  },
+  "homepage": "https://github.com/dkackman/chia-repl",
+  "readme": "https://github.com/dkackman/chia-repl#readme"
 }
