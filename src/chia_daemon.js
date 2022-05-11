@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 import { WebSocket } from 'ws';
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
-import { createRpcProxy } from './rpc_proxy.js';
+import createRpcProxy from './rpc_proxy.js';
 
 export let defaultConnection = {
     host: 'localhost',

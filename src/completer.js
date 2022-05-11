@@ -7,7 +7,7 @@ const completions = ['chia.crawler', 'chia.daemon', 'chia.farmer', 'chia.full_no
 loadCompletions(__dirname);
 
 // wrap the regular completer in a proxy so we can synthesize completions
-export function createCompleterProxy(completer) {
+export default function createCompleterProxy(completer) {
     return new Proxy(completer, handler);
 }
 

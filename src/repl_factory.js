@@ -1,10 +1,10 @@
 import { start } from 'repl';
-import { createCompleterProxy } from './completer.js';
+import createCompleterProxy from './completer.js';
 import * as settings from './settings.js';
 import chalk from 'chalk';
-import { ChiaRepl } from './chia_repl.js';
+import ChiaRepl from './chia_repl.js';
 
-export function createRepl(options) {
+export default function createRepl(options) {
     const repl = start({ prompt: options.cursor, useColors: true });
     const chiaRepl = new ChiaRepl(repl, options);
 

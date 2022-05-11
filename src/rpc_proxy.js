@@ -12,7 +12,7 @@
  * @param  {Chia} chia The chia daemon service that will execute the RPC
  * @param  {string} endpoint The name of the chia endpoint service
  */
-export function createRpcProxy(chia, endpoint) {
+export default function createRpcProxy(chia, endpoint) {
     // create a proxy around a new empty object that will intrecept
     // any method call that doesn't exist and turn it into an RPC invocation
     return new Proxy({}, {

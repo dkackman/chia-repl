@@ -76,4 +76,4 @@ class ChiaRepl {
 }
 
 const _ChiaRepl = ChiaRepl;
-export { _ChiaRepl as ChiaRepl };
+export { _ChiaRepl as default };
