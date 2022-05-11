@@ -4,6 +4,9 @@ import * as settings from './settings.js';
 import chalk from 'chalk';
 import ChiaRepl from './chia_repl.js';
 
+// this module is responsible for creating and configuring the repl and ChiaRepl 
+// instances and then smashing them together
+
 export default function createRepl(options) {
     const repl = start({ prompt: options.cursor, useColors: true });
     const chiaRepl = new ChiaRepl(repl, options);

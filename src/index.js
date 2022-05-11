@@ -4,6 +4,7 @@ import * as settings from './settings.js';
 import * as _options from './options.js';
 import _ from 'lodash';
 
+// application entry point only
 const options = settings.getSetting('.options', _options.defaultOptions);
 const chiaRepl = createRepl(options);
 chiaRepl.ready();

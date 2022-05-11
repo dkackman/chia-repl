@@ -5,6 +5,8 @@ import * as compiler from './compiler.js';
 import _utils from 'chia-utils';
 import chalk from 'chalk';
 
+// this exists in order to bring together the node repl, the chia deamon 
+// and all the other chia specfic tools and utilities
 class ChiaRepl {
     constructor(repl, options) {
         this.repl = repl;

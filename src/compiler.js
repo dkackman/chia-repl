@@ -1,6 +1,8 @@
 import * as _clvm_tools from 'clvm_tools';
 import _utils from 'chia-utils'; 
 
+// this module only exists to wrap the clvm and related things
+
 /* jshint ignore:start */
 await _clvm_tools.initialize();
 /* jshint ignore:end */

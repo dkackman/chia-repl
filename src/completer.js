@@ -3,6 +3,10 @@ import _ from 'lodash';
 import { __dirname } from './settings.js';
 import path from 'path';
 
+// this module does tab completions for the chia service endpoints. When
+// it looks like the user is using the chia endpoints it will lookup matching
+// completions. Otherwise it defers to the builtin in tab completer
+
 const completions = ['chia.crawler', 'chia.daemon', 'chia.farmer', 'chia.full_node', 'chia.harvester', 'chia.wallet'];
 loadCompletions(__dirname);
 

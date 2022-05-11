@@ -13,6 +13,8 @@ export let defaultConnection = {
     prefix: 'xch',
 };
 
+// this guy encapsulates asynchornous communciation with the chia daemon
+// which in turn proxies communication to the other chia services
 class ChiaDaemon {
     constructor(connection) {
         this.connection = connection;
