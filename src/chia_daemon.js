@@ -24,7 +24,7 @@ class ChiaDaemon extends EventEmitter {
         this.incoming = new Map(); // incoming responses 
     }
 
-    get endpoints() {
+    get services() {
         return {
             daemon: createRpcProxy(this, 'daemon'),
             full_node: createRpcProxy(this, 'chia_full_node'),

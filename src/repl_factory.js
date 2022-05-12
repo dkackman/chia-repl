@@ -98,7 +98,7 @@ export default function createRepl(options) {
         action() {
             console.log('These global objects are available within the REPL environment');
             console.log(`${chalk.green('bls')}\t\tBLS signature functions`);
-            console.log(`${chalk.green('chia')}\t\tChia node rpc endpoints. This object is only availble after a successful .connect`);
+            console.log(`${chalk.green('chia')}\t\tChia node rpc services. This object is only availble after a successful .connect`);
             console.log('\t\tAll functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet');
             console.log(`${chalk.green('clvm')}\t\tCLVM functions (run, brun, opc, opd, read_ir)`);
             console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);

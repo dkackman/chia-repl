@@ -62,7 +62,7 @@ class ChiaRepl {
 
         chiaDeamon.connect();
         this.repl.context.chiaDeamon = chiaDeamon;
-        this.repl.context.chia = chiaDeamon.endpoints;
+        this.repl.context.chia = chiaDeamon.services;
     }
 
     disconnect() {
