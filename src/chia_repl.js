@@ -23,7 +23,7 @@ class ChiaRepl {
         this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 
         this.loadConnection();
-        
+
         console.log(chalk.green('Welcome to Chia!'));
         if (this.options.verbosity !== 'quiet') {
             console.log(chalk.gray('Type .help or .more-help to get started'));
@@ -43,7 +43,7 @@ class ChiaRepl {
             console.log(`Connecting to ${address}...`);
         });
 
-        chiaDeamon.on('connect', () => {
+        chiaDeamon.on('connected', () => {
             console.log('Connected');
             this.repl.displayPrompt();
         });

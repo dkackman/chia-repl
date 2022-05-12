@@ -18,7 +18,7 @@ export function getSetting(name, def) {
         const json = fs.readFileSync(path.join(settingsDir, name));
         return JSON.parse(json);
     } catch (e) {
-        // console.log(`Could not load settings ${name}`);
+        console.log(`Could not load settings ${name}\n${e}`);
     }
 
     return def;
