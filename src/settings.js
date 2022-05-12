@@ -7,7 +7,10 @@ import { fileURLToPath } from 'url';
 export const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /* jshint ignore:end */
 
-const settingsDir = path.join(homedir(), '.chia-repl');
+const packagejson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+export const version = packagejson.version;
+
+const settingsDir = path.join(homedir(), `.${packagejson.name}`);
 
 export function settingExists(name) {
     return fs.existsSync(path.join(settingsDir, name));

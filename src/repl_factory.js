@@ -93,6 +93,14 @@ export default function createRepl(options) {
         }
     });
 
+    repl.defineCommand('version', {
+        help: 'Shows the version of this application',
+        action() {
+            console.log(settings.version);
+            repl.displayPrompt();
+        }
+    });
+
     repl.defineCommand('more-help', {
         help: 'Shows more help about using the environment',
         action() {
