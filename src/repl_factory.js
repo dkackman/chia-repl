@@ -15,7 +15,7 @@ export default function createRepl(options) {
 
     repl.on('reset', () => {
         chiaRepl.disconnect(repl);
-        chiaRepl.initializeContext();
+        chiaRepl.loadConnection();
     });
 
     repl.on('exit', () => {
@@ -34,7 +34,7 @@ export default function createRepl(options) {
             }
         }
     });
-    
+
     repl.defineCommand('disconnect', {
         help: 'Closes the websocket connection to the chia daemon',
         action() {
@@ -46,7 +46,7 @@ export default function createRepl(options) {
             }
         }
     });
-    
+
     repl.defineCommand('load-connection', {
         help: 'Loads a saved connection with an optional name',
         action(name) {
@@ -56,13 +56,13 @@ export default function createRepl(options) {
                 console.log(`No connection named ${name} found`);
             } else {
                 settings.saveSetting('.lastConnectionName', name);
-                chiaRepl.initializeContext();
+                chiaRepl.loadConnection();
             }
-    
+
             repl.displayPrompt();
         }
     });
-    
+
     repl.defineCommand('list-connections', {
         help: 'Displays a list of saved connection names',
         action() {
@@ -75,7 +75,7 @@ export default function createRepl(options) {
             repl.displayPrompt();
         }
     });
-    
+
     repl.defineCommand('save-options', {
         help: 'Saves the options',
         action() {
@@ -83,7 +83,7 @@ export default function createRepl(options) {
             repl.displayPrompt();
         }
     });
-    
+
     repl.defineCommand('save-connection', {
         help: 'Saves the current connection with an optional name',
         action(name) {
@@ -111,10 +111,10 @@ export default function createRepl(options) {
             console.log('\t\tCompiles a chialisp program into its address, clvm, puzzle, and puzzle_hash');
             console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
             console.log('\t\tRuns a chialisp program and displays its output');
-    
+
             repl.displayPrompt();
         }
     });
-    
+
     return chiaRepl;
 }

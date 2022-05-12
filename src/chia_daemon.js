@@ -3,6 +3,7 @@ import { WebSocket } from 'ws';
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
 import createRpcProxy from './rpc_proxy.js';
+import { EventEmitter } from 'events';
 
 export let defaultConnection = {
     host: 'localhost',
@@ -15,8 +16,9 @@ export let defaultConnection = {
 
 // this guy encapsulates asynchornous communciation with the chia daemon
 // which in turn proxies communication to the other chia services
-class ChiaDaemon {
+class ChiaDaemon extends EventEmitter {
     constructor(connection) {
+        super();
         this.connection = connection;
         this.outgoing = new Map(); // outgoing messages awaiting a response
         this.incoming = new Map(); // incoming responses 
@@ -33,12 +35,14 @@ class ChiaDaemon {
         };
     }
 
-    connect(status, error) {
+    connect() {
         if (this.ws !== undefined) {
             throw new Error('Already connected');
         }
 
         const address = `wss://${this.connection.host}:${this.connection.port}`;
+        this.emit('connecting', address);
+
         const ws = new WebSocket(address, {
             rejectUnauthorized: false,
             key: readFileSync(this.connection.key_path.replace('~', homedir())),
@@ -56,21 +60,17 @@ class ChiaDaemon {
             if (this.outgoing.has(msg.request_id)) {
                 this.outgoing.delete(msg.request_id);
                 this.incoming.set(msg.request_id, msg);
-            } else if (status !== undefined && msg.command === 'register_service') {
-                status('Connected'); //a little bit hacky way to callback after register service finishes
+            } else if (msg.command === 'register_service') {
+                this.emit('connected');
             }
         });
 
         ws.on('error', (e) => {
-            if (error !== undefined) {
-                error(e);
-            }
+            this.emit('error', e);
         });
 
         ws.on('close', () => {
-            if (status !== undefined) {
-                status('Disconnected');
-            }
+            this.emit('disconnected');
         });
 
         this.ws = ws;
