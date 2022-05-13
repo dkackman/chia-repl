@@ -14,14 +14,14 @@ export let defaultConnection = {
     prefix: 'xch',
 };
 
-// this guy encapsulates asynchornous communciation with the chia daemon
+// this guy encapsulates asynchronous communication with the chia daemon
 // which in turn proxies communication to the other chia services
 class ChiaDaemon extends EventEmitter {
     constructor(connection) {
         super();
         this.connection = connection;
         this.outgoing = new Map(); // outgoing messages awaiting a response
-        this.incoming = new Map(); // incoming responses 
+        this.incoming = new Map(); // incoming responses not yet consumed
     }
 
     get services() {

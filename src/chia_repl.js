@@ -84,6 +84,7 @@ class ChiaRepl {
     }
 
     exit() {
+        this.disconnect();
         process.exit();
     }
 }

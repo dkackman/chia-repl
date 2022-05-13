@@ -18,10 +18,7 @@ export default function createRepl(options) {
         chiaRepl.loadConnection();
     });
 
-    repl.on('exit', () => {
-        chiaRepl.disconnect();
-        process.exit();
-    });
+    repl.on('exit', () => chiaRepl.exit());
 
     repl.defineCommand('connect', {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
