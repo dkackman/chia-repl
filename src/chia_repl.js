@@ -1,9 +1,10 @@
 import { ChiaDaemon, defaultConnection } from './chia_daemon.js';
 import * as settings from './settings.js';
-import * as bls from '@rigidity/bls-signatures';
-import * as compiler from './compiler.js';
-import _utils from 'chia-utils';
 import chalk from 'chalk';
+import * as bls from '@rigidity/bls-signatures';
+import _utils from 'chia-utils';
+import { Program } from '@rigidity/clvm';
+import { Compiler } from './compiler.js';
 
 // this exists in order to bring together the node repl, the chia deamon 
 // and all the other chia specfic tools and utilities
@@ -17,10 +18,9 @@ class ChiaRepl {
         // these are the various helper modules that don't require other state
         this.repl.context.bls = bls;
         this.repl.context.options = this.options;
-        this.repl.context.clvm = compiler.clvm_tools;
+        this.repl.context.clvm = Program;
+        this.repl.context.compiler = new Compiler(this.options.includePath);
         this.repl.context.utils = _utils;
-        this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
-        this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
 
         this.loadConnection();
 

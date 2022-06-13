@@ -1,46 +1,53 @@
-import * as _clvm_tools from 'clvm_tools';
-import _utils from 'chia-utils'; 
+import { Program } from '@rigidity/clvm';
+import { getSource } from './source.js';
 
-// this module only exists to wrap the clvm and related things
+class Compiler {
+    constructor(include) {
+        this.include = include;
+    }
 
-/* jshint ignore:start */
-await _clvm_tools.initialize();
-/* jshint ignore:end */
+    run(source) {
+        const src = getSource(source);
+        //const options = 
+        return Program.fromSource(src).compile().value.toString();
+    }
 
-export let clvm_tools = {
-    run: (...args) => do_clvm('run', ...args),
-    brun: (...args) => do_clvm('brun', ...args),
-    opd: (...args) => do_clvm('opd', ...args),
-    opc: (...args) => do_clvm('opc', ...args),
-    read_ir: (...args) => do_clvm('read_ir', ...args),
-};
+    brun(source, environment) {
+        const src = getSource(source);
+        const env = getSource(environment);
+    
+        return Program.fromSource(src).run(Program.fromSource(env)).value.toString();
+    }
 
-export function compile(chiaLisp, prefix, ...compileArgs) {
-    const clvm = do_clvm('run', chiaLisp, ...compileArgs);
-    const hash = do_clvm('opc', '-H', clvm);
-    const puzzle = do_clvm('opc', clvm);
-    const address = _utils.puzzle_hash_to_address(hash, prefix);
+    compile(source, solution = '()') {
+        const src = getSource(source);        
+        const solutionSrc = getSource(solution);
+        const puzzleProgram = Program.fromSource(src);
+        const output = puzzleProgram.compile();
+        //const solutionProgram = Program.fromSource(solutionSrc);
+        //const result = puzzleProgram.run();
 
-    return {
-        address: address,
-        clvm: clvm,
-        puzzle: puzzle,
-        puzzle_hash: hash,
-    };
+        return {
+            puzzleProgram: puzzleProgram,
+            //solutionProgram: solutionProgram,
+            //result: result,
+            source: puzzleProgram.toSource(true),
+            clvm: output.value.toString(),
+            cost: output.cost,
+            puzzle: puzzleProgram.serializeHex(),
+            //solution: solutionProgram.serializeHex(),
+        };
+    }
 }
 
-export function test(chiaLisp, compileArgs = [], programArgs = []) {
-    const clvm = do_clvm('run', chiaLisp, ...compileArgs);
-    return do_clvm('brun', clvm, ...programArgs);
-}
+//const src = '(mod ARGUMENT (+ ARGUMENT 3))';//readFileSync('C:\\Users\\dkack\\src\\github\\dkackman\\chia-repl\\examples\\factorial.clsp');
 
-// this lifts the last clvm_tools result from a parameter 
-// to a return value so the repl can access it
-let last_clvm_result;
-_clvm_tools.setPrintFunction((message) => last_clvm_result = message);
+/*
+brun is Program.fromSource(source).run(Program.fromSource(environment)).value.toString()
+and run is Program.fromSource(input).compile().value.toString()
+opc would be Program.fromSource(source).serializeHex()
+and opd is Program.deserializeHex(hex).toString()
+*/
 
-export function do_clvm(command, ...args) {
-    _clvm_tools.go(command, ...args);
-
-    return last_clvm_result;
-}
+const _Compiler = Compiler;
+export { _Compiler as Compiler };

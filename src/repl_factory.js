@@ -3,6 +3,7 @@ import createCompleterProxy from './completer.js';
 import * as settings from './settings.js';
 import chalk from 'chalk';
 import ChiaRepl from './chia_repl.js';
+import { Compiler } from './compiler.js';
 
 // this module is responsible for creating and configuring the repl and ChiaRepl 
 // instances and then smashing them together
@@ -77,6 +78,7 @@ export default function createRepl(options) {
         help: 'Saves the options',
         action() {
             settings.saveSetting('.options', repl.context.options);
+            repl.context.compiler = new Compiler(repl.context.options);
             repl.displayPrompt();
         }
     });
@@ -105,17 +107,11 @@ export default function createRepl(options) {
             console.log(`${chalk.green('bls')}\t\tBLS signature functions`);
             console.log(`${chalk.green('chia')}\t\tChia node rpc services. This object is only availble after a successful .connect`);
             console.log('\t\tAll functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet');
-            console.log(`${chalk.green('clvm')}\t\tCLVM functions (run, brun, opc, opd, read_ir)`);
+            console.log(`${chalk.green('compiler')}\tCLVM functions (run, brun, opc, opd, read_ir)`);
             console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);
             console.log(`${chalk.green('connection')}\tProperties of the current connection`);
             console.log(`${chalk.green('options')}\t\tConfigurable REPl options`);
             console.log(`${chalk.green('repl.builtinModules')}\n\t\tShow other available builtin node modules`);
-
-            console.log('\nThese global functions are invocable within the REPL environment');
-            console.log(`${chalk.green('compile')}${chalk.gray('(chiaLisp, prefix, ...compileArgs)')}`);
-            console.log('\t\tCompiles a chialisp program into its address, clvm, puzzle, and puzzle_hash');
-            console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
-            console.log('\t\tRuns a chialisp program and displays its output');
 
             repl.displayPrompt();
         }

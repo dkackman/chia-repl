@@ -1,5 +1,6 @@
 export let defaultOptions = {
     cursor: '🌿 ',
     autoConnect: false,
-    verbosity: 'normal'
+    verbosity: 'normal',
+    includePath: '../examples/include',
 };
