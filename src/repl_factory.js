@@ -22,12 +22,12 @@ export default function createRepl(options) {
 
     repl.defineCommand('connect', {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
-        action() {
+        async action() {
             if (repl.context.chiaDeamon !== undefined) {
                 console.log('Already connected. Use .disconnect first');
                 repl.displayPrompt();
             } else {
-                chiaRepl.connect();
+                await chiaRepl.connect();
             }
         }
     });

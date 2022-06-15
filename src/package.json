@@ -23,6 +23,7 @@
   "dependencies": {
     "@rigidity/bls-signatures": "^2.0.3",
     "chalk": "^5.0.1",
+    "chia-daemon": "^0.2.4",
     "chia-utils": "^1.0.10",
     "clvm_tools": "^0.9.5",
     "lodash": "^4.17.21",

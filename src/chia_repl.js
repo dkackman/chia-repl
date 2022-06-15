@@ -1,4 +1,4 @@
-import { ChiaDaemon, defaultConnection } from './chia_daemon.js';
+import { ChiaDaemon, localDaemonConnection } from 'chia-daemon';
 import * as settings from './settings.js';
 import * as bls from '@rigidity/bls-signatures';
 import * as compiler from './compiler.js';
@@ -37,7 +37,7 @@ class ChiaRepl {
         }
     }
 
-    connect() {
+    async connect() {
         const chiaDeamon = new ChiaDaemon(this.repl.context.connection);
         chiaDeamon.on('connecting', (address) => {
             console.log(`Connecting to ${address}...`);
@@ -60,9 +60,10 @@ class ChiaRepl {
             this.repl.displayPrompt();
         });
 
-        chiaDeamon.connect();
-        this.repl.context.chiaDeamon = chiaDeamon;
-        this.repl.context.chia = chiaDeamon.services;
+        if (await chiaDeamon.connect()) {
+            this.repl.context.chiaDeamon = chiaDeamon;
+            this.repl.context.chia = chiaDeamon.services;
+        }
     }
 
     disconnect() {
@@ -73,7 +74,7 @@ class ChiaRepl {
 
     loadConnection() {
         const lastConnectionName = settings.getSetting('.lastConnectionName', '');
-        this.repl.context.connection = settings.getSetting(`${lastConnectionName}.connection`, defaultConnection);
+        this.repl.context.connection = settings.getSetting(`${lastConnectionName}.connection`, localDaemonConnection);
         settings.fixup(this.repl.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
     }
 
