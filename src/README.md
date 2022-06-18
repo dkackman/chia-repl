@@ -1,5 +1,9 @@
 # chia-repl
 
+[![CodeQL](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml)
+[![Node.js CI](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml)
+[![NPM](https://nodei.co/npm/chia-repl.png?mini=true)](https://npmjs.org/package/chia-repl)
+
 A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
 
 - [Chia RPC](https://dkackman.github.io/chia-api/)
@@ -58,8 +62,8 @@ Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 
 ## Globals
 
-Various global objects and functions are available within the REPL environment.
-These configure the connection and REPL options as well enable interaction with the chia node and clvm.
+Various global objects and functions are available within the REPL environment and can be listed with `.more-help`.
+Some of these configure the connection and REPL options, while other enable interaction with the chia node, utility functions, and the clvm.
 
 ```bash
 🌿 .more-help
@@ -158,6 +162,23 @@ blockchain_state: {
 🌿
 ```
 
+### Helpers for RPC Payloads
+
+```javascript
+🌿 chia.daemon.getPayloadDescriptor('is_running')
+{
+  type: 'object',
+  required: [ 'service' ],
+  properties: { service: { type: 'string' } }
+}
+🌿 var p = chia.daemon.makePayload('is_running')
+undefined
+🌿 p.service = 'chia_fulll_node'
+'chia_fulll_node'
+🌿 await chia.daemon.is_running(p)
+{ is_running: false, service_name: 'chia_fulll_node', success: true }
+```
+
 ### BLS Support
 
 ```javascript
@@ -173,3 +194,7 @@ $38c91b9e16a98741$export$8f54525b330fd87b {
 }
 🌿
 ```
+
+___
+
+_chia and its logo are the registered trademark or trademark of Chia Network, Inc. in the United States and worldwide._

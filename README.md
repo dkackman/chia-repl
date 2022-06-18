@@ -162,6 +162,23 @@ blockchain_state: {
 🌿
 ```
 
+### Helpers for RPC Payloads
+
+```javascript
+🌿 chia.daemon.getPayloadDescriptor('is_running')
+{
+  type: 'object',
+  required: [ 'service' ],
+  properties: { service: { type: 'string' } }
+}
+🌿 var p = chia.daemon.makePayload('is_running')
+undefined
+🌿 p.service = 'chia_fulll_node'
+'chia_fulll_node'
+🌿 await chia.daemon.is_running(p)
+{ is_running: false, service_name: 'chia_fulll_node', success: true }
+```
+
 ### BLS Support
 
 ```javascript
