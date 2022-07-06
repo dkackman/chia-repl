@@ -4,15 +4,18 @@ import * as bls from '@rigidity/bls-signatures';
 import * as compiler from './compiler.js';
 import _utils from 'chia-utils';
 import chalk from 'chalk';
+import listener from './listen.js';
 
 // this exists in order to bring together the node repl, the chia deamon 
-// and all the other chia specfic tools and utilities
+// and all the other chia specific tools and utilities
 class ChiaRepl {
     constructor(repl, options) {
         this.repl = repl;
         this.options = options;
     }
 
+    get repl() { return this.ready; }
+    
     ready() {
         // these are the various helper modules that don't require other state
         this.repl.context.bls = bls;
@@ -37,38 +40,40 @@ class ChiaRepl {
         }
     }
 
-    async connect() {
-        const chiaDeamon = new ChiaDaemon(this.repl.context.connection);
-        chiaDeamon.on('connecting', (address) => {
+    async connect(service_name = 'chia_repl') {
+        const chiaDaemon = new ChiaDaemon(this.repl.context.connection, service_name);
+        chiaDaemon.on('connecting', (address) => {
             console.log(`Connecting to ${address}...`);
         });
 
-        chiaDeamon.on('connected', () => {
+        chiaDaemon.on('connected', () => {
             console.log('Connected');
             this.repl.displayPrompt();
         });
 
-        chiaDeamon.on('disconnected', () => {
+        chiaDaemon.on('disconnected', () => {
             this.clearChiaContext();
             console.log('Disconnected');
             this.repl.displayPrompt();
         });
 
-        chiaDeamon.on('error', (e) => {
+        chiaDaemon.on('error', (e) => {
             this.clearChiaContext();
             console.log(e);
             this.repl.displayPrompt();
         });
 
-        if (await chiaDeamon.connect()) {
-            this.repl.context.chiaDeamon = chiaDeamon;
-            this.repl.context.chia = chiaDeamon.services;
+        chiaDaemon.listen = async () => await listener(chiaDaemon);
+
+        if (await chiaDaemon.connect()) {
+            this.repl.context.chiaDaemon = chiaDaemon;
+            this.repl.context.chia = chiaDaemon.services;
         }
     }
 
     disconnect() {
-        if (this.repl.context.chiaDeamon !== undefined) {
-            this.repl.context.chiaDeamon.disconnect();
+        if (this.repl.context.chiaDaemon !== undefined) {
+            this.repl.context.chiaDaemon.disconnect();
         }
     }
 
@@ -80,7 +85,7 @@ class ChiaRepl {
 
     clearChiaContext() {
         // clear all these out so they aren't available in the repl when not connected
-        this.repl.context.chiaDeamon = undefined;
+        this.repl.context.chiaDaemon = undefined;
         this.repl.context.chia = undefined;
     }
 
