@@ -10,12 +10,12 @@ import listener from './listen.js';
 // and all the other chia specific tools and utilities
 class ChiaRepl {
     constructor(repl, options) {
-        this.repl = repl;
+        this._repl = repl;
         this.options = options;
     }
 
-    get repl() { return this.ready; }
-    
+    get repl() { return this._repl; }
+
     ready() {
         // these are the various helper modules that don't require other state
         this.repl.context.bls = bls;
