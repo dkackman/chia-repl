@@ -7,8 +7,8 @@ import ChiaRepl from './chia_repl.js';
 // this module is responsible for creating and configuring the repl and ChiaRepl 
 // instances and then smashing them together
 
-export default function createRepl(options) {
-    const chiaRepl = new ChiaRepl(start({ prompt: options.cursor, useColors: true }), options);
+export default function createRepl(cursor) {
+    const chiaRepl = new ChiaRepl(start({ prompt: cursor, useColors: true }));
 
     chiaRepl.repl.completer = createCompleterProxy(chiaRepl.repl.completer);
 

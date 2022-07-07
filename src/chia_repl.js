@@ -9,17 +9,16 @@ import listener from './listen.js';
 // this exists in order to bring together the node repl, the chia deamon 
 // and all the other chia specific tools and utilities
 class ChiaRepl {
-    constructor(repl, options) {
+    constructor(repl) {
         this._repl = repl;
-        this.options = options;
     }
 
     get repl() { return this._repl; }
 
-    ready() {
-        // these are the various helper modules that don't require other state
+    ready(options) {
+        // these are the various helper modules that don't require the websocket connection
         this.repl.context.bls = bls;
-        this.repl.context.options = this.options;
+        this.repl.context.options = options;
         this.repl.context.clvm = compiler.clvm_tools;
         this.repl.context.utils = _utils;
         this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
@@ -28,11 +27,11 @@ class ChiaRepl {
         this.loadConnection();
 
         console.log(chalk.green('Welcome to Chia!'));
-        if (this.options.verbosity !== 'quiet') {
+        if (options.verbosity !== 'quiet') {
             console.log(chalk.gray('Type .help or .more-help to get started'));
         }
 
-        if (this.options.autoConnect) {
+        if (options.autoConnect) {
             this.connect();
         }
         else {
