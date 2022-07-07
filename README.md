@@ -48,6 +48,7 @@ REPL commands always start with `.` and are lsited with `.help`.
 .editor             Enter editor mode
 .exit               Exit the REPL
 .help               Print this help message
+.listen             Opens the websocket connection to the chia daemon and listens for `wallet_ui` messages
 .list-connections   Displays a list of saved connection names
 .load               Load JS from a file into the REPL session
 .load-connection    Loads a saved connection with an optional name
