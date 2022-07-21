@@ -7,6 +7,7 @@ import ChiaRepl from './chia_repl.js';
 // this module is responsible for creating and configuring the repl and ChiaRepl
 // instances and then smashing them together
 
+
 export default function createRepl(cursor) {
     const chiaRepl = new ChiaRepl(start({ prompt: cursor, useColors: true }));
 
@@ -97,6 +98,19 @@ export default function createRepl(cursor) {
         }
     });
 
+    chiaRepl.repl.defineCommand('credits', {
+        help: 'Shows credits for the various tool authors',
+        action() {
+            console.log('clvm_tools-js - https://github.com/Chia-Mine/clvm_tools-js');
+            console.log('clvm-js - https://github.com/Chia-Mine/clvm-js');
+            console.log('chia-utils - https://github.com/CMEONE/chia-utils');
+            console.log('@rigidity/bls-signatures - https://github.com/Rigidity/bls-signatures');
+
+            console.log('\nchia and its logo are the registered trademark or trademark of Chia Network, Inc. in the United States and worldwide.');
+            chiaRepl.repl.displayPrompt();
+        }
+    });
+
     chiaRepl.repl.defineCommand('listen', {
         help: 'Opens the websocket connection to the chia daemon and listens for `wallet_ui` messages',
         async action() {
@@ -119,7 +133,8 @@ export default function createRepl(cursor) {
             console.log(`${chalk.green('bls')}\t\tBLS signature functions`);
             console.log(`${chalk.green('chia')}\t\tChia node rpc services. This object is only availble after a successful .connect`);
             console.log('\t\tAll functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet');
-            console.log(`${chalk.green('clvm_tools')}\t\tCLVM tools functions (run, brun, opc, opd, read_ir)`);
+            console.log(`${chalk.green('clvm_tools')}\tclvm_tools-js functions (run, brun, opc, opd, read_ir)`);
+            console.log(`${chalk.green('clvm')}\t\tclvm-js (Program, SExp etc.)`);
             console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);
             console.log(`${chalk.green('connection')}\tProperties of the current connection`);
             console.log(`${chalk.green('options')}\t\tConfigurable REPl options`);

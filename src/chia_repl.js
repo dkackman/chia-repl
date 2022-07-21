@@ -5,6 +5,11 @@ import * as compiler from './compiler.js';
 import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
+import clvm from 'clvm';
+
+/* jshint ignore:start */
+await clvm.initialize();
+/* jshint ignore:end */
 
 // this exists in order to bring together the node repl, the chia deamon
 // and all the other chia specific tools and utilities
@@ -20,6 +25,7 @@ class ChiaRepl {
         this.repl.context.bls = bls;
         this.repl.context.options = options;
         this.repl.context.clvm_tools = compiler.clvm_tools;
+        this.repl.context.clvm = clvm;
         this.repl.context.utils = _utils;
         this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
         this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);

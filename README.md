@@ -8,6 +8,7 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 
 - [Chia RPC](https://dkackman.github.io/chia-api/)
 - [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
+- [clvm-js](https://github.com/Chia-Mine/clvm-js)
 - [chia-utils](https://github.com/CMEONE/chia-utils)
 - [@rigidity/bls-signatures](https://github.com/Rigidity/bls-signatures)
 
@@ -44,18 +45,20 @@ REPL commands always start with `.` and are lsited with `.help`.
 .break              Sometimes you get stuck, this gets you out
 .clear              Break, and also clear the local context
 .connect            Opens the websocket connection to the chia daemon using the currently loaded connection
+.credits            Shows credits for the various tool authors
 .disconnect         Closes the websocket connection to the chia daemon
 .editor             Enter editor mode
 .exit               Exit the REPL
 .help               Print this help message
-.listen             Opens the websocket connection to the chia daemon and listens for `wallet_ui` messages
 .list-connections   Displays a list of saved connection names
+.listen             Opens the websocket connection to the chia daemon and listens for `wallet_ui` messages
 .load               Load JS from a file into the REPL session
 .load-connection    Loads a saved connection with an optional name
 .more-help          Shows more help about using the environment
 .save               Save all evaluated commands in this REPL session to a file
 .save-connection    Saves the current connection with an optional name
 .save-options       Saves the options
+.version            Shows the version of this application
 
 Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 🌿
@@ -70,12 +73,13 @@ Some of these configure the connection and REPL options, while other enable inte
 🌿 .more-help
 These global objects are available within the REPL environment
 bls             BLS signature functions
-chia            Chia node rpc endpoints. This object is only availble after a successful .connect
+chia            Chia node rpc services. This object is only availble after a successful .connect
                 All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
-clvm            CLVM functions (run, brun, opc, opd, read_ir)
+clvm_tools      clvm_tools-js functions (run, brun, opc, opd, read_ir)
+clvm            clvm-js (Program, SExp etc.)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
-options         Configurable REPL options
+options         Configurable REPl options
 repl.builtinModules
                 Show other available builtin node modules
 
@@ -96,9 +100,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program
 
 ```lisp
-🌿 clvm.run("(mod ARGUMENT (+ ARGUMENT 3))")
+🌿 clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
-🌿 clvm.brun(_, '1')
+🌿 clvm_tools.brun(_, '1')
 '4'
 🌿
 ```
@@ -106,9 +110,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program From a File
 
 ```lisp
-🌿 clvm.run('../examples/factorial.clsp')
+🌿 clvm_tools.run('../examples/factorial.clsp')
 '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
-🌿 clvm.brun(_, '(5)')
+🌿 clvm_tools.brun(_, '(5)')
 '120'
 🌿
 ```
