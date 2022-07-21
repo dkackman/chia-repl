@@ -97,7 +97,21 @@ Once connected to the `daemon` each of the service endpoints becomes availalbe a
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
 
-### Compile a Simple Program
+### Run a CLVM Program
+
+```javascript
+const {SExp, OPERATOR_LOOKUP, KEYWORD_TO_ATOM, h, t, run_program} = clvm;
+const plus = h(KEYWORD_TO_ATOM["+"]);
+const q = h(KEYWORD_TO_ATOM["q"]);
+const program = SExp.to([plus, 1, t(q, 175)]);
+const env = SExp.to(25);
+const [cost, result] = run_program(program, env, OPERATOR_LOOKUP);
+let isEqual = result.equal_to(SExp.to(25 + 175));
+isEqual = result.as_int() === (25 + 175);
+true
+```
+
+### Compile a Simple Program with clvm_tools
 
 ```lisp
 🌿 clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
@@ -147,7 +161,7 @@ done
 🌿
 ```
 
-### Chaining calls
+### Chaining Calls
 
 Since it is a javascript environment, variables can be defined and set, and are preserved through. The [special value](https://nodejs.org/api/repl.html#assignment-of-the-_-underscore-variable) `_` can also be used to chain function calls.
 
