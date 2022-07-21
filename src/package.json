@@ -28,8 +28,7 @@
     "clvm": "^2.0.0",
     "clvm_tools": "^0.9.5",
     "keypress": "^0.2.1",
-    "lodash": "^4.17.21",
-    "ws": "^8.5.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "^8.13.0",

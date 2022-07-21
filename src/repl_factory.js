@@ -105,6 +105,7 @@ export default function createRepl(cursor) {
             console.log('clvm-js - https://github.com/Chia-Mine/clvm-js');
             console.log('chia-utils - https://github.com/CMEONE/chia-utils');
             console.log('@rigidity/bls-signatures - https://github.com/Rigidity/bls-signatures');
+            console.log('chia rpc api - https://dkackman.github.io/chia-api/');
 
             console.log('\nchia and its logo are the registered trademark or trademark of Chia Network, Inc. in the United States and worldwide.');
             chiaRepl.repl.displayPrompt();
