@@ -100,15 +100,20 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Run a CLVM Program
 
 ```javascript
-const {SExp, OPERATOR_LOOKUP, KEYWORD_TO_ATOM, h, t, run_program} = clvm;
-const plus = h(KEYWORD_TO_ATOM["+"]);
-const q = h(KEYWORD_TO_ATOM["q"]);
-const program = SExp.to([plus, 1, t(q, 175)]);
-const env = SExp.to(25);
-const [cost, result] = run_program(program, env, OPERATOR_LOOKUP);
-let isEqual = result.equal_to(SExp.to(25 + 175));
-isEqual = result.as_int() === (25 + 175);
+🌿 const {SExp, OPERATOR_LOOKUP, KEYWORD_TO_ATOM, h, t, run_program} = clvm;
+🌿 const plus = h(KEYWORD_TO_ATOM["+"]);
+🌿 const q = h(KEYWORD_TO_ATOM["q"]);
+🌿 const program = SExp.to([plus, 1, t(q, 175)]);
+🌿 const env = SExp.to(25);
+🌿 const [cost, result] = run_program(program, env, OPERATOR_LOOKUP);
+🌿 let isEqual = result.equal_to(SExp.to(25 + 175));
+🌿 isEqual = result.as_int() === (25 + 175);
 true
+🌿 cost
+833
+🌿 result
+SExp { _atom: Bytes { _b: Uint8Array(2) [ 0, 200 ] }, _pair: null }
+🌿 
 ```
 
 ### Compile a Simple Program with clvm_tools
@@ -181,7 +186,7 @@ blockchain_state: {
 🌿
 ```
 
-### Helpers for RPC Payloads
+### OpenAPI Helpers for RPC Payloads
 
 ```javascript
 🌿 chia.daemon.getPayloadDescriptor('is_running')
