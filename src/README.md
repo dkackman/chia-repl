@@ -71,7 +71,7 @@ These global objects are available within the REPL environment
 bls             BLS signature functions
 chia            Chia node rpc endpoints. This object is only availble after a successful .connect
                 All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
-clvm            CLVM functions (run, brun, opc, opd, read_ir)
+clvm_tools      CLVM tools functions (run, brun, opc, opd, read_ir)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
 options         Configurable REPL options
@@ -95,9 +95,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program
 
 ```lisp
-🌿 clvm.run("(mod ARGUMENT (+ ARGUMENT 3))")
+🌿 clvm_tools.run("(mod ARGUMENT (+ ARGUMENT 3))")
 '(+ 1 (q . 3))'
-🌿 clvm.brun(_, '1')
+🌿 clvm_tools.brun(_, '1')
 '4'
 🌿
 ```
@@ -105,9 +105,9 @@ Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immen
 ### Compile a Simple Program From a File
 
 ```lisp
-🌿 clvm.run('../examples/factorial.clsp')
+🌿 clvm_tools.run('../examples/factorial.clsp')
 '(a (q 2 2 (c 2 (c 5 ()))) (c (q 2 (i (= 5 (q . 1)) (q 1 . 1) (q 18 5 (a 2 (c 2 (c (- 5 (q . 1)) ()))))) 1) 1))'
-🌿 clvm.brun(_, '(5)')
+🌿 clvm_tools.brun(_, '(5)')
 '120'
 🌿
 ```

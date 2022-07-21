@@ -6,7 +6,7 @@ import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
 
-// this exists in order to bring together the node repl, the chia deamon 
+// this exists in order to bring together the node repl, the chia deamon
 // and all the other chia specific tools and utilities
 class ChiaRepl {
     constructor(repl) {
@@ -19,7 +19,7 @@ class ChiaRepl {
         // these are the various helper modules that don't require the websocket connection
         this.repl.context.bls = bls;
         this.repl.context.options = options;
-        this.repl.context.clvm = compiler.clvm_tools;
+        this.repl.context.clvm_tools = compiler.clvm_tools;
         this.repl.context.utils = _utils;
         this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
         this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
