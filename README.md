@@ -76,10 +76,10 @@ bls             BLS signature functions
 chia            Chia node rpc services. This object is only availble after a successful .connect
                 All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
 clvm_tools      clvm_tools-js functions (run, brun, opc, opd, read_ir)
-clvm            clvm-js (Program, SExp etc.)
+clvm            clvm-js (Program, SExp, op_codes etc.)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
-options         Configurable REPl options
+options         Configurable REPL options
 repl.builtinModules
                 Show other available builtin node modules
 

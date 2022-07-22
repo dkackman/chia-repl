@@ -79,7 +79,7 @@ clvm_tools      clvm_tools-js functions (run, brun, opc, opd, read_ir)
 clvm            clvm-js (Program, SExp etc.)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
-options         Configurable REPl options
+options         Configurable REPL options
 repl.builtinModules
                 Show other available builtin node modules
 

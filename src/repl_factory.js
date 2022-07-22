@@ -138,7 +138,7 @@ export default function createRepl(cursor) {
             console.log(`${chalk.green('clvm')}\t\tclvm-js (Program, SExp etc.)`);
             console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);
             console.log(`${chalk.green('connection')}\tProperties of the current connection`);
-            console.log(`${chalk.green('options')}\t\tConfigurable REPl options`);
+            console.log(`${chalk.green('options')}\t\tConfigurable REPL options`);
             console.log(`${chalk.green('repl.builtinModules')}\n\t\tShow other available builtin node modules`);
 
             console.log('\nThese global functions are invocable within the REPL environment');
