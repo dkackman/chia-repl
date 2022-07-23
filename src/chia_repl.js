@@ -62,7 +62,7 @@ class ChiaRepl {
             this.repl.displayPrompt();
         });
 
-        chiaDaemon.on('error', (e) => {
+        chiaDaemon.on('socket-error', (e) => {
             this.clearChiaContext();
             console.log(e);
             this.repl.displayPrompt();
