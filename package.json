@@ -1,0 +1,7 @@
+{
+    "name": "chia-repl-project",
+    "workspaces": [
+        "src",
+        "test"
+    ]
+}
