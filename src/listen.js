@@ -3,8 +3,7 @@ import keypress from 'keypress';
 export default async function listener(chia) {
     keypress(process.stdin);
     let anykey = false;
-    const keypress_callback = () => anykey = true;
-    process.stdin.on('keypress', keypress_callback);
+    process.stdin.once('keypress', () => anykey = true);
 
     const event_callback = m => console.log(m);
     chia.on('event-message', event_callback);
@@ -20,7 +19,6 @@ export default async function listener(chia) {
     }
 
     chia.removeListener('event-message', event_callback);
-    process.stdin.removeListener('keypress', keypress_callback);
     process.stdin.setRawMode(true);
     process.stdin.resume();
 }
