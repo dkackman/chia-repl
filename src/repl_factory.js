@@ -3,6 +3,7 @@ import createCompleterProxy from './completer.js';
 import * as settings from './settings.js';
 import chalk from 'chalk';
 import ChiaRepl from './chia_repl.js';
+import _ from 'lodash';
 
 // this module is responsible for creating and configuring the repl and ChiaRepl
 // instances and then smashing them together
@@ -112,15 +113,16 @@ export default function createRepl(cursor) {
     });
 
     chiaRepl.repl.defineCommand('listen', {
-        help: 'Opens the websocket connection to the chia daemon and listens for `wallet_ui` messages',
-        async action() {
+        help: 'Listens for messages addressed to the given service name, defaulting to "wallet_ui"',
+        async action(service_name) {
+            if (_.isEmpty(service_name)) service_name = 'wallet_ui';
+
+            // we can't reuse the daemon because it uses its own service_name
             if (chiaRepl.repl.context.chiaDaemon !== undefined) {
                 console.log('Currently connected. Use .disconnect first');
-            } else {
-                if (await chiaRepl.connect('wallet_ui')) {
-                    await chiaRepl.repl.context.chiaDaemon.listen();
-                    chiaRepl.disconnect();
-                }
+            } else if (await chiaRepl.connect(service_name)) {
+                await chiaRepl.repl.context.chiaDaemon.listen();
+                chiaRepl.disconnect();
             }
 
             chiaRepl.repl.displayPrompt();
