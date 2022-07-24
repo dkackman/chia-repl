@@ -35,12 +35,12 @@ class ChiaRepl {
         console.log(chalk.green('Welcome to Chia!'));
         if (options.verbosity !== 'quiet') {
             console.log(chalk.gray('Type .help or .more-help to get started'));
+            console.log(`\nCurrent connection address is wss://${chalk.blue(this.repl.context.connection.host)}:${this.repl.context.connection.port}`);
         }
 
         if (options.autoConnect) {
             this.connect();
-        }
-        else {
+        } else {
             this.repl.displayPrompt();
         }
     }
