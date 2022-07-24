@@ -118,9 +118,10 @@ export default function createRepl(cursor) {
             if (chiaRepl.repl.context.chiaDaemon !== undefined) {
                 console.log('Currently connected. Use .disconnect first');
             } else {
-                await chiaRepl.connect('wallet_ui');
-                await chiaRepl.repl.context.chiaDaemon.listen();
-                chiaRepl.disconnect();
+                if (await chiaRepl.connect('wallet_ui')) {
+                    await chiaRepl.repl.context.chiaDaemon.listen();
+                    chiaRepl.disconnect();
+                }
             }
 
             chiaRepl.repl.displayPrompt();
