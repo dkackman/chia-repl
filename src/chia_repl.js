@@ -47,16 +47,16 @@ class ChiaRepl {
 
     async connect(service_name = 'chia_repl') {
         const chiaDaemon = new ChiaDaemon(this.repl.context.connection, service_name);
-        chiaDaemon.on('connecting', (address) => {
+        chiaDaemon.once('connecting', (address) => {
             console.log(`Connecting to ${address}...`);
         });
 
-        chiaDaemon.on('connected', () => {
+        chiaDaemon.once('connected', () => {
             console.log('Connected');
             this.repl.displayPrompt();
         });
 
-        chiaDaemon.on('disconnected', () => {
+        chiaDaemon.once('disconnected', () => {
             this.clearChiaContext();
             console.log('Disconnected');
             this.repl.displayPrompt();
@@ -95,9 +95,6 @@ class ChiaRepl {
     clearChiaContext() {
         if (this.repl.context.chiaDaemon !== undefined) {
             this.repl.context.chiaDaemon.removeAllListeners('socket-error');
-            this.repl.context.chiaDaemon.removeAllListeners('disconnected');
-            this.repl.context.chiaDaemon.removeAllListeners('connected');
-            this.repl.context.chiaDaemon.removeAllListeners('connecting');
         }
 
         // clear all these out so they aren't available in the repl when not connected
