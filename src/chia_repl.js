@@ -73,7 +73,11 @@ class ChiaRepl {
         if (await chiaDaemon.connect()) {
             this.repl.context.chiaDaemon = chiaDaemon;
             this.repl.context.chia = chiaDaemon.services;
+
+            return true;
         }
+
+        return false;
     }
 
     disconnect() {
