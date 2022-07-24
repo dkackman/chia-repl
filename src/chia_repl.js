@@ -90,10 +90,10 @@ class ChiaRepl {
 
     clearChiaContext() {
         if (this.repl.context.chiaDaemon !== undefined) {
-            this.repl.context.chiaDaemon.removeAllListeners('error')
-                .removeAllListeners('disconnected')
-                .removeAllListeners('connected')
-                .removeAllListeners('connecting');
+            this.repl.context.chiaDaemon.removeAllListeners('socket-error');
+            this.repl.context.chiaDaemon.removeAllListeners('disconnected');
+            this.repl.context.chiaDaemon.removeAllListeners('connected');
+            this.repl.context.chiaDaemon.removeAllListeners('connecting');
         }
 
         // clear all these out so they aren't available in the repl when not connected
