@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/dkackman/chia-repl/issues"
   },
-  "homepage": "https://github.com/dkackman/chia-repl#readme",
+  "homepage": "https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon#readme",
   "devDependencies": {
     "eslint": "^8.20.0",
     "jsdoc": "^3.6.10",
