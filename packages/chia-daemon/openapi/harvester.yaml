@@ -1,0 +1,500 @@
+openapi: 3.0.3
+info:
+  description: >-
+    The Chia node and services come with a JSON RPC API server that allows you
+    to access information and control the services.  These are accessible via
+    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
+    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
+    to the internet. TLS certificates are used to secure the communication 
+    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
+
+    The harvester uses port 8560 by default.
+  version: 1.4.0
+  title: Chia RPC
+  termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
+  contact:
+    name: Chia Network
+    url: https://www.chia.net/
+    email: hello@chia.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://localhost:8560
+    description: Harvester RPC
+security:
+  - bearerAuth: []
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: &ref_6
+        application/json:
+          schema:
+            type: object
+  responses:
+    empty:
+      description: OK response without return values
+      content: &ref_7
+        application/json:
+          schema:
+            type: object
+            description: >-
+              Success indicator and optional error message included in all
+              responses
+            required: &ref_1
+              - success
+            properties: &ref_2
+              success:
+                type: boolean
+                description: Success/failure indicator
+              error:
+                type: string
+                description: Only present when success is false
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: &ref_8
+        bytes_read:
+          type: integer
+          format: uint32
+          nullable: true
+        bytes_written:
+          type: integer
+          format: uint32
+          nullable: true
+        creation_time:
+          type: number
+          format: double
+        last_message_time:
+          type: number
+          format: double
+        local_port:
+          type: integer
+          format: int32
+        node_id:
+          type: string
+        peak_hash:
+          type: string
+        peak_height:
+          type: integer
+          format: uint64
+          nullable: true
+        peak_weight:
+          type: integer
+          format: uint64
+          nullable: true
+        peer_host:
+          type: string
+        peer_port:
+          type: integer
+          format: int32
+        peer_server_port:
+          type: integer
+          format: int32
+        type:
+          type: integer
+          enum: &ref_4
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: |-
+            The type of node:
+              * 1 FULL_NODE
+              * 2 HARVESTER
+              * 3 FARMER
+              * 4 TIMELORD
+              * 5 INTRODUCER
+              * 6 WALLET
+    k_size: &ref_5
+      type: integer
+      description: >-
+        Defines the size of a plot. 25 is used for testing only.
+        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: &ref_0
+        - 25
+        - 32
+        - 33
+        - 34
+        - 35
+    plot_info:
+      type: object
+      description: Info about a plot file
+      properties: &ref_9
+        file_size:
+          type: integer
+          format: uint64
+        filename:
+          type: string
+        plot_id:
+          type: string
+        plot_public_key:
+          type: string
+          nullable: true
+        pool_contract_puzzle_hash:
+          type: string
+        pool_public_key:
+          type: string
+          nullable: true
+        size:
+          type: integer
+          description: >-
+            Defines the size of a plot. 25 is used for testing only.
+            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          default: 32
+          enum: *ref_0
+        time_modified:
+          type: number
+          format: double
+    apiResponse: &ref_3
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_1
+      properties: *ref_2
+    apiResponse_apiResponse: *ref_3
+    node_type:
+      type: integer
+      enum: *ref_4
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+    k_size_k_size: *ref_5
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: >-
+        -> Chia uses [mutualTLS
+        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
+        client and server share TLS keys.
+tags:
+  - name: Shared
+    description: Methods shared by all services.
+  - name: Harvester
+    description: >-
+      The harvester RPC API is exposed, by default, on port 8560 and contains
+      methods for managing plot files and directories.
+paths:
+  /stop_node:
+    post:
+      tags:
+        - Shared
+      summary: Stop the node.
+      description: Stop the node.
+      operationId: stop_node
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /open_connection:
+    post:
+      tags:
+        - Shared
+      summary: Add a connection to another node.
+      description: Add a connection to another node.
+      operationId: open_connection
+      requestBody:
+        required: true
+        description: the address of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+                - port
+              properties:
+                ip:
+                  type: string
+                  format: ipaddress
+                port:
+                  type: integer
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /close_connection:
+    post:
+      tags:
+        - Shared
+      summary: Removes a connection.
+      description: Removes a connection.
+      operationId: close_connection
+      requestBody:
+        required: true
+        description: the node id of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - node_id
+              properties:
+                node_id:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /get_connections:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of connections.
+      description: Retrieve the list of connections.
+      operationId: get_connections
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      connections:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Chia's representation of a connection from node to
+                            node.
+                          properties: *ref_8
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /healthz:
+    post:
+      tags:
+        - Shared
+      summary: Heartbeat.
+      description: Heartbeat.
+      operationId: healthz
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_1
+                properties: *ref_2
+  /get_routes:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of routes exposed by the service.
+      description: Retrieve the list of routes/endpoints exposed by the service.
+      operationId: get_routes
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      routes:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /add_plot_directory:
+    post:
+      tags:
+        - Harvester
+      summary: Add a plot directory to the harvester configuration.
+      description: Add a plot directory to the harvester configuration.
+      operationId: add_plot_directory
+      requestBody:
+        description: The directory name to add
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dirname
+              properties:
+                dirname:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /remove_plot_directory:
+    post:
+      tags:
+        - Harvester
+      summary: Removes a plot directory from the harveser configuration.
+      description: Removes a plot directory from the harveser configuration.
+      operationId: remove_plot_directory
+      requestBody:
+        description: The directory name to remove
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - dirname
+              properties:
+                dirname:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /get_plot_directories:
+    post:
+      tags:
+        - Harvester
+      summary: Get the list of plot directories from the harvester configuration.
+      description: Get the list of plot directories from the harvester configuration.
+      operationId: get_plot_directories
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      directories:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /refresh_plots:
+    post:
+      tags:
+        - Harvester
+      summary: Refresh the list of plots.
+      description: Refresh the list of plots.
+      operationId: refresh_plots
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+  /get_plots:
+    post:
+      tags:
+        - Harvester
+      summary: Get information about the plots the harvester knows about.
+      description: Get information about the plots the harvester knows about.
+      operationId: get_plots
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_6
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      failed_to_open_filenames:
+                        type: array
+                        items:
+                          type: string
+                      not_found_filenames:
+                        type: array
+                        items:
+                          type: string
+                      plots:
+                        type: array
+                        items:
+                          type: object
+                          description: Info about a plot file
+                          properties: *ref_9
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /delete_plot:
+    post:
+      tags:
+        - Harvester
+      summary: Permanently delete a plot file.
+      description: Permanently delete a plot file.
+      operationId: delete_plot
+      requestBody:
+        required: true
+        description: the file name of the plot
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - filename
+              properties:
+                filename:
+                  type: string
+            example:
+              filename: >-
+                plot-k33-2021-06-12-03-55-1d5a2afe637578d6c9dfa04484854831012b678921a8dce5a8aee9c0fd3c1470.plot
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_7
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net

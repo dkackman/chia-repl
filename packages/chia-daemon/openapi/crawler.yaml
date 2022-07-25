@@ -1,0 +1,393 @@
+openapi: 3.0.3
+info:
+  description: >-
+    The Chia node and services come with a JSON RPC API server that allows you
+    to access information and control the services.  These are accessible via
+    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
+    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
+    to the internet. TLS certificates are used to secure the communication 
+    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
+
+    The crawler uses port 8561 by default.
+  version: 1.4.0
+  title: Chia RPC
+  termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
+  contact:
+    name: Chia Network
+    url: https://www.chia.net/
+    email: hello@chia.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://localhost:8561
+    description: Crawler RPC
+security:
+  - bearerAuth: []
+components:
+  responses:
+    empty:
+      description: OK response without return values
+      content: &ref_5
+        application/json:
+          schema:
+            type: object
+            description: >-
+              Success indicator and optional error message included in all
+              responses
+            required: &ref_0
+              - success
+            properties: &ref_1
+              success:
+                type: boolean
+                description: Success/failure indicator
+              error:
+                type: string
+                description: Only present when success is false
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: &ref_4
+        application/json:
+          schema:
+            type: object
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: &ref_6
+        bytes_read:
+          type: integer
+          format: uint32
+          nullable: true
+        bytes_written:
+          type: integer
+          format: uint32
+          nullable: true
+        creation_time:
+          type: number
+          format: double
+        last_message_time:
+          type: number
+          format: double
+        local_port:
+          type: integer
+          format: int32
+        node_id:
+          type: string
+        peak_hash:
+          type: string
+        peak_height:
+          type: integer
+          format: uint64
+          nullable: true
+        peak_weight:
+          type: integer
+          format: uint64
+          nullable: true
+        peer_host:
+          type: string
+        peer_port:
+          type: integer
+          format: int32
+        peer_server_port:
+          type: integer
+          format: int32
+        type:
+          type: integer
+          enum: &ref_3
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: |-
+            The type of node:
+              * 1 FULL_NODE
+              * 2 HARVESTER
+              * 3 FARMER
+              * 4 TIMELORD
+              * 5 INTRODUCER
+              * 6 WALLET
+    apiResponse: &ref_2
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_0
+      properties: *ref_1
+    apiResponse_apiResponse: *ref_2
+    node_type:
+      type: integer
+      enum: *ref_3
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: >-
+        -> Chia uses [mutualTLS
+        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
+        client and server share TLS keys.
+tags:
+  - name: Shared
+    description: Methods shared by all services.
+  - name: Crawler
+    description: >-
+      The crawler RPC API is exposed, by default, on port 8561 and contains peer
+      metrics.
+paths:
+  /stop_node:
+    post:
+      tags:
+        - Shared
+      summary: Stop the node.
+      description: Stop the node.
+      operationId: stop_node
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_5
+  /open_connection:
+    post:
+      tags:
+        - Shared
+      summary: Add a connection to another node.
+      description: Add a connection to another node.
+      operationId: open_connection
+      requestBody:
+        required: true
+        description: the address of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+                - port
+              properties:
+                ip:
+                  type: string
+                  format: ipaddress
+                port:
+                  type: integer
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_5
+  /close_connection:
+    post:
+      tags:
+        - Shared
+      summary: Removes a connection.
+      description: Removes a connection.
+      operationId: close_connection
+      requestBody:
+        required: true
+        description: the node id of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - node_id
+              properties:
+                node_id:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_5
+  /get_connections:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of connections.
+      description: Retrieve the list of connections.
+      operationId: get_connections
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      connections:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Chia's representation of a connection from node to
+                            node.
+                          properties: *ref_6
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /healthz:
+    post:
+      tags:
+        - Shared
+      summary: Heartbeat.
+      description: Heartbeat.
+      operationId: healthz
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+  /get_routes:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of routes exposed by the service.
+      description: Retrieve the list of routes/endpoints exposed by the service.
+      operationId: get_routes
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      routes:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_peer_counts:
+    post:
+      tags:
+        - Crawler
+      summary: Retrieves aggregate information about peers.
+      description: Retrieves aggregate information about peers.
+      operationId: get_peer_counts
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      peer_counts:
+                        type: object
+                        properties:
+                          total_last_5_days:
+                            type: integer
+                          reliable_nodes:
+                            type: integer
+                          ipv4_last_5_days:
+                            type: integer
+                          ipv6_last_5_days:
+                            type: integer
+                          versions:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_ips_after_timestamp:
+    post:
+      tags:
+        - Crawler
+      summary: Retrieves ip addresses of peers that have connected after a given time.
+      description: Retrieves ip addresses of peers that have connected after a given time.
+      operationId: get_ips_after_timestamp
+      requestBody:
+        description: Search criteria
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - after
+              properties:
+                after:
+                  description: The unix timestamp to seach for peer connections after
+                  type: integer
+                  format: timestamp
+                offset:
+                  description: An offset into the returned items
+                  type: integer
+                  default: 0
+                limit:
+                  description: The maximum number of result to return
+                  type: integer
+                  default: 10000
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      ips:
+                        type: array
+                        items:
+                          type: string
+                          format: ipaddress
+                      total:
+                        type: integer
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net

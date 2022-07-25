@@ -1,0 +1,1868 @@
+openapi: 3.0.3
+info:
+  description: >-
+    The Chia node and services come with a JSON RPC API server that allows you
+    to access information and control the services.  These are accessible via
+    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
+    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
+    to the internet. TLS certificates are used to secure the communication 
+    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
+
+    The full node uses port 8555 by default.  
+  version: 1.4.0
+  title: Chia RPC
+  termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
+  contact:
+    name: Chia Network
+    url: https://www.chia.net/
+    email: hello@chia.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://localhost:8555
+    description: Full Node RPC
+security:
+  - bearerAuth: []
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: &ref_40
+        application/json:
+          schema:
+            type: object
+    header_hash:
+      required: true
+      description: the block's header_hash
+      content: &ref_43
+        application/json:
+          schema:
+            type: object
+            required:
+              - header_hash
+            properties:
+              header_hash:
+                type: string
+                format: hex
+    start_end:
+      required: true
+      description: Start and end heights
+      content: &ref_44
+        application/json:
+          schema:
+            type: object
+            required:
+              - start
+              - end
+            properties:
+              start:
+                type: integer
+                format: uint32
+              end:
+                type: integer
+                format: uint32
+  responses:
+    empty:
+      description: OK response without return values
+      content: &ref_41
+        application/json:
+          schema:
+            type: object
+            description: >-
+              Success indicator and optional error message included in all
+              responses
+            required: &ref_0
+              - success
+            properties: &ref_1
+              success:
+                type: boolean
+                description: Success/failure indicator
+              error:
+                type: string
+                description: Only present when success is false
+    coin_records:
+      description: OK
+      content: &ref_53
+        application/json:
+          schema:
+            type: object
+            properties:
+              coin_records:
+                type: array
+                items:
+                  type: object
+                  properties: &ref_4
+                    coin:
+                      type: object
+                      properties: &ref_3
+                        parent_coin_info:
+                          type: string
+                        puzzle_hash:
+                          type: string
+                        amount:
+                          type: integer
+                          format: uint64
+                    confirmed_block_index:
+                      type: integer
+                      format: uint32
+                    spent_block_index:
+                      type: integer
+                      format: uint32
+                    spent:
+                      type: boolean
+                    coinbase:
+                      type: boolean
+                    timestamp:
+                      type: integer
+                      format: uint64
+            allOf:
+              - type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+  schemas:
+    proof_of_space: &ref_25
+      type: object
+      properties: &ref_7
+        challenge:
+          type: string
+        public_pool_key:
+          type: string
+        pool_contract_puzzle_hash:
+          type: string
+        plot_public_key:
+          type: string
+        size:
+          type: integer
+          description: >-
+            Defines the size of a plot. 25 is used for testing only.
+            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          default: 32
+          enum: &ref_24
+            - 25
+            - 32
+            - 33
+            - 34
+            - 35
+        proof:
+          type: string
+    blockchain_state:
+      type: object
+      description: The node's view of the blockchain.
+      properties: &ref_48
+        node_id:
+          type: string
+          format: hex
+        difficulty:
+          type: integer
+          format: uint64
+        genesis_challenge_initialized:
+          type: boolean
+        mempool_size:
+          type: integer
+          format: int32
+        mempool_cost:
+          type: integer
+          format: int32
+        mempool_min_fees:
+          type: object
+          properties:
+            cost_5000000:
+              type: number
+              format: double
+        mempool_max_total_cost:
+          type: integer
+          format: int32
+        block_max_cost:
+          type: integer
+          format: int32
+        peak:
+          nullable: true
+          type: object
+          description: >-
+            This class is not included or hashed into the blockchain, but it is
+            kept in memory as a more efficient way to maintain data about the
+            blockchain. This allows us to validate future blocks, difficulty
+            adjustments, etc, without saving the whole header block in memory.
+          properties: &ref_2
+            challenge_block_info_hash:
+              type: string
+              description: >-
+                Hash of challenge chain data, used to validate end of slots in
+                the future.
+            challenge_vdf_output:
+              type: object
+              description: >-
+                This is the intermediary VDF output at ip_iters in challenge
+                chain.
+              properties:
+                data:
+                  type: string
+            deficit:
+              type: integer
+              format: uint8
+              description: >-
+                A deficit of 16 is an overflow block after an infusion. Deficit
+                of 15 is a challenge block.
+            farmer_puzzle_hash:
+              type: string
+            fees:
+              type: integer
+              format: uint64
+              nullable: true
+              description: Transaction block (present iff is_transaction_block)
+            finished_challenge_slot_hashes:
+              type: string
+              format: nullable
+              description: Slot (present iff this is the first SB in sub slot)
+            finished_infused_challenge_slot_hashes:
+              type: string
+              format: nullable
+              description: Slot (present iff this is the first SB in sub slot)
+            finished_reward_slot_hashes:
+              type: string
+              format: nullable
+              description: Slot (present iff this is the first SB in sub slot)
+            header_hash:
+              type: string
+            height:
+              type: integer
+              format: uint32
+            infused_challenge_vdf_output:
+              type: string
+              format: nullable
+              description: >-
+                This is the intermediary VDF output at ip_iters in infused cc,
+                if deficit less than or equal to 3.
+            overflow:
+              type: boolean
+            pool_puzzle_hash:
+              type: string
+              description: >-
+                Need to keep track of these because Coins are created in a
+                future block.
+            prev_hash:
+              type: string
+              description: >-
+                Header hash of the previous block. Transaction block (present
+                iff is_transaction_block).
+            prev_transaction_block_hash:
+              type: string
+              format: nullable
+              description: Header hash of the previous transaction block
+            prev_transaction_block_height:
+              type: integer
+              format: int32
+            required_iters:
+              type: integer
+              format: int32
+            reward_claims_incorporated:
+              type: string
+              format: nullable
+            reward_infusion_new_challenge:
+              type: string
+              description: The reward chain infusion output, input to next VDF
+            signage_point_index:
+              type: integer
+              format: uint8
+            sub_epoch_summary_included:
+              type: string
+              format: nullable
+            sub_slot_iters:
+              type: integer
+              format: uint64
+            timestamp:
+              type: integer
+              format: uint64
+              nullable: true
+            total_iters:
+              type: integer
+              format: bigint
+              description: >-
+                Total number of VDF iterations since genesis, including this
+                block
+            weight:
+              type: integer
+              format: bigint
+              description: Total cumulative difficulty of all ancestor blocks since genesis
+        space:
+          type: integer
+          format: bigint
+        sub_slot_iters:
+          type: integer
+          format: uint64
+        sync:
+          type: object
+          properties:
+            sync_mode:
+              type: boolean
+            sync_progress_height:
+              type: integer
+              format: uint64
+            sync_tip_height:
+              type: integer
+              format: uint64
+            synced:
+              type: boolean
+    block_record:
+      type: object
+      description: >-
+        This class is not included or hashed into the blockchain, but it is kept
+        in memory as a more efficient way to maintain data about the blockchain.
+        This allows us to validate future blocks, difficulty adjustments, etc,
+        without saving the whole header block in memory.
+      properties: *ref_2
+    coin: &ref_31
+      type: object
+      properties: *ref_3
+    coin_record:
+      type: object
+      properties: *ref_4
+    coin_search_options:
+      type: object
+      properties: &ref_52
+        start_height:
+          type: integer
+          format: uint32
+        end_height:
+          type: integer
+          format: uint32
+        include_spent_coins:
+          type: boolean
+    coin_spend: &ref_34
+      type: object
+      properties: &ref_11
+        coin:
+          type: object
+          properties: *ref_3
+        puzzle_reveal:
+          type: string
+        solution:
+          type: string
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: &ref_42
+        bytes_read:
+          type: integer
+          format: uint32
+          nullable: true
+        bytes_written:
+          type: integer
+          format: uint32
+          nullable: true
+        creation_time:
+          type: number
+          format: double
+        last_message_time:
+          type: number
+          format: double
+        local_port:
+          type: integer
+          format: int32
+        node_id:
+          type: string
+        peak_hash:
+          type: string
+        peak_height:
+          type: integer
+          format: uint64
+          nullable: true
+        peak_weight:
+          type: integer
+          format: uint64
+          nullable: true
+        peer_host:
+          type: string
+        peer_port:
+          type: integer
+          format: int32
+        peer_server_port:
+          type: integer
+          format: int32
+        type:
+          type: integer
+          enum: &ref_12
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: |-
+            The type of node:
+              * 1 FULL_NODE
+              * 2 HARVESTER
+              * 3 FARMER
+              * 4 TIMELORD
+              * 5 INTRODUCER
+              * 6 WALLET
+    foliage: &ref_29
+      type: object
+      properties: &ref_8
+        prev_block_hash:
+          type: string
+        reward_block_hash:
+          type: string
+        foliage_block_data:
+          type: object
+          properties: &ref_28
+            unfinished_reward_block_hash:
+              type: string
+            pool_target:
+              type: object
+              properties: &ref_27
+                puzzle_hash:
+                  type: string
+                max_height:
+                  type: integer
+                  format: uint32
+            pool_signature:
+              type: string
+            farmer_reward_puzzle_hash:
+              type: string
+            extension_data:
+              type: string
+        foliage_block_data_signature:
+          type: string
+        foliage_transaction_block_hash:
+          type: string
+        foliage_transaction_block_signature:
+          type: string
+    foliage_transaction_block: &ref_30
+      type: object
+      properties: &ref_9
+        prev_transaction_block_hash:
+          type: string
+        timestamp:
+          type: integer
+          format: uint64
+        filter_hash:
+          type: string
+        additions_root:
+          type: string
+        removals_root:
+          type: string
+        transactions_info_hash:
+          type: string
+    full_block:
+      type: object
+      properties: &ref_45
+        finished_sub_slots:
+          type: array
+          items:
+            type: object
+            properties: &ref_10
+              challenge_chain:
+                type: object
+                properties: &ref_18
+                  challenge_chain_end_of_slot_vdf:
+                    type: object
+                    description: Used to generate the discriminant (VDF group)
+                    properties: &ref_5
+                      challenge:
+                        type: string
+                      number_of_iterations:
+                        type: integer
+                        format: uint64
+                      output:
+                        type: object
+                        description: >-
+                          Represents a classgroup element (a,b,c) where a, b,
+                          and c are 512 bit signed integers. However this is
+                          using a compressed representation. VDF outputs are a
+                          single classgroup element. VDF proofs can also be one
+                          classgroup element(or multiple).
+                        properties: &ref_16
+                          data:
+                            type: string
+                  infused_challenge_chain_sub_slot_hash:
+                    type: string
+                  subepoch_summary_hash:
+                    type: string
+                  new_sub_slot_iters:
+                    type: integer
+                    format: uint64
+                    nullable: true
+                  new_difficulty:
+                    type: integer
+                    format: uint64
+                    nullable: true
+              infused_challenge_chain:
+                type: object
+                properties: &ref_19
+                  infused_challenge_chain_end_of_slot_vdf:
+                    type: object
+                    description: Used to generate the discriminant (VDF group)
+                    properties: *ref_5
+              reward_chain:
+                type: object
+                properties: &ref_20
+                  end_of_slot_vdf:
+                    type: object
+                    description: Used to generate the discriminant (VDF group)
+                    properties: *ref_5
+                  challenge_chain_sub_slot_hash:
+                    type: string
+                  infused_challenge_chain_sub_slot_hash:
+                    type: string
+                  deficit:
+                    type: integer
+                    format: uint8
+              proofs:
+                type: object
+                properties: &ref_22
+                  challenge_chain_slot_proof:
+                    type: object
+                    properties: &ref_6
+                      witness_type:
+                        type: integer
+                        format: uint8
+                      witness:
+                        type: string
+                      normalized_to_identity:
+                        type: boolean
+                  infused_challenge_chain_slot_proof:
+                    type: object
+                    properties: *ref_6
+                  reward_chain_slot_proof:
+                    type: object
+                    properties: *ref_6
+        reward_chain_block:
+          type: object
+          properties: &ref_26
+            weight:
+              type: integer
+              format: bigint
+            height:
+              type: integer
+              format: uint32
+            total_iters:
+              type: integer
+              format: bigint
+            signage_point_index:
+              type: integer
+              format: uint8
+            pos_ss_cc_challenge_hash:
+              type: string
+            proof_of_space:
+              type: object
+              properties: *ref_7
+            challenge_chain_sp_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            challenge_chain_sp_signature:
+              type: string
+            challenge_chain_ip_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            reward_chain_sp_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            reward_chain_sp_signature:
+              type: string
+            reward_chain_ip_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            infused_challenge_chain_ip_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            is_transaction_block:
+              type: boolean
+        challenge_chain_sp_proof:
+          type: object
+          properties: *ref_6
+        challenge_chain_ip_proof:
+          type: object
+          properties: *ref_6
+        reward_chain_sp_proof:
+          type: object
+          properties: *ref_6
+        reward_chain_ip_proof:
+          type: object
+          properties: *ref_6
+        infused_challenge_chain_ip_proof:
+          type: object
+          properties: *ref_6
+        foliage:
+          type: object
+          properties: *ref_8
+        foliage_transaction_block:
+          type: object
+          properties: *ref_9
+        transactions_info:
+          type: object
+          properties: &ref_32
+            generator_root:
+              type: string
+            generator_refs_root:
+              type: string
+            aggregated_signature:
+              type: string
+            fees:
+              type: integer
+              format: uint64
+            cost:
+              type: integer
+              format: uint64
+            reward_claims_incorporated:
+              type: array
+              items:
+                type: object
+                properties: *ref_3
+        transactions_generator:
+          type: string
+        transactions_generator_ref_list:
+          type: array
+          items:
+            type: integer
+            format: uint32
+    end_of_sub_slot_bundle: &ref_23
+      type: object
+      properties: *ref_10
+    mempool_item:
+      type: object
+      properties: &ref_51
+        spend_bundle:
+          type: object
+          properties: &ref_13
+            aggregated_signature:
+              type: string
+            coin_spends:
+              type: array
+              items:
+                type: object
+                properties: *ref_11
+        fee:
+          type: integer
+          format: uint64
+        n_p_c_result:
+          type: object
+          properties: &ref_39
+            error:
+              type: integer
+              format: uint16
+              nullable: true
+            npc_list:
+              type: array
+              items:
+                type: object
+                properties: &ref_38
+                  coin_name:
+                    type: string
+                  puzzle_hash:
+                    type: string
+                  conditions:
+                    type: array
+                    items:
+                      type: object
+                      properties: &ref_37
+                        condition_opcode:
+                          type: string
+                        args:
+                          type: array
+                          items:
+                            type: object
+                            properties: &ref_36
+                              opcode:
+                                type: string
+                              vars:
+                                type: array
+                                items:
+                                  type: string
+            clvm_cost:
+              type: integer
+              format: uint64
+        cost:
+          type: integer
+          format: uint64
+        spend_budndle_name:
+          type: string
+        additions:
+          type: array
+          items:
+            type: object
+            properties: *ref_3
+        removals:
+          type: array
+          items:
+            type: object
+            properties: *ref_3
+        program:
+          type: string
+    network_info:
+      type: object
+      description: Basic information about the current network.
+      required: &ref_49
+        - network_name
+        - network_prefix
+      properties: &ref_50
+        network_name:
+          type: string
+        network_prefix:
+          type: string
+    node_type: &ref_15
+      type: integer
+      enum: *ref_12
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+    signage_point:
+      type: object
+      properties: &ref_47
+        cc_vdf:
+          type: object
+          description: Used to generate the discriminant (VDF group)
+          properties: *ref_5
+        cc_proof:
+          type: object
+          properties: *ref_6
+        rc_vdf:
+          type: object
+          description: Used to generate the discriminant (VDF group)
+          properties: *ref_5
+        rc_proof:
+          type: object
+          properties: *ref_6
+    spend_bundle: &ref_35
+      type: object
+      properties: *ref_13
+    unfinished_header_block:
+      type: object
+      properties: &ref_46
+        finished_sub_slots:
+          type: array
+          items:
+            type: object
+            properties: *ref_10
+        reward_chain_block:
+          type: object
+          properties: &ref_33
+            total_iters:
+              type: integer
+              format: bigint
+            signage_point_index:
+              type: integer
+              format: uint8
+            pos_ss_cc_challenge_hash:
+              type: string
+            proof_of_space:
+              type: object
+              properties: *ref_7
+            challenge_chain_sp_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            challenge_chain_sp_signature:
+              type: string
+            reward_chain_sp_vdf:
+              type: object
+              description: Used to generate the discriminant (VDF group)
+              properties: *ref_5
+            reward_chain_sp_signature:
+              type: string
+        challenge_chain_sp_proof:
+          type: object
+          properties: *ref_6
+        reward_chain_sp_proof:
+          type: object
+          properties: *ref_6
+        foliage:
+          type: object
+          properties: *ref_8
+        foliage_transaction_block:
+          type: object
+          properties: *ref_9
+        transactions_filter:
+          type: string
+    apiResponse: &ref_14
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_0
+      properties: *ref_1
+    vdf_info: &ref_17
+      type: object
+      description: Used to generate the discriminant (VDF group)
+      properties: *ref_5
+    vdf_proof: &ref_21
+      type: object
+      properties: *ref_6
+    apiResponse_apiResponse: *ref_14
+    node_type_node_type: *ref_15
+    classgroup_element:
+      type: object
+      description: >-
+        Represents a classgroup element (a,b,c) where a, b, and c are 512 bit
+        signed integers. However this is using a compressed representation. VDF
+        outputs are a single classgroup element. VDF proofs can also be one
+        classgroup element(or multiple).
+      properties: *ref_16
+    vdf_info_vdf_info: *ref_17
+    challenge_chain_sub_slot:
+      type: object
+      properties: *ref_18
+    infused_challenge_chain_sub_slot:
+      type: object
+      properties: *ref_19
+    reward_chain_sub_slot:
+      type: object
+      properties: *ref_20
+    vdf_proof_vdf_proof: *ref_21
+    sub_slot_proofs:
+      type: object
+      properties: *ref_22
+    end_of_sub_slot_bundle_end_of_sub_slot_bundle: *ref_23
+    k_size:
+      type: integer
+      description: >-
+        Defines the size of a plot. 25 is used for testing only.
+        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: *ref_24
+    proof_of_space_proof_of_space: *ref_25
+    reward_chain_block:
+      type: object
+      properties: *ref_26
+    pool_target:
+      type: object
+      properties: *ref_27
+    foliage_block_data:
+      type: object
+      properties: *ref_28
+    foliage_foliage: *ref_29
+    foliage_transaction_block_foliage_transaction_block: *ref_30
+    coin_coin: *ref_31
+    transactions_info:
+      type: object
+      properties: *ref_32
+    reward_chain_block_unfinished:
+      type: object
+      properties: *ref_33
+    coin_spend_coin_spend: *ref_34
+    spend_bundle_spend_bundle: *ref_35
+    condition_with_args:
+      type: object
+      properties: *ref_36
+    condition:
+      type: object
+      properties: *ref_37
+    npc:
+      type: object
+      properties: *ref_38
+    npc_result:
+      type: object
+      properties: *ref_39
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: >-
+        -> Chia uses [mutualTLS
+        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
+        client and server share TLS keys.
+tags:
+  - name: Blocks
+    description: Methods for managing blocks.
+  - name: Coins
+    description: Methods for managing coins.
+  - name: Shared
+    description: Methods shared by all services.
+  - name: Full Node
+    description: >-
+      The full node RPC API is exposed, by default, on port 8555. This port must
+      not be exposed publicly for security concerns.
+  - name: Mempool
+    description: Get information about the mempool.
+paths:
+  /stop_node:
+    post:
+      tags:
+        - Shared
+      summary: Stop the node.
+      description: Stop the node.
+      operationId: stop_node
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_41
+  /open_connection:
+    post:
+      tags:
+        - Shared
+      summary: Add a connection to another node.
+      description: Add a connection to another node.
+      operationId: open_connection
+      requestBody:
+        required: true
+        description: the address of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+                - port
+              properties:
+                ip:
+                  type: string
+                  format: ipaddress
+                port:
+                  type: integer
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_41
+  /close_connection:
+    post:
+      tags:
+        - Shared
+      summary: Removes a connection.
+      description: Removes a connection.
+      operationId: close_connection
+      requestBody:
+        required: true
+        description: the node id of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - node_id
+              properties:
+                node_id:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_41
+  /get_connections:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of connections.
+      description: Retrieve the list of connections.
+      operationId: get_connections
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      connections:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Chia's representation of a connection from node to
+                            node.
+                          properties: *ref_42
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /healthz:
+    post:
+      tags:
+        - Shared
+      summary: Heartbeat.
+      description: Heartbeat.
+      operationId: healthz
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+  /get_routes:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of routes exposed by the service.
+      description: Retrieve the list of routes/endpoints exposed by the service.
+      operationId: get_routes
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      routes:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_block_count_metrics:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves aggregate information about blocks.
+      description: Retrieves aggregate information about blocks.
+      operationId: get_block_count_metrics
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      metrics:
+                        type: object
+                        properties:
+                          compact_blocks:
+                            type: integer
+                          uncompact_blocks:
+                            type: integer
+                          hint_count:
+                            type: integer
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_block_record:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves a block record by header hash.
+      description: Retrieves a block record by header hash.
+      operationId: get_block_record
+      requestBody:
+        required: true
+        description: the block's header_hash
+        content: *ref_43
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      block_record:
+                        type: object
+                        description: >-
+                          This class is not included or hashed into the
+                          blockchain, but it is kept in memory as a more
+                          efficient way to maintain data about the blockchain.
+                          This allows us to validate future blocks, difficulty
+                          adjustments, etc, without saving the whole header
+                          block in memory.
+                        properties: *ref_2
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_block_records:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves block records in a range.
+      description: Retrieves block records in a range
+      operationId: get_block_records
+      requestBody:
+        required: true
+        description: Start and end heights
+        content: *ref_44
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      block_records:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            This class is not included or hashed into the
+                            blockchain, but it is kept in memory as a more
+                            efficient way to maintain data about the blockchain.
+                            This allows us to validate future blocks, difficulty
+                            adjustments, etc, without saving the whole header
+                            block in memory.
+                          properties: *ref_2
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_block_record_by_height:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves a block record by height.
+      description: >-
+        Retrieves a block record by height (assuming the height <= peak height).
+        Note that not all blocks will have all fields set here (depending on
+        transaction block, finishing sub epoch, etc).
+      operationId: get_block_record_by_height
+      requestBody:
+        required: true
+        description: the block height
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - height
+              properties:
+                height:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      block_record:
+                        type: object
+                        description: >-
+                          This class is not included or hashed into the
+                          blockchain, but it is kept in memory as a more
+                          efficient way to maintain data about the blockchain.
+                          This allows us to validate future blocks, difficulty
+                          adjustments, etc, without saving the whole header
+                          block in memory.
+                        properties: *ref_2
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_block:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves a block by header hash.
+      description: Retrieves a block by header hash.
+      operationId: get_block
+      requestBody:
+        required: true
+        description: the block's header_hash
+        content: *ref_43
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      block:
+                        type: object
+                        properties: *ref_45
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_blocks:
+    post:
+      tags:
+        - Blocks
+      summary: Get the blocks between a start and end height.
+      description: Get the blocks between a start and end height
+      operationId: get_blocks
+      requestBody:
+        required: true
+        description: Start and end heights
+        content: *ref_44
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      blocks:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_45
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_unfinished_block_headers:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves unfinished block headers.
+      description: Retrieves unfinished block headers.
+      operationId: get_unfinished_block_headers
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      headers:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_46
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_additions_and_removals:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves the additions and removals for a certain block.
+      description: >-
+        Retrieves the additions and removals (state transitions) for a certain
+        block. Returns coin records for each addition and removal.
+      operationId: get_additions_and_removals
+      requestBody:
+        required: true
+        description: the block's header_hash
+        content: *ref_43
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      additions:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_4
+                      removals:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_recent_signage_point_or_eos:
+    post:
+      tags:
+        - Blocks
+      summary: Retrieves a recent signage point or end of slot.
+      description: Retrieves a recent signage point or end of slot.
+      operationId: get_recent_signage_point_or_eos
+      requestBody:
+        required: true
+        description: >-
+          The signage point hash or challenge hash. If both are present sp_hash
+          takes precedence.
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    sp_hash:
+                      type: string
+                      format: hex
+                - type: object
+                  properties:
+                    challenge_hash:
+                      type: string
+                      format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Type returned when a sp_hash is provided in the request
+                    properties:
+                      signage_point:
+                        type: object
+                        properties: *ref_47
+                  - type: object
+                    description: >-
+                      Type returned when a challenge_hash is provided in the
+                      request
+                    properties:
+                      eos:
+                        type: object
+                        properties: *ref_10
+                allOf:
+                  - type: object
+                    properties:
+                      time_received:
+                        type: number
+                        format: double
+                      reverted:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_blockchain_state:
+    post:
+      tags:
+        - Full Node
+      summary: >-
+        Retrieves a summary of the current state of the blockchain and full
+        node.
+      description: >-
+        Retrieves a summary of the current state of the blockchain and full
+        node.
+      operationId: get_blockchain_state
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      blockchain_state:
+                        type: object
+                        description: The node's view of the blockchain.
+                        properties: *ref_48
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_network_info:
+    post:
+      tags:
+        - Full Node
+      description: Retrieves some information about the current network.
+      summary: Retrieves some information about the current network.
+      operationId: full_node_get_network_info
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: Basic information about the current network.
+                    required: *ref_49
+                    properties: *ref_50
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_network_space:
+    post:
+      tags:
+        - Full Node
+      description: >-
+        Retrieves an estimate of total space validating the chain between two
+        block header hashes.
+      summary: Retrieves an estimate of total space.
+      operationId: get_network_space
+      requestBody:
+        required: true
+        description: The block header hashes
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - newer_block_header_hash
+                - older_block_header_hash
+              properties:
+                newer_block_header_hash:
+                  type: string
+                  format: hex
+                older_block_header_hash:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      space:
+                        type: integer
+                        format: bigint
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_all_mempool_tx_ids:
+    post:
+      tags:
+        - Mempool
+      description: >-
+        Returns a list of all transaction IDs (spend bundle hashes) in the
+        mempool.
+      summary: Returns a list of all transaction IDs in the mempool.
+      operationId: get_all_mempool_tx_ids
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      tx_ids:
+                        type: array
+                        items:
+                          type: string
+                          format: hex
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_all_mempool_items:
+    post:
+      tags:
+        - Mempool
+      description: Returns all items in the mempool.
+      summary: Returns all items in the mempool.
+      operationId: get_all_mempool_items
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_40
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      mempool_items:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_51
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_mempool_item_by_tx_id:
+    post:
+      tags:
+        - Mempool
+      description: Returns a specific item from the mempool.
+      summary: Returns a specific item from the mempool.
+      operationId: get_mempool_item_by_tx_id
+      requestBody:
+        required: true
+        description: The tx id.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tx_id
+              properties:
+                tx_id:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      mempool_item:
+                        type: object
+                        properties: *ref_51
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_coin_records_by_puzzle_hash:
+    post:
+      tags:
+        - Coins
+      description: >-
+        Retrieves the coins for a given puzzlehash, by default returns unspent
+        coins.
+      summary: Retrieves the coins for a given puzzlehash.
+      operationId: get_coin_records_by_puzzle_hash
+      requestBody:
+        required: true
+        description: The puzzle hash.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - puzzle_hash
+                  properties:
+                    puzzle_hash:
+                      type: string
+                      format: hex
+                - type: object
+                  properties: *ref_52
+      responses:
+        '200':
+          description: OK
+          content: *ref_53
+  /get_coin_records_by_puzzle_hashes:
+    post:
+      tags:
+        - Coins
+      description: >-
+        Retrieves the coins for a given puzzlehashes, by default returns unspent
+        coins.
+      summary: Retrieves the coins for a given puzzlehashes
+      operationId: get_coin_records_by_puzzle_hashes
+      requestBody:
+        required: true
+        description: The puzzle hashes.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - puzzle_hashes
+                  properties:
+                    puzzle_hashes:
+                      type: array
+                      items:
+                        type: string
+                        format: hex
+                - type: object
+                  properties: *ref_52
+      responses:
+        '200':
+          description: OK
+          content: *ref_53
+  /get_coin_records_by_hint:
+    post:
+      tags:
+        - Coins
+      description: Retrieves coins by hint, by default returns unspent coins.
+      summary: Retrieves coins by hint.
+      operationId: get_coin_records_by_hint
+      requestBody:
+        required: true
+        description: The hint.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - hint
+                  properties:
+                    hint:
+                      type: string
+                      format: hex
+                - type: object
+                  properties: *ref_52
+      responses:
+        '200':
+          description: OK
+          content: *ref_53
+  /get_coin_record_by_name:
+    post:
+      tags:
+        - Coins
+      description: Retrieves a coin record by it's name.
+      summary: Retrieves a coin record by it's name.
+      operationId: get_coin_record_by_name
+      requestBody:
+        required: true
+        description: The coin name.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      coin_record:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_coin_records_by_names:
+    post:
+      tags:
+        - Coins
+      description: >-
+        Retrieves the coins for given coin IDs, by default returns unspent
+        coins.
+      summary: Retrieves the coins for given coin IDs.
+      operationId: get_coin_records_by_names
+      requestBody:
+        required: true
+        description: The coin names.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - names
+                  properties:
+                    names:
+                      type: array
+                      items:
+                        type: string
+                        format: hex
+                - type: object
+                  properties: *ref_52
+      responses:
+        '200':
+          description: OK
+          content: *ref_53
+  /get_coin_records_by_parent_ids:
+    post:
+      tags:
+        - Coins
+      description: >-
+        Retrieves the coins for given parent coin IDs, by default returns
+        unspent coins.
+      summary: Retrieves the coins for given parent coin IDs.
+      operationId: get_coin_records_by_parent_ids
+      requestBody:
+        required: true
+        description: The parent ids.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - parent_ids
+                  properties:
+                    parent_ids:
+                      type: array
+                      items:
+                        type: string
+                        format: hex
+                - type: object
+                  properties: *ref_52
+      responses:
+        '200':
+          description: OK
+          content: *ref_53
+  /get_puzzle_and_solution:
+    post:
+      tags:
+        - Coins
+      description: Retrieves a coin solution.
+      summary: Retrieves a coin solution.
+      operationId: get_puzzle_and_solution
+      requestBody:
+        required: true
+        description: The coin id and height
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - coin_id
+                - height
+              properties:
+                coin_id:
+                  type: string
+                  format: hex
+                height:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      coin_solution:
+                        type: object
+                        properties: *ref_11
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /push_tx:
+    post:
+      tags:
+        - Coins
+      description: >-
+        Pushes a transaction/spend bundle to the mempool and blockchain. Returns
+        whether the spend bundle was successfully included into the mempool.
+      summary: Pushes a transaction/spend bundle to the mempool and blockchain.
+      operationId: push_tx
+      requestBody:
+        required: true
+        description: The spend bundle
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - spend_bundle
+              properties:
+                spend_bundle:
+                  type: object
+                  properties: *ref_13
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      status:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net

@@ -24,6 +24,6 @@
     "mocha": "^10.0.0"
   },
   "dependencies": {
-    "chia-repl": "file:../src/package.json"
+    "chia-repl": "file:../chia-repl/package.json"
   }
 }

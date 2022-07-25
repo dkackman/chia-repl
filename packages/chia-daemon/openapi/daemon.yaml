@@ -1,0 +1,1003 @@
+openapi: 3.0.3
+info:
+  description: >-
+    The Chia node and services come with a JSON RPC API server that allows you
+    to access information and control the services.  These are accessible via
+    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
+    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
+    to the internet. TLS certificates are used to secure the communication 
+    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
+
+    The daemon uses port 55400 by default.
+  version: 1.4.0
+  title: Chia RPC
+  termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
+  contact:
+    name: Chia Network
+    url: https://www.chia.net/
+    email: hello@chia.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: wss://localhost:55400
+    description: Daemon Websocket RPC
+security:
+  - bearerAuth: []
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: &ref_7
+        application/json:
+          schema:
+            type: object
+    service:
+      description: Request body with the name of a service
+      required: true
+      content: &ref_4
+        application/json:
+          schema:
+            type: object
+            required:
+              - service
+            properties:
+              service:
+                type: string
+  responses:
+    empty:
+      description: OK response without return values
+      content: &ref_6
+        application/json:
+          schema:
+            type: object
+            description: >-
+              Success indicator and optional error message included in all
+              responses
+            required: &ref_1
+              - success
+            properties: &ref_2
+              success:
+                type: boolean
+                description: Success/failure indicator
+              error:
+                type: string
+                description: Only present when success is false
+  schemas:
+    k_size: &ref_3
+      type: integer
+      description: >-
+        Defines the size of a plot. 25 is used for testing only.
+        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: &ref_0
+        - 25
+        - 32
+        - 33
+        - 34
+        - 35
+    plotter_config:
+      type: object
+      properties: &ref_9
+        delay:
+          type: integer
+          format: int32
+          description: The number of seconds to delay before beginning the plotting.
+        parallel:
+          type: boolean
+          default: false
+        'n':
+          type: integer
+          format: int32
+          default: 1
+          description: The number of plots that will be made, in sequence.
+        k:
+          type: integer
+          description: >-
+            Defines the size of a plot. 25 is used for testing only.
+            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          default: 32
+          enum: *ref_0
+        queue:
+          type: string
+          default: default
+        t:
+          type: string
+          description: >
+            Define the temporary directory for plot creation. This is where
+            Plotting  Phase 1 (Forward Propagation) and Phase 2
+            (Backpropagation) both occur.  The -t dir requires the largest
+            working space: normally about 2.5 times the size of the final plot.
+        t2:
+          type: string
+          description: >-
+            Define a secondary temporary directory for plot creation. This is
+            where Plotting Phase 3 (Compression) and Phase 4 (Checkpoints)
+            occur.
+        d:
+          type: string
+          description: >-
+            Define the final location for plot(s). Of course, -d should have
+            enough free space as the final size of the plot. This directory is
+            automatically added to your ~/.chia/VERSION/config/config.yaml file.
+        b:
+          type: integer
+          format: int32
+          default: 4608
+          description: >-
+            Define memory/RAM usage. Default is 4608 (4.6 GiB). More RAM will
+            marginally increase speed of plot creation. Please bear in mind that
+            this is what is allocated to the plotting algorithm alone. Code,
+            container, libraries etc. will require additional RAM from your
+            system.
+        u:
+          type: integer
+          format: int32
+          default: 128
+          description: >-
+            More buckets require less RAM but more random seeks to disk. With
+            spinning disks you want less buckets and with NVMe more buckets.
+            There is no significant benefit from using smaller buckets - just
+            use 128
+        a:
+          type: integer
+          format: uint32
+          nullable: true
+          description: >-
+            This is the key Fingerprint used to select both the Farmer and Pool
+            Public Keys to use. Utilize this when you want to select one key out
+            of several in your keychain.
+        c:
+          type: string
+          description: The pool contract address.
+        p:
+          type: string
+          description: >-
+            This is your "Pool Public Key". Utilise this when you want to create
+            plots on other machines for which you do not want to give full chia
+            account access.
+        f:
+          type: string
+          description: >-
+            This is your "Farmer Public Key". Utilise this when you want to
+            create plots on other machines for which you do not want to give
+            full chia account access
+        memo:
+          type: string
+        e:
+          type: boolean
+          default: false
+          description: >-
+            Setting to true will disable the bitfield plotting algorithm, and
+            revert back to the older b17 plotting style. After 1.0.4 it's better
+            to use bitfield for most cases
+        r:
+          type: integer
+          format: int32
+          default: 2
+          description: The number of threads to devote to each plot.
+        x:
+          type: boolean
+          default: false
+          description: Skips adding [final dir] to harvester for farming.
+        overrideK:
+          type: boolean
+          default: false
+          nullable: true
+          description: Only needed when k is set to 25
+        w:
+          type: boolean
+          default: false
+          nullable: true
+          description: BladeBit Only - warm start
+        m:
+          type: boolean
+          default: false
+          nullable: true
+          description: BladeBit Only - disable NUMA
+        K:
+          type: boolean
+          default: false
+          nullable: true
+          description: MadMax Only - note upper case - Thread multiplier for phase 2
+        G:
+          type: boolean
+          default: false
+          nullable: true
+          description: MadMax Only - note upper case - Alternate tmpdir/tmp2dir
+    plotter_info:
+      type: object
+      properties: &ref_8
+        can_install:
+          type: boolean
+        display_name:
+          type: string
+        installed:
+          type: boolean
+        version:
+          type: string
+          format: nullable
+    queued_plot_info:
+      type: object
+      description: An entry in the plot queue.
+      properties: &ref_5
+        delay:
+          type: integer
+          format: int32
+        deleted:
+          type: boolean
+        error:
+          type: string
+        id:
+          type: string
+        log:
+          type: string
+        log_new:
+          type: string
+        parallel:
+          type: boolean
+        queue:
+          type: string
+        size:
+          type: integer
+          description: >-
+            Defines the size of a plot. 25 is used for testing only.
+            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          default: 32
+          enum: *ref_0
+        state:
+          type: string
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_1
+      properties: *ref_2
+    error_details:
+      type: object
+      description: Extended error information
+      properties: &ref_11
+        error_details:
+          type: object
+          properties:
+            message:
+              type: string
+    keyring_status:
+      type: object
+      properties: &ref_10
+        is_keyring_locked:
+          type: boolean
+        passphrase_support_enabled:
+          type: boolean
+        can_save_passphrase:
+          type: boolean
+        user_passphrase_is_set:
+          type: boolean
+        needs_migration:
+          type: boolean
+        can_remove_legacy_keys:
+          type: boolean
+        can_set_passphrase_hint:
+          type: boolean
+        passphrase_hint:
+          type: string
+        passphrase_requirements:
+          type: object
+          properties:
+            is_optional:
+              type: boolean
+            min_length:
+              type: integer
+    private_key:
+      type: object
+      properties: &ref_12
+        pk:
+          type: string
+        entropy:
+          type: string
+    k_size_k_size: *ref_3
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: >-
+        -> Chia uses [mutualTLS
+        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
+        client and server share TLS keys.
+tags:
+  - name: Daemon
+    description: >-
+      The daemon interface is exposed on port 55400 by default and uses
+      WebSockets only. It can be used to interact with other service endpoints.
+  - name: Key Ring
+    description: Methods for managing keys and the keyring.
+  - name: Plotter
+    description: Methods for creating plos and managing plotters.
+paths:
+  /register_service:
+    post:
+      tags:
+        - Daemon
+      summary: Registers this daemon to receive messages.
+      description: >-
+        Registers this daemon to receive messages. This is needed to receive
+        responses from services other than the daemon.
+      operationId: register_service
+      requestBody:
+        description: Request body with the name of a service
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      queue:
+                        type: array
+                        description: >-
+                          Only present when the registered service name is
+                          'chia_plotter'
+                        items:
+                          type: object
+                          description: An entry in the plot queue.
+                          properties: *ref_5
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /start_service:
+    post:
+      tags:
+        - Daemon
+      summary: Starts the named service.
+      description: Starts the named service.
+      operationId: start_service
+      requestBody:
+        description: Request body with the name of a service
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /stop_service:
+    post:
+      tags:
+        - Daemon
+      summary: Stops the named service.
+      description: Stops the named service.
+      operationId: stop_service
+      requestBody:
+        description: Request body with the name of a service
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /ping:
+    post:
+      tags:
+        - Daemon
+      summary: Ping the daemon.
+      description: Ping the daemon.
+      operationId: ping
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /exit:
+    post:
+      tags:
+        - Daemon
+      summary: Tells the daemon at the RPC endpoint to exit.
+      description: >-
+        Tells the daemon at the RPC endpoint to exit. There isn't a way to start
+        the daemon remotely via RPC, so take care that you have access to the
+        RPC host if needed.
+      operationId: exit
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /is_running:
+    post:
+      tags:
+        - Daemon
+      summary: Determines if the named service is running.
+      description: Determines if the named service is running.
+      operationId: is_running
+      requestBody:
+        description: Request body with the name of a service
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      is_running:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_version:
+    post:
+      tags:
+        - Daemon
+      summary: Get the installed version of chia at the endpoint.
+      description: Get the installed version of chia at the endpoint.
+      operationId: get_version
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      version:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_status:
+    post:
+      tags:
+        - Daemon
+      summary: Indicator if the genesis block is intialized.
+      description: Indicator if the genesis block is intialized.
+      operationId: get_status
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      genesis_initialized:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_plotters:
+    post:
+      tags:
+        - Plotter
+      summary: Get info about installed and installable plotters.
+      description: Get info about installed and installable plotters.
+      operationId: get_plotters
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      plotters:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties: *ref_8
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /start_plotting:
+    post:
+      tags:
+        - Plotter
+      summary: Starts plotting.
+      description: >-
+        Starts plotting. Returns after request is added to the plotting queue.
+        Does not wait for plotting to finish.
+      operationId: start_plotting
+      requestBody:
+        description: Options for creating the plots
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: *ref_9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      ids:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /stop_plotting:
+    post:
+      tags:
+        - Plotter
+      summary: Stops the plot with the given id.
+      description: Stops the plot with the given id.
+      operationId: stop_plotting
+      requestBody:
+        description: The id of the plot to stop
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /is_keyring_locked:
+    post:
+      tags:
+        - Key Ring
+      summary: Returns whether the keyring is in a locked state.
+      description: >-
+        Returns whether the keyring is in a locked state. If the keyring doesn't
+        have a master passphrase set, or if a master passphrase is set and the
+        cached passphrase is valid, the keyring is "unlocked".
+      operationId: is_keyring_locked
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      is_keyring_locked:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /keyring_status:
+    post:
+      tags:
+        - Key Ring
+      summary: Get detailed status of the key ring.
+      description: Get detailed status of the key ring.
+      operationId: keyring_status
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties: *ref_10
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /unlock_keyring:
+    post:
+      tags:
+        - Key Ring
+      summary: Unlock the keyring.
+      description: Unlock the keyring.
+      operationId: unlock_keyring
+      requestBody:
+        description: Key ring key
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /validate_keyring_passphrase:
+    post:
+      tags:
+        - Key Ring
+      summary: Test the validity of a passphrase.
+      description: Test the validity of a passphrase.
+      operationId: validate_keyring_passphrase
+      requestBody:
+        description: The passphrase
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /migrate_keyring:
+    post:
+      tags:
+        - Key Ring
+      summary: Migrate from key phrase to key ring.
+      description: Migrate from key phrase to key ring.
+      operationId: migrate_keyring
+      requestBody:
+        description: The migration options
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - passphrase
+                - passphrase_hint
+              properties:
+                passphrase:
+                  type: string
+                passphrase_hint:
+                  type: string
+                save_passphrase:
+                  type: boolean
+                  default: false
+                cleanup_legacy_keyring:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /set_keyring_passphrase:
+    post:
+      tags:
+        - Key Ring
+      summary: Update the key ring passphrase.
+      description: Update the key ring passphrase.
+      operationId: set_keyring_passphrase
+      requestBody:
+        description: The passphrase options
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - new_passphrase
+              properties:
+                current_passphrase:
+                  type: string
+                new_passphrase:
+                  type: string
+                passphrase_hint:
+                  type: string
+                save_passphrase:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /remove_keyring_passphrase:
+    post:
+      tags:
+        - Key Ring
+      summary: Remove the key ring passphrase.
+      description: Remove the key ring passphrase.
+      operationId: remove_keyring_passphrase
+      requestBody:
+        description: The passphrase
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - current_passphrase
+              properties:
+                current_passphrase:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /add_private_key:
+    post:
+      tags:
+        - Key Ring
+      summary: Adds a private key to the keychain.
+      description: >-
+        Adds a private key to the keychain, with the given entropy and
+        passphrase. The keychain itself will store the public key, and the
+        entropy bytes, but not the passphrase.
+      operationId: add_private_key
+      requestBody:
+        description: The private key
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - mnemonic
+                - passphrase
+              properties:
+                mnemonic:
+                  type: string
+                passphrase:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+                  - type: object
+                    description: Extended error information
+                    properties: *ref_11
+  /check_keys:
+    post:
+      tags:
+        - Key Ring
+      summary: Check the keys.
+      description: Check the keys.
+      operationId: check_keys
+      requestBody:
+        description: The config root path
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - root_path
+              properties:
+                root_path:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+                  - type: object
+                    description: Extended error information
+                    properties: *ref_11
+  /delete_all_keys:
+    post:
+      tags:
+        - Key Ring
+      summary: Deletes all keys from the keychain.
+      description: Deletes all keys from the keychain.
+      operationId: daemon_delete_all_keys
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_6
+  /delete_key_by_fingerprint:
+    post:
+      tags:
+        - Key Ring
+      summary: Deletes all keys which have the given public key fingerprint.
+      description: Deletes all keys which have the given public key fingerprint.
+      operationId: delete_key_by_fingerprint
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK response without return values
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+                  - type: object
+                    description: Extended error information
+                    properties: *ref_11
+  /get_all_private_keys:
+    post:
+      tags:
+        - Key Ring
+      summary: >-
+        Returns all private keys which can be retrieved, with the given
+        passphrases.
+      description: >-
+        Returns all private keys which can be retrieved, with the given
+        passphrases. A tuple of key, and entropy bytes (i.e. mnemonic) is
+        returned for each key.
+      operationId: get_all_private_keys
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      private_keys:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_12
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_first_private_key:
+    post:
+      tags:
+        - Key Ring
+      summary: Returns the first key in the keychain.
+      description: Returns the first key in the keychain.
+      operationId: get_first_private_key
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_7
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties: *ref_12
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_key_for_fingerprint:
+    post:
+      tags:
+        - Key Ring
+      summary: Locates and returns a private key matching the provided fingerprint.
+      description: Locates and returns a private key matching the provided fingerprint.
+      operationId: get_key_for_fingerprint
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties: *ref_12
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_1
+                    properties: *ref_2
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net

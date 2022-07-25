@@ -1,0 +1,36 @@
+{
+  "name": "chia-daemon-tests",
+  "version": "0.3.5",
+  "description": "Tests for a JS daemon client for chia rpc with dynamically generated end points",
+  "scripts": {
+    "test": "mocha *.ci.test.js --exit",
+    "test-live": "mocha --exit",
+    "debug": "mocha -g '_DEBUG_' --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkackman/chia-repl.git"
+  },
+  "keywords": [
+    "chia",
+    "rpc",
+    "js",
+    "daemon"
+  ],
+  "type": "module",
+  "author": "dkackman",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dkackman/chia-repl/issues"
+  },
+  "homepage": "https://github.com/dkackman/chia-repl#readme",
+  "devDependencies": {
+    "eslint": "^8.20.0",
+    "jshint": "^2.13.5"
+  },
+  "dependencies": {
+    "chia-daemon": "file:../chia-daemon/package.json",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  }
+}

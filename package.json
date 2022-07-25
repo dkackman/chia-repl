@@ -2,7 +2,9 @@
     "name": "chia-repl-project",
     "workspaces": [
         "packages/chia-repl",
-        "packages/chia-repl-tests"
+        "packages/chia-repl-tests",
+        "packages/chia-daemon",
+        "packages/chia-daemon-tests"
     ],
     "version": "0.0.1"
 }

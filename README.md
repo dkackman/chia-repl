@@ -24,10 +24,9 @@ chia-repl
 ## From Source
 
 ```shell
-cd src
 npm install
-npm start
-> chia-repl@0.9.1 start
+npm start -w packages/chiar-epl
+> chia-repl@0.12.3 start
 > node index.js
 
 🌿 Welcome to Chia!

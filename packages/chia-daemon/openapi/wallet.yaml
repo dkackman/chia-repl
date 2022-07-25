@@ -1,0 +1,4046 @@
+openapi: 3.0.3
+info:
+  description: >-
+    The Chia node and services come with a JSON RPC API server that allows you
+    to access information and control the services.  These are accessible via
+    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
+    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
+    to the internet. TLS certificates are used to secure the communication 
+    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
+
+    The wallet uses port 9256 by default.
+  version: 1.4.0
+  title: Chia RPC
+  termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
+  contact:
+    name: Chia Network
+    url: https://www.chia.net/
+    email: hello@chia.net
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://localhost:9256
+    description: Wallet RPC
+security:
+  - bearerAuth: []
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: &ref_25
+        application/json:
+          schema:
+            type: object
+    fingerprint:
+      description: Request body with a wallet fingerprint.
+      required: true
+      content: &ref_42
+        application/json:
+          schema:
+            type: object
+            required:
+              - fingerprint
+            properties:
+              fingerprint:
+                type: integer
+                format: uint32
+    wallet_id:
+      description: Request body with the Id of a wallet
+      required: true
+      content: &ref_28
+        application/json:
+          schema:
+            type: object
+            required:
+              - wallet_id
+            properties:
+              wallet_id:
+                type: integer
+                format: uint32
+    transaction_id:
+      description: Request body with the Id of a transaction.
+      required: true
+      content: &ref_39
+        application/json:
+          schema:
+            type: object
+            required:
+              - transaction_id
+            properties:
+              transaction_id:
+                type: string
+                format: hex
+  responses:
+    empty:
+      description: OK response without return values
+      content: &ref_26
+        application/json:
+          schema:
+            type: object
+            description: >-
+              Success indicator and optional error message included in all
+              responses
+            required: &ref_0
+              - success
+            properties: &ref_1
+              success:
+                type: boolean
+                description: Success/failure indicator
+              error:
+                type: string
+                description: Only present when success is false
+    fingerprint:
+      description: OK
+      content: &ref_43
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  fingerprint:
+                    type: integer
+                    format: uint32
+              - type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+    transaction_record:
+      description: OK response with a transaction record and a transaction id.
+      content: &ref_32
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  transaction:
+                    type: object
+                    description: Used for storing transaction data and status in wallets.
+                    properties: &ref_11
+                      confirmed_at_height:
+                        type: integer
+                        format: uint32
+                      created_at_time:
+                        type: integer
+                        format: uint64
+                      to_puzzle_hash:
+                        type: string
+                        format: hex
+                      amount:
+                        type: integer
+                        format: uint64
+                      fee_amount:
+                        type: integer
+                        format: uint64
+                      confirmed:
+                        type: boolean
+                      sent:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: &ref_4
+                          aggregated_signature:
+                            type: string
+                          coin_spends:
+                            type: array
+                            items:
+                              type: object
+                              properties: &ref_17
+                                coin:
+                                  type: object
+                                  properties: &ref_2
+                                    parent_coin_info:
+                                      type: string
+                                    puzzle_hash:
+                                      type: string
+                                    amount:
+                                      type: integer
+                                      format: uint64
+                                puzzle_reveal:
+                                  type: string
+                                solution:
+                                  type: string
+                      additions:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_2
+                      removals:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_2
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      sent_to:
+                        type: array
+                        description: >-
+                          Represents the list of peers that we sent the
+                          transaction to, whether each one included it in the
+                          mempool, and what the error message (if any) was.
+                          List[Tuple[str, uint8, Optional[str]]]
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            anyOf:
+                              - type: string
+                              - type: integer
+                                format: uint8
+                              - type: string
+                      trade_id:
+                        type: string
+                        format: hex
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: &ref_12
+                          - 0
+                          - 1
+                          - 2
+                          - 3
+                          - 4
+                          - 5
+                        description: |-
+                          The type of transaction:
+                            * 0 INCOMING_TX
+                            * 1 OUTGOING_TX
+                            * 2 COINBASE_REWARD
+                            * 3 FEE_REWARD
+                            * 4 INCOMING_TRADE
+                            * 5 OUTGOING_TRADE
+                      name:
+                        type: string
+                        format: hex
+                      memos:
+                        type: array
+                        description: List[Tuple[bytes32, List[bytes]]]
+                        items:
+                          type: object
+                          anyOf:
+                            - type: string
+                              format: hex
+                            - type: array
+                              items:
+                                type: string
+                                format: hex
+                  transaction_id:
+                    type: string
+                    format: hex
+              - type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+  schemas:
+    amount_with_puzzlehash: &ref_22
+      type: object
+      required: &ref_5
+        - amount
+        - puzzle_hash
+      properties: &ref_6
+        amount:
+          type: integer
+          format: uint64
+        puzzle_hash:
+          type: string
+          format: hex
+        memos:
+          type: array
+          items:
+            type: string
+    coin_announcement: &ref_23
+      type: object
+      required: &ref_7
+        - coin_id
+        - message
+      properties: &ref_8
+        coin_id:
+          type: string
+          format: hex
+        message:
+          type: string
+          format: hex
+        morph_bytes:
+          type: string
+          format: hex
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: &ref_27
+        bytes_read:
+          type: integer
+          format: uint32
+          nullable: true
+        bytes_written:
+          type: integer
+          format: uint32
+          nullable: true
+        creation_time:
+          type: number
+          format: double
+        last_message_time:
+          type: number
+          format: double
+        local_port:
+          type: integer
+          format: int32
+        node_id:
+          type: string
+        peak_hash:
+          type: string
+        peak_height:
+          type: integer
+          format: uint64
+          nullable: true
+        peak_weight:
+          type: integer
+          format: uint64
+          nullable: true
+        peer_host:
+          type: string
+        peer_port:
+          type: integer
+          format: int32
+        peer_server_port:
+          type: integer
+          format: int32
+        type:
+          type: integer
+          enum: &ref_15
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: |-
+            The type of node:
+              * 1 FULL_NODE
+              * 2 HARVESTER
+              * 3 FARMER
+              * 4 TIMELORD
+              * 5 INTRODUCER
+              * 6 WALLET
+    puzzle_announcement: &ref_24
+      type: object
+      required: &ref_9
+        - coin_id
+        - message
+      properties: &ref_10
+        puzzle_hash:
+          type: string
+          format: hex
+        message:
+          type: string
+          format: hex
+        morph_bytes:
+          type: string
+          format: hex
+    cat_info:
+      type: object
+      description: Information about a CAT
+      properties: &ref_31
+        asset_id:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+    coin: &ref_16
+      type: object
+      properties: *ref_2
+    farmer_rewards:
+      type: object
+      properties: &ref_38
+        farmed_amount:
+          type: integer
+          format: uint64
+        pool_reward_amount:
+          type: integer
+          format: uint64
+        farmer_reward_amount:
+          type: integer
+          format: uint64
+        fee_amount:
+          type: integer
+          format: uint64
+        last_height_farmed:
+          type: integer
+          format: uint64
+    mnemonic:
+      description: 24 words of entropy.
+      type: array
+      items: &ref_45
+        type: string
+      minItems: 24
+      maxItems: 24
+    network_info:
+      type: object
+      description: Basic information about the current network.
+      required: &ref_40
+        - network_name
+        - network_prefix
+      properties: &ref_41
+        network_name:
+          type: string
+        network_prefix:
+          type: string
+    nft_info:
+      type: object
+      description: NFT Info for displaying NFT on the UI
+      properties: &ref_29
+        launcher_id:
+          type: string
+          format: hex
+        nft_coin_id:
+          type: string
+          format: hex
+        owner_did:
+          type: string
+        royalty_percentage:
+          type: integer
+          format: uint16
+        royalty_puzzle_hash:
+          type: string
+          format: hex
+        data_uris:
+          type: array
+          items:
+            type: string
+            format: uri
+        data_hash:
+          type: string
+          format: hex
+        metadata_uris:
+          type: array
+          items:
+            type: string
+            format: uri
+        metadata_hash:
+          type: string
+          format: hex
+        license_uris:
+          type: array
+          items:
+            type: string
+            format: uri
+        license_hash:
+          type: string
+          format: hex
+        series_total:
+          type: integer
+          format: uint64
+        series_number:
+          type: integer
+          format: uint64
+        updater_puzhash:
+          type: string
+          format: hex
+        chain_info:
+          type: string
+        mint_height:
+          type: integer
+          format: uint32
+        supports_did:
+          type: boolean
+        pending_transaction:
+          type: boolean
+          default: false
+        launcher_puzhash:
+          type: string
+          format: hex
+    pool_state: &ref_21
+      type: object
+      description: >-
+        `PoolState` is a type that is serialized to the blockchain to track the
+        state of the user's pool singleton `target_puzzle_hash` is either the
+        pool address, or the self-pooling address that pool rewards will be paid
+        to. `target_puzzle_hash` is NOT the p2_singleton puzzle that block
+        rewards are sent to. The `p2_singleton` address is the initial address,
+        and the `target_puzzle_hash` is the final destination.
+        `relative_lock_height` is zero when in SELF_POOLING state
+      properties: &ref_3
+        version:
+          type: integer
+          format: uint8
+        state:
+          type: integer
+          format: uint8
+          description: |-
+            "From the user's point of view, a pool group can be in these states:
+              `1 SELF_POOLING`: The singleton exists on the blockchain, and we are farming
+                  block rewards to a wallet address controlled by the user
+              `2 LEAVING_POOL`: The singleton exists, and we have entered the "escaping" state, which
+                  means we are waiting for a number of blocks = `relative_lock_height` to pass, so we can leave.
+              `3 FARMING_TO_POOL`: The singleton exists, and it is assigned to a pool.
+              `CLAIMING_SELF_POOLED_REWARDS`: We have submitted a transaction to sweep our
+                  self-pooled funds."
+          enum: &ref_20
+            - 1
+            - 2
+            - 3
+        target_puzzle_hash:
+          type: string
+          format: hex
+          description: >-
+            -> A puzzle_hash we pay to. When self-farming, this is a main wallet
+            address When farming-to-pool, the pool sends this to the farmer
+            during pool protocol setup
+        owner_pubkey:
+          type: string
+          format: hex
+        pool_url:
+          type: string
+          format: url
+        relative_lock_height:
+          type: integer
+          format: uint32
+    pool_wallet_info:
+      type: object
+      description: >-
+        Internal Pool Wallet state, not destined for the blockchain. This can be
+        completely derived with the Singleton's CoinSpends list, or with the
+        information from the WalletPoolStore.
+      properties: &ref_34
+        current:
+          type: object
+          description: >-
+            `PoolState` is a type that is serialized to the blockchain to track
+            the state of the user's pool singleton `target_puzzle_hash` is
+            either the pool address, or the self-pooling address that pool
+            rewards will be paid to. `target_puzzle_hash` is NOT the
+            p2_singleton puzzle that block rewards are sent to. The
+            `p2_singleton` address is the initial address, and the
+            `target_puzzle_hash` is the final destination.
+            `relative_lock_height` is zero when in SELF_POOLING state
+          properties: *ref_3
+        target:
+          type: object
+          description: >-
+            `PoolState` is a type that is serialized to the blockchain to track
+            the state of the user's pool singleton `target_puzzle_hash` is
+            either the pool address, or the self-pooling address that pool
+            rewards will be paid to. `target_puzzle_hash` is NOT the
+            p2_singleton puzzle that block rewards are sent to. The
+            `p2_singleton` address is the initial address, and the
+            `target_puzzle_hash` is the final destination.
+            `relative_lock_height` is zero when in SELF_POOLING state
+          properties: *ref_3
+        launcher_coin:
+          type: object
+          properties: *ref_2
+        launcher_id:
+          type: string
+          format: hex
+        p2_singleton_puzzle_hash:
+          type: string
+          format: hex
+        current_inner:
+          type: string
+          description: inner puzzle in current singleton, not revealed yet
+        tip_singleton_coin_id:
+          type: string
+          format: hex
+        singleton_block_height:
+          description: Block height that current PoolState is from
+          type: integer
+          format: uint32
+    private_key:
+      type: object
+      properties: &ref_44
+        fingerprint:
+          type: integer
+          format: uint32
+        sk:
+          type: string
+          format: hex
+        pk:
+          type: string
+          format: hex
+        farmer_pk:
+          type: string
+          format: hex
+        pool_pk:
+          type: string
+          format: hex
+        seed:
+          type: string
+    spend_bundle:
+      type: object
+      properties: *ref_4
+    token:
+      type: object
+      properties: &ref_33
+        asset_id:
+          type: string
+        name:
+          type: string
+        first_seen_height:
+          type: integer
+          format: uint32
+        sender_puzzle_hash:
+          type: string
+    trade_record:
+      type: object
+      description: Used for storing transaction data and status in wallets.
+      properties: &ref_30
+        confirmed_at_height:
+          type: integer
+          format: uint32
+        accepted_at_time:
+          type: integer
+          format: uint64
+          nullable: true
+        created_at_time:
+          type: integer
+          format: uint64
+        is_my_offer:
+          type: boolean
+        sent:
+          type: integer
+          format: uint32
+        offer:
+          type: string
+        taken_offer:
+          type: string
+        coins_of_interest:
+          type: array
+          items:
+            type: object
+            properties: *ref_2
+        trade_id:
+          type: string
+          format: hex
+        status:
+          type: integer
+          enum: &ref_19
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+          description: >-
+            The status of a trade: * 0 PENDING_ACCEPT * 1 PENDING_CONFIRM * 2
+            PENDING_CANCEL * 3 CANCELLED * 4 CONFIRMED * 5 FAILED
+        sent_to:
+          type: array
+          description: >-
+            Represents the list of peers that we sent the transaction to,
+            whether each one included it in the mempool, and what the error
+            message (if any) was. List[Tuple[str, uint8, Optional[str]]]
+          items:
+            type: array
+            items:
+              type: object
+              anyOf:
+                - type: string
+                - type: integer
+                  format: uint8
+                - type: string
+    transaction_input:
+      type: object
+      required: &ref_35
+        - additions
+      properties: &ref_36
+        additions:
+          type: array
+          items:
+            type: object
+            required: *ref_5
+            properties: *ref_6
+        fee:
+          type: integer
+          format: uint64
+          default: 0
+        coins:
+          type: array
+          items:
+            type: object
+            properties: *ref_2
+        coin_announcements:
+          type: array
+          items:
+            type: object
+            required: *ref_7
+            properties: *ref_8
+        puzzle_announcements:
+          type: array
+          items:
+            type: object
+            required: *ref_9
+            properties: *ref_10
+    transaction_record:
+      type: object
+      description: Used for storing transaction data and status in wallets.
+      properties: *ref_11
+    transaction_type: &ref_18
+      type: integer
+      format: uint8
+      enum: *ref_12
+      description: |-
+        The type of transaction:
+          * 0 INCOMING_TX
+          * 1 OUTGOING_TX
+          * 2 COINBASE_REWARD
+          * 3 FEE_REWARD
+          * 4 INCOMING_TRADE
+          * 5 OUTGOING_TRADE
+    wallet_balance:
+      type: object
+      properties: &ref_37
+        confirmed_wallet_balance:
+          type: integer
+          format: uint64
+        unconfirmed_wallet_balance:
+          type: integer
+          format: uint64
+        spendable_balance:
+          type: integer
+          format: uint64
+        pending_change:
+          type: integer
+          format: uint64
+        max_send_amount:
+          type: integer
+          format: uint64
+        unspent_coin_count:
+          type: integer
+          format: int32
+        pending_coin_removal_count:
+          type: integer
+          format: int32
+    wallet_info:
+      type: object
+      description: >-
+        This object represents the wallet data as it is stored in DB. ID: Main
+        wallet (Standard) is stored at index 1, every wallet created after done
+        has auto incremented id. Name: can be a user provided or default
+        generated name. (can be modified) Type: is specified during wallet
+        creation and should never be changed. Data: this field is intended to be
+        used for storing any wallet specific information required for it. (RL
+        wallet stores origin_id, admin/user pubkey, rate limit, etc.) This data
+        should be a json encoded string.
+      properties: &ref_46
+        id:
+          type: integer
+          format: uint32
+        name:
+          type: string
+        type:
+          type: integer
+          format: uint8
+          enum: &ref_13
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+          description: |-
+            The type of wallet:
+              * 0 STANDARD_WALLET
+              * 1 RATE_LIMITED
+              * 2 ATOMIC_SWAP
+              * 3 AUTHORIZED_PAYEE
+              * 4 MULTI_SIG
+              * 5 CUSTODY
+              * 6 CAT
+              * 7 RECOVERABLE
+              * 8 DISTRIBUTED_ID
+              * 9 POOLING_WALLET
+              * 10 NFT
+        data:
+          type: string
+          format: json
+    wallet_type:
+      type: integer
+      format: uint8
+      enum: *ref_13
+      description: |-
+        The type of wallet:
+          * 0 STANDARD_WALLET
+          * 1 RATE_LIMITED
+          * 2 ATOMIC_SWAP
+          * 3 AUTHORIZED_PAYEE
+          * 4 MULTI_SIG
+          * 5 CUSTODY
+          * 6 CAT
+          * 7 RECOVERABLE
+          * 8 DISTRIBUTED_ID
+          * 9 POOLING_WALLET
+          * 10 NFT
+    apiResponse: &ref_14
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_0
+      properties: *ref_1
+    apiResponse_apiResponse: *ref_14
+    node_type:
+      type: integer
+      enum: *ref_15
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+    coin_coin: *ref_16
+    coin_spend:
+      type: object
+      properties: *ref_17
+    transaction_type_transaction_type: *ref_18
+    trade_status:
+      type: integer
+      enum: *ref_19
+      description: >-
+        The status of a trade: * 0 PENDING_ACCEPT * 1 PENDING_CONFIRM * 2
+        PENDING_CANCEL * 3 CANCELLED * 4 CONFIRMED * 5 FAILED
+    pool_singleton_state:
+      type: integer
+      format: uint8
+      description: |-
+        "From the user's point of view, a pool group can be in these states:
+          `1 SELF_POOLING`: The singleton exists on the blockchain, and we are farming
+              block rewards to a wallet address controlled by the user
+          `2 LEAVING_POOL`: The singleton exists, and we have entered the "escaping" state, which
+              means we are waiting for a number of blocks = `relative_lock_height` to pass, so we can leave.
+          `3 FARMING_TO_POOL`: The singleton exists, and it is assigned to a pool.
+          `CLAIMING_SELF_POOLED_REWARDS`: We have submitted a transaction to sweep our
+              self-pooled funds."
+      enum: *ref_20
+    pool_state_pool_state: *ref_21
+    amount_with_puzzlehash_amount_with_puzzlehash: *ref_22
+    coin_announcement_coin_announcement: *ref_23
+    puzzle_announcement_puzzle_announcement: *ref_24
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: >-
+        -> Chia uses [mutualTLS
+        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
+        client and server share TLS keys.
+tags:
+  - name: Shared
+    description: Methods shared by all services.
+  - name: CAT Wallet
+    description: CATs, trades, and offers.
+  - name: DID Wallet
+    description: Distributed Identity wallet.
+  - name: Key Management
+    description: Methods for managing keys.
+  - name: Pool Wallet
+    description: Pool wallet api.
+  - name: Rate Limited Wallet
+    description: Rate limited wallet api.
+  - name: Wallet
+    description: Methods for shared wallet operations.
+  - name: Wallet Management
+    description: Methods for creating and managing wallets.
+  - name: Wallet Node
+    description: >-
+      The wallet RPC API is exposed, by default, on port 9256 and contains
+      methods for managing wallet, trades, offers and transactions.
+paths:
+  /stop_node:
+    post:
+      tags:
+        - Shared
+      summary: Stop the node.
+      description: Stop the node.
+      operationId: stop_node
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /open_connection:
+    post:
+      tags:
+        - Shared
+      summary: Add a connection to another node.
+      description: Add a connection to another node.
+      operationId: open_connection
+      requestBody:
+        required: true
+        description: the address of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+                - port
+              properties:
+                ip:
+                  type: string
+                  format: ipaddress
+                port:
+                  type: integer
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /close_connection:
+    post:
+      tags:
+        - Shared
+      summary: Removes a connection.
+      description: Removes a connection.
+      operationId: close_connection
+      requestBody:
+        required: true
+        description: the node id of the connection
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - node_id
+              properties:
+                node_id:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /get_connections:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of connections.
+      description: Retrieve the list of connections.
+      operationId: get_connections
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      connections:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Chia's representation of a connection from node to
+                            node.
+                          properties: *ref_27
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /healthz:
+    post:
+      tags:
+        - Shared
+      summary: Heartbeat.
+      description: Heartbeat.
+      operationId: healthz
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: >-
+                  Success indicator and optional error message included in all
+                  responses
+                required: *ref_0
+                properties: *ref_1
+  /get_routes:
+    post:
+      tags:
+        - Shared
+      summary: Retrieve the list of routes exposed by the service.
+      description: Retrieve the list of routes/endpoints exposed by the service.
+      operationId: get_routes
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      routes:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_mint_nft:
+    post:
+      tags:
+        - NFT Wallet
+      description: Mints an NFT.
+      summary: Mints an NFT.
+      operationId: nft_mint_nft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - royalty_address
+                - target_address
+                - uris
+                - hash
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                royalty_address:
+                  type: string
+                  format: hex
+                target_address:
+                  type: string
+                  format: hex
+                uris:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                meta_uris:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                license_uris:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                hash:
+                  type: string
+                  format: hex
+                series_number:
+                  type: integer
+                  format: uint64
+                  default: 1
+                series_total:
+                  type: integer
+                  format: uint64
+                  default: 1
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                meta_hash:
+                  type: string
+                  format: hex
+                license_hash:
+                  type: string
+                  format: hex
+                did_id:
+                  type: string
+                royalty_percentage:
+                  type: integer
+                  format: uint16
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_get_nfts:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Gets NFTs from a wallet.
+      description: Gets NFTs from a wallet.
+      operationId: nft_get_nfts
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      nft_list:
+                        type: array
+                        items:
+                          type: object
+                          description: NFT Info for displaying NFT on the UI
+                          properties: *ref_29
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_set_nft_did:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Sets the DID of an NFT.
+      description: Sets the DID of an NFT.
+      operationId: nft_set_nft_did
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                did_id:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_get_by_did:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Gets an NFT wallet by its DID.
+      description: Gets an NFT wallet by its DID.
+      operationId: nft_get_by_did
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - did_id
+              properties:
+                did_id:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_get_wallet_did:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Gets the DID for an NFT wallet.
+      description: Gets the DID for an NFT wallet.
+      operationId: nft_get_wallet_did
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      did_id:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_get_wallets_with_dids:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Gets all the wallets with a DID.
+      description: Gets all the wallets with a DID.
+      operationId: nft_get_wallets_with_dids
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      nft_wallets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            wallet_id:
+                              type: integer
+                              format: uint32
+                            did_id:
+                              type: string
+                            did_wallet_id:
+                              type: integer
+                              format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_set_nft_status:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Sets the status of an NFT.
+      description: Sets the status of an NFT.
+      operationId: nft_set_nft_status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - coin_id
+                - in_transaction
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                coin_id:
+                  type: string
+                  format: hex
+                in_transaction:
+                  type: boolean
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /nft_transfer_nft:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Transfers an NFT to another address.
+      description: Transfers an NFT to another address.
+      operationId: nft_transfer_nft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - target_address
+                - nft_coin_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                target_address:
+                  type: string
+                  format: hex
+                nft_coin_id:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_get_info:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Gets info about an NFT.
+      description: Gets info about an NFT.
+      operationId: nft_get_info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - coin_id
+              properties:
+                coin_id:
+                  type: string
+                  format: hex
+                latest:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      nft_info:
+                        type: object
+                        description: NFT Info for displaying NFT on the UI
+                        properties: *ref_29
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_add_uri:
+    post:
+      tags:
+        - NFT Wallet
+      summary: Adds an Uri to an NFT.
+      description: Adds a Uri to an NFT.
+      operationId: nft_add_uri
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - uri
+                - key
+                - nft_coin_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                uri:
+                  type: string
+                  format: uri
+                key:
+                  type: string
+                  enum:
+                    - u
+                    - mu
+                    - lu
+                  description: |-
+                    The type of uri:
+                      * u Uri for the NFT data
+                      * mu Uri for NFT metadata
+                      * lu Uri for the NFT license
+                nft_coin_id:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_create_backup_file:
+    post:
+      tags:
+        - DID Wallet
+      summary: Creates a backup file for the given DID wallet.
+      description: Creates a backup file for the given DID wallet.
+      operationId: did_create_backup_file
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      backup_data:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_transfer_did:
+    post:
+      tags:
+        - DID Wallet
+      summary: Transfer a DID to another owner.
+      description: Transfer the given DID wallet to another owner.
+      operationId: did_transfer_did
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - inner_address
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                inner_address:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                with_recovery_info:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      transaction:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                      transaction_id:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_information_needed_for_recovery:
+    post:
+      tags:
+        - DID Wallet
+      summary: Retrieves the recovery information needed for the given DID wallet.
+      description: Retrieves the recovery information needed for the given DID wallet.
+      operationId: did_get_information_needed_for_recovery
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      my_did:
+                        type: string
+                      coin_name:
+                        type: string
+                      newpuzhash:
+                        type: string
+                      pubkey:
+                        type: string
+                      backup_dids:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_create_attest:
+    post:
+      tags:
+        - DID Wallet
+      summary: Creates an attestment for the given DID wallet.
+      description: Creates an attestment for the given DID wallet.
+      operationId: did_create_attest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - coin_name
+                - pubkey
+                - puzhash
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                coin_name:
+                  type: string
+                  format: hex
+                pubkey:
+                  type: string
+                  format: hex
+                puzhash:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      message_spend_bundle:
+                        type: string
+                        format: hex
+                      info:
+                        type: array
+                        items:
+                          oneOf:
+                            - type: string
+                              format: hex
+                            - type: string
+                              format: hex
+                            - type: integer
+                              format: uint64
+                          minItems: 3
+                          maxItems: 3
+                      attest_data:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_pubkey:
+    post:
+      tags:
+        - DID Wallet
+      summary: Retrieves the public key for the given DID wallet.
+      description: Retrieves the public key for the given DID wallet.
+      operationId: did_get_pubkey
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      pubkey:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_current_coin_info:
+    post:
+      tags:
+        - DID Wallet
+      summary: Gets information about the DID wallets current coin.
+      description: Gets information about the DID wallets current coin.
+      operationId: did_get_current_coin_info
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      my_did:
+                        type: string
+                        format: hex
+                      did_parent:
+                        type: string
+                        format: hex
+                      did_innerpuz:
+                        type: string
+                        format: hex
+                      did_amount:
+                        type: integer
+                        format: uint64
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_recovery_spend:
+    post:
+      tags:
+        - DID Wallet
+      summary: Spend from the given DID wallet.
+      description: Spend from the given DID wallet.
+      operationId: did_recovery_spend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - attest_data
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                attest_data:
+                  type: array
+                  items:
+                    type: string
+                pubkey:
+                  type: string
+                  format: hex
+                puzhash:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_recovery_list:
+    post:
+      tags:
+        - DID Wallet
+      summary: Retrieves the recovery list for a given DID wallet.
+      description: Retrieves the recovery list for a given DID wallet.
+      operationId: did_get_recovery_list
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      recover_list:
+                        type: array
+                        items:
+                          type: string
+                          format: hex
+                      num_required:
+                        type: integer
+                        format: uint64
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_did:
+    post:
+      tags:
+        - DID Wallet
+      summary: Retrieves the distributed identity for a given wallet.
+      description: Retrieves the distributed identity for a given wallet.
+      operationId: did_get_did
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      my_did:
+                        type: string
+                      coin_id:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_update_recovery_ids:
+    post:
+      tags:
+        - DID Wallet
+      summary: Updates the recovery ids for a DID wallet.
+      description: Updates the recovery ids for a DID wallet.
+      operationId: did_update_recovery_ids
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - new_list
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                new_list:
+                  type: array
+                  items:
+                    type: string
+                    format: hex
+                num_verifications_required:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /did_set_wallet_name:
+    post:
+      tags:
+        - DID Wallet
+      summary: Sets the name of a DID wallet.
+      description: Sets the name of a DID wallet.
+      operationId: did_set_wallet_name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - name
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                name:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+  /did_get_wallet_name:
+    post:
+      tags:
+        - DID Wallet
+      summary: Gets the name of a DID wallet.
+      description: Gets the name of a DID wallet.
+      operationId: did_get_wallet_name
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      name:
+                        type: string
+  /did_update_metadata:
+    post:
+      tags:
+        - DID Wallet
+      summary: Updates the metadata for a DID wallet.
+      description: Updates the metadata for a DID wallet.
+      operationId: did_update_metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_4
+  /did_get_metadata:
+    post:
+      tags:
+        - DID Wallet
+      summary: Gets the metadata of a DID wallet.
+      description: Gets the metadata of a DID wallet.
+      operationId: did_get_metadata
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      metadata:
+                        type: object
+                        additionalProperties:
+                          type: string
+  /take_offer:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Takes an offer.
+      description: Takes an offer.
+      operationId: take_offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - offer
+              properties:
+                offer:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      trade_record:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_30
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_offers_count:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Retrieves the number of offers.
+      description: Retrieves the number of offers.
+      operationId: get_offers_count
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      total:
+                        type: integer
+                      my_offers_count:
+                        type: integer
+                      taken_offers_count:
+                        type: integer
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_cat_list:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Retrieves the list of CATs.
+      description: Retrieves the list of CATs.
+      operationId: get_cat_list
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      cat_list:
+                        type: array
+                        description: Default list of CATs
+                        items:
+                          type: object
+                          description: Information about a CAT
+                          properties: *ref_31
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /cancel_offer:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Cancels an offer.
+      description: Cancels an offer.
+      operationId: cancel_offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - trade_id
+                - secure
+              properties:
+                trade_id:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                secure:
+                  type: boolean
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /select_coins:
+    post:
+      tags:
+        - CAT Wallet
+      summary: >-
+        Returns a set of coins that can be used for generating a new
+        transaction.
+      description: >-
+        Returns a set of coins that can be used for generating a new
+        transaction.
+      operationId: select_coins
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - amount
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                amount:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      coins:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_2
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_offer:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Retrieves an offer.
+      description: Retrieves an offer.
+      operationId: get_offer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - trade_id
+              properties:
+                trade_id:
+                  type: string
+                  format: hex
+                file_contents:
+                  type: boolean
+                  description: Indicator as to whether to return the offer contents
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      trade_record:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_30
+                      offer:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_all_offers:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Retrieves offers.
+      description: Retrieves offers.
+      operationId: get_all_offers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start:
+                  type: integer
+                  default: 0
+                end:
+                  type: integer
+                  default: 10
+                exclude_my_offers:
+                  type: boolean
+                exclude_taken_offers:
+                  type: boolean
+                include_completed:
+                  type: boolean
+                sort_key:
+                  type: string
+                reverse:
+                  type: boolean
+                file_contents:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      trade_records:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Used for storing transaction data and status in
+                            wallets.
+                          properties: *ref_30
+                      offers:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /check_offer_validity:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Checks the validity of an offer.
+      description: Checks the validity of an offer.
+      operationId: check_offer_validity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - offer
+              properties:
+                offer:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      valid:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_offer_summary:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Get the summary of a given offer.
+      description: Get the summary of a given offer.
+      operationId: get_offer_summary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - offer
+              properties:
+                offer:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      summary:
+                        type: object
+                        properties:
+                          offered:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                              format: uint64
+                          requested:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                              format: uint64
+                          fees:
+                            type: integer
+                            format: uint64
+                          infos:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              additionalProperties: true
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /create_offer_for_ids:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Creates an offer.
+      description: Creates an offer for the given set of wallet id and amount pairs.
+      operationId: create_offer_for_ids
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - offer
+              properties:
+                offer:
+                  type: object
+                  additionalProperties:
+                    type: integer
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                validate_only:
+                  type: boolean
+                  default: false
+                driver_dict:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      offer:
+                        type: string
+                      trade_record:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_30
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /cat_asset_id_to_name:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Gets the name and wallet id associated with an asset id.
+      description: Gets the name and wallet id associated with an asset id.
+      operationId: cat_asset_id_to_name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - asset_id
+              properties:
+                asset_id:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      name:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /cat_get_asset_id:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Gets the asset id of the CAT wallet.
+      description: Gets the asset id of the CAT wallet.
+      operationId: cat_get_asset_id
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      asset_id:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /cat_spend:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Spends an amount from the given wallet.
+      description: Spends an amount from the given wallet.
+      operationId: cat_spend
+      requestBody:
+        description: Request body with the Id of a wallet.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - amount
+                - inner_address
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                amount:
+                  type: integer
+                  format: uint64
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                inner_address:
+                  type: string
+                  format: hex
+                memos:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: OK response with a transaction record and a transaction id.
+          content: *ref_32
+  /cat_set_name:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Sets the name of the CAT wallet.
+      description: Sets the name of the CAT wallet.
+      operationId: cat_set_name
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - name
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                name:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /cat_get_name:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Gets the name of the CAT wallet.
+      description: Gets the name of the CAT wallet.
+      operationId: cat_get_name
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      name:
+                        type: string
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_stray_cats:
+    post:
+      tags:
+        - CAT Wallet
+      summary: Get a list of all unacknowledged CATs.
+      description: Get a list of all unacknowledged CATs.
+      operationId: get_stray_cats
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      stray_cats:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_33
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /pw_join_pool:
+    post:
+      tags:
+        - Pool Wallet
+      summary: Joins the given wallet to a pool.
+      description: Joins the given wallet to a pool.
+      operationId: pw_join_pool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - pool_url
+                - relative_lock_height
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                target_puzzlehash:
+                  type: string
+                  format: hex
+                pool_url:
+                  type: string
+                  format: url
+                relative_lock_height:
+                  type: integer
+                  format: uint32
+                fee:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      transaction:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                      total_fee:
+                        type: integer
+                        format: uint64
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /pw_self_pool:
+    post:
+      tags:
+        - Pool Wallet
+      summary: Removes the given wallet to a pool.
+      description: Removes the given wallet to a pool.
+      operationId: pw_self_pool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                fee:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      transaction:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                      total_fee:
+                        type: integer
+                        format: uint64
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /pw_absorb_rewards:
+    post:
+      tags:
+        - Pool Wallet
+      summary: >-
+        Perform a sweep of the p2_singleton rewards controlled by the pool
+        wallet singleton.
+      description: >-
+        Perform a sweep of the p2_singleton rewards controlled by the pool
+        wallet singleton.
+      operationId: pw_absorb_rewards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                fee:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      transaction:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                      state:
+                        type: object
+                        description: >-
+                          Internal Pool Wallet state, not destined for the
+                          blockchain. This can be completely derived with the
+                          Singleton's CoinSpends list, or with the information
+                          from the WalletPoolStore.
+                        properties: *ref_34
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /pw_status:
+    post:
+      tags:
+        - Pool Wallet
+      summary: Return the complete state of the given Pool wallet.
+      description: Return the complete state of the given Pool wallet.
+      operationId: pw_status
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      unconfirmed_transactions:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Used for storing transaction data and status in
+                            wallets.
+                          properties: *ref_11
+                      state:
+                        type: object
+                        description: >-
+                          Internal Pool Wallet state, not destined for the
+                          blockchain. This can be completely derived with the
+                          Singleton's CoinSpends list, or with the information
+                          from the WalletPoolStore.
+                        properties: *ref_34
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /add_rate_limited_funds:
+    post:
+      tags:
+        - Rate Limited Wallet
+      summary: Adds rate limited funds.
+      description: Adds rate limited funds.
+      operationId: add_rate_limited_funds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - amount
+                - fee
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                amount:
+                  type: integer
+                  format: uint64
+                fee:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /rl_set_user_info:
+    post:
+      tags:
+        - Rate Limited Wallet
+      summary: Sets user info on a rate limited wallet.
+      description: Sets user info on a rate limited wallet.
+      operationId: rl_set_user_info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                interval:
+                  type: integer
+                  format: uint64
+                limit:
+                  type: integer
+                  format: uint64
+                admin_pubkey:
+                  type: string
+                  format: hex
+                origin:
+                  type: object
+                  properties:
+                    parent_coin_info:
+                      type: string
+                      format: hex
+                    puzzle_hash:
+                      type: string
+                      format: hex
+                    amount:
+                      type: integer
+                      format: uint64
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /send_clawback_transaction:
+    post:
+      tags:
+        - Rate Limited Wallet
+      summary: Sends a clawback transaction.
+      description: Sends a clawback transaction.
+      operationId: send_clawback_transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - fee
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                fee:
+                  type: integer
+                  format: uint64
+      responses:
+        '200':
+          description: OK response with a transaction record and a transaction id.
+          content: *ref_32
+  /create_signed_transaction:
+    post:
+      tags:
+        - Wallet
+      summary: Creates and signs a transaction.
+      description: Creates and signs a transaction.
+      operationId: create_signed_transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: *ref_35
+              properties: *ref_36
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      signed_tx:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /send_transaction:
+    post:
+      tags:
+        - Wallet
+      summary: Sends an amount of mojo from then given wallet to the given address.
+      description: Sends an amount of mojo from then given wallet to the given address.
+      operationId: send_transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+                - amount
+                - address
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                amount:
+                  type: integer
+                  format: uint64
+                address:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                memos:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: OK response with a transaction record and a transaction id.
+          content: *ref_32
+  /send_transaction_multi:
+    post:
+      tags:
+        - Wallet
+      summary: Sends multiple transactions from then given wallet.
+      description: Sends multiple transactions from then given wallet.
+      operationId: send_transaction_multi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - type: object
+                  required:
+                    - wallet_id
+                  properties:
+                    wallet_id:
+                      type: integer
+                      format: uint32
+                - type: object
+                  required: *ref_35
+                  properties: *ref_36
+      responses:
+        '200':
+          description: OK response with a transaction record and a transaction id.
+          content: *ref_32
+  /get_wallet_balance:
+    post:
+      tags:
+        - Wallet
+      summary: Retrieves the balance of a specific wallet.
+      description: Retrieves the balance of a specific wallet (in units of mojos).
+      operationId: get_wallet_balance
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    required:
+                      - wallet_balance
+                    properties:
+                      wallet_balance:
+                        type: object
+                        properties: *ref_37
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_farmed_amount:
+    post:
+      tags:
+        - Wallet
+      summary: Retrieves the amount farmed.
+      description: Retrieves the amount farmed.
+      operationId: get_farmed_amount
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties: *ref_38
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /delete_unconfirmed_transactions:
+    post:
+      tags:
+        - Wallet
+      summary: Delete all unconfirmed transactions for a given wallet.
+      description: Delete all unconfirmed transactions for a given wallet.
+      operationId: delete_unconfirmed_transactions
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /get_transaction:
+    post:
+      tags:
+        - Wallet
+      summary: Retrieves a specific transaction.
+      description: Retrieves a specific transaction.
+      operationId: get_transaction
+      requestBody:
+        description: Request body with the Id of a transaction.
+        required: true
+        content: *ref_39
+      responses:
+        '200':
+          description: OK response with a transaction record and a transaction id.
+          content: *ref_32
+  /get_transactions:
+    post:
+      tags:
+        - Wallet
+      summary: Retrieves a list of trnsactions from a wallet.
+      description: Retrieves a list of trnsactions from a wallet.
+      operationId: get_transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                start:
+                  type: integer
+                  format: uint32
+                  default: 0
+                end:
+                  type: integer
+                  format: uint32
+                  default: 50
+                sort_key:
+                  type: string
+                reverse:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      transactions:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            Used for storing transaction data and status in
+                            wallets.
+                          properties: *ref_11
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_transaction_count:
+    post:
+      tags:
+        - Wallet
+      summary: Retrieves the number of transactions for a wallet.
+      description: Retrieves the number of transactions for a wallet.
+      operationId: get_transaction_count
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      count:
+                        type: integer
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_next_address:
+    post:
+      tags:
+        - Wallet
+      summary: Returns a new address.
+      description: Returns a new address.
+      operationId: get_next_address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                new_address:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      address:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_network_info:
+    post:
+      tags:
+        - Wallet Node
+      summary: Retrieves some information about the current network.
+      description: Retrieves some information about the current network.
+      operationId: wallet_get_network_info
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: Basic information about the current network.
+                    required: *ref_40
+                    properties: *ref_41
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /log_in:
+    post:
+      tags:
+        - Key Management
+      summary: Logs in the wallet with a specific key.
+      description: Logs in the wallet with a specific key.
+      operationId: log_in
+      requestBody:
+        description: Request body with a wallet fingerprint.
+        required: true
+        content: *ref_42
+      responses:
+        '200':
+          description: OK
+          content: *ref_43
+  /get_logged_in_fingerprint:
+    post:
+      tags:
+        - Key Management
+      summary: Retrieves the logged in fingerprint.
+      description: Retrieves the logged in fingerprint.
+      operationId: get_logged_in_fingerprint
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content: *ref_43
+  /get_public_keys:
+    post:
+      tags:
+        - Key Management
+      summary: Retrieves all public keys on the node.
+      description: Retrieves all public keys on the node.
+      operationId: get_public_keys
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      public_key_fingerprints:
+                        type: array
+                        items:
+                          type: integer
+                          format: uint32
+                  - type: object
+                    properties:
+                      keyring_is_locked:
+                        type: boolean
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_private_key:
+    post:
+      tags:
+        - Key Management
+      summary: Retrieves the private key by fingerprint.
+      description: Retrieves the private key by fingerprint.
+      operationId: get_private_key
+      requestBody:
+        description: Request body with a wallet fingerprint.
+        required: true
+        content: *ref_42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Return type if the private key is found.
+                    properties:
+                      private_key:
+                        type: object
+                        properties: *ref_44
+                  - type: object
+                    description: Return type if the private key is not found.
+                    properties:
+                      private_key:
+                        type: object
+                        properties:
+                          fingerprint:
+                            type: integer
+                            format: uint32
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /generate_mnemonic:
+    post:
+      tags:
+        - Key Management
+      summary: Generates a new mnemonic phrase.
+      description: Generates a new mnemonic phrase.
+      operationId: generate_mnemonic
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: 24 words of entropy.
+                type: array
+                items: *ref_45
+                minItems: 24
+                maxItems: 24
+  /add_key:
+    post:
+      tags:
+        - Key Management
+      summary: Generates a new mnemonic phrase.
+      description: Generates a new mnemonic phrase.
+      operationId: add_key
+      requestBody:
+        description: The mnemonic phrase.
+        required: true
+        content:
+          application/json:
+            schema:
+              description: 24 words of entropy.
+              type: array
+              items: *ref_45
+              minItems: 24
+              maxItems: 24
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: The fingerprint of the new key.
+                    properties:
+                      private_key:
+                        type: object
+                        properties:
+                          fingerprint:
+                            type: integer
+                            format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /delete_key:
+    post:
+      tags:
+        - Key Management
+      summary: Deletes all keys which have the given public key fingerprint.
+      description: Deletes all keys which have the given public key fingerprint.
+      operationId: delete_key
+      requestBody:
+        description: Request body with a wallet fingerprint.
+        required: true
+        content: *ref_42
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /check_delete_key:
+    post:
+      tags:
+        - Key Management
+      summary: Determines if it is safe to delete a private key.
+      description: >-
+        Determines if it is safe to delete a private key. Returns whether it is
+        used for farming, pooling, or has a balance.
+      operationId: check_delete_key
+      requestBody:
+        description: Request body with a wallet fingerprint.
+        required: true
+        content: *ref_42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      fingerprint:
+                        type: integer
+                        format: uint32
+                      used_for_farmer_rewards:
+                        type: boolean
+                      used_for_pool_rewards:
+                        type: boolean
+                      wallet_balance:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /delete_all_keys:
+    post:
+      tags:
+        - Key Management
+      summary: Deletes all keys from the keychain.
+      description: Deletes all keys from the keychain.
+      operationId: wallet_delete_all_keys
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /get_sync_status:
+    post:
+      tags:
+        - Wallet Node
+      summary: Retrieves the sync status of the wallet.
+      description: Retrieves the sync status of the wallet.
+      operationId: get_sync_status
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      synced:
+                        type: boolean
+                      syncing:
+                        type: boolean
+                      genesis_initialized:
+                        type: boolean
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_height_info:
+    post:
+      tags:
+        - Wallet Node
+      summary: Retrieves the sync height of the wallet.
+      description: Retrieves the sync height of the wallet.
+      operationId: get_height_info
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      height:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /push_tx:
+    post:
+      tags:
+        - Wallet Node
+      description: >-
+        Pushes a transaction/spend bundle to the mempool and blockchain. Returns
+        whether the spend bundle was successfully included into the mempool.
+      summary: Pushes a transaction/spend bundle to the mempool and blockchain.
+      operationId: wallet_push_tx
+      requestBody:
+        required: true
+        description: The spend bundle
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - spend_bundle
+              properties:
+                spend_bundle:
+                  type: object
+                  properties: *ref_4
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_26
+  /get_wallets:
+    post:
+      tags:
+        - Wallet Management
+      description: Retrieves all of the wallets on the node.
+      summary: Retrieves all of the wallets on the node.
+      operationId: get_wallets
+      requestBody:
+        description: Optional wallet type to filter by
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: integer
+                  format: uint8
+                  enum: *ref_13
+                  description: |-
+                    The type of wallet:
+                      * 0 STANDARD_WALLET
+                      * 1 RATE_LIMITED
+                      * 2 ATOMIC_SWAP
+                      * 3 AUTHORIZED_PAYEE
+                      * 4 MULTI_SIG
+                      * 5 CUSTODY
+                      * 6 CAT
+                      * 7 RECOVERABLE
+                      * 8 DISTRIBUTED_ID
+                      * 9 POOLING_WALLET
+                      * 10 NFT
+                include_data:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallets:
+                        type: array
+                        items:
+                          type: object
+                          description: >-
+                            This object represents the wallet data as it is
+                            stored in DB. ID: Main wallet (Standard) is stored
+                            at index 1, every wallet created after done has auto
+                            incremented id. Name: can be a user provided or
+                            default generated name. (can be modified) Type: is
+                            specified during wallet creation and should never be
+                            changed. Data: this field is intended to be used for
+                            storing any wallet specific information required for
+                            it. (RL wallet stores origin_id, admin/user pubkey,
+                            rate limit, etc.) This data should be a json encoded
+                            string.
+                          properties: *ref_46
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /create_new_wallet:
+    post:
+      tags:
+        - Wallet Management
+      description: Creates a new wallet.
+      summary: Creates a new wallet.
+      operationId: create_new_wallet
+      requestBody:
+        required: true
+        description: Details of the wallet to create.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_type
+              properties:
+                wallet_type:
+                  type: string
+                  description: The type of wallet to create.
+                  enum:
+                    - cat_wallet
+                    - rl_wallet
+                    - did_wallet
+                    - pool_wallet
+                    - nft_wallet
+                name:
+                  type: string
+                  description: >-
+                    User supplied name for the wallet. Will default if not
+                    provided.
+                amount:
+                  type: integer
+                  format: uint64
+                  description: The amount of mojo to deposit in the new wallet.
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                  description: The transaction fee amount in mojo.
+              oneOf:
+                - type: object
+                  description: Details needed to create a cat_wallet.
+                  properties:
+                    mode:
+                      type: string
+                      enum:
+                        - new
+                        - existing
+                    asset_id:
+                      type: string
+                      description: Only used when `mode` is 'existing'
+                - type: object
+                  description: Details needed to create a rl_wallet.
+                  required:
+                    - rl_type
+                  properties:
+                    rl_type:
+                      type: string
+                      description: The type of RL Wallet to create.
+                      enum:
+                        - admin
+                        - user
+                    interval:
+                      type: integer
+                      format: uint64
+                      description: Rate interval - needed for admin creation only.
+                    limit:
+                      type: integer
+                      format: uint64
+                      description: Rate limit - needed for admin creation only.
+                    pubkey:
+                      type: string
+                      format: hex
+                      description: Public key - needed for admin creation only.
+                - type: object
+                  description: Details needed to create a did_wallet.
+                  required:
+                    - did_type
+                  properties:
+                    did_type:
+                      type: string
+                      description: The type of DID wallet to create.
+                      enum:
+                        - new
+                        - recovery
+                  oneOf:
+                    - type: object
+                      description: Details needed for creating a new DID wallet.
+                      properties:
+                        backup_dids:
+                          type: array
+                          items:
+                            type: string
+                            format: hex
+                        num_of_backup_ids_needed:
+                          type: integer
+                          format: uint64
+                        metadata:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        wallet_name:
+                          type: string
+                        fee:
+                          type: integer
+                          format: uint64
+                          default: 0
+                    - type: object
+                      description: Details needed to create a recovery DID wallet.
+                      properties:
+                        backup_data:
+                          type: string
+                - type: object
+                  description: Details needed to create a pool wallet.
+                  required:
+                    - mode
+                  properties:
+                    mode:
+                      type: string
+                      description: The pooling mode.
+                      enum:
+                        - new
+                        - recovery
+                    initial_target_state:
+                      type: object
+                      description: >-
+                        `PoolState` is a type that is serialized to the
+                        blockchain to track the state of the user's pool
+                        singleton `target_puzzle_hash` is either the pool
+                        address, or the self-pooling address that pool rewards
+                        will be paid to. `target_puzzle_hash` is NOT the
+                        p2_singleton puzzle that block rewards are sent to. The
+                        `p2_singleton` address is the initial address, and the
+                        `target_puzzle_hash` is the final destination.
+                        `relative_lock_height` is zero when in SELF_POOLING
+                        state
+                      properties: *ref_3
+                    p2_singleton_delayed_ph:
+                      type: string
+                      format: hex
+                    p2_singleton_delay_time:
+                      type: integer
+                      format: uint64
+                - type: object
+                  description: Details needed to create an NFT wallet.
+                  properties:
+                    did_id:
+                      type: string
+                      format: hex
+                    name:
+                      type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Response when a CAT wallet is created.
+                    properties:
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: *ref_13
+                        description: |-
+                          The type of wallet:
+                            * 0 STANDARD_WALLET
+                            * 1 RATE_LIMITED
+                            * 2 ATOMIC_SWAP
+                            * 3 AUTHORIZED_PAYEE
+                            * 4 MULTI_SIG
+                            * 5 CUSTODY
+                            * 6 CAT
+                            * 7 RECOVERABLE
+                            * 8 DISTRIBUTED_ID
+                            * 9 POOLING_WALLET
+                            * 10 NFT
+                      asset_id:
+                        type: string
+                        format: hex
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: Response when a RL wallet is created.
+                    properties:
+                      id:
+                        type: integer
+                        format: uint32
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: *ref_13
+                        description: |-
+                          The type of wallet:
+                            * 0 STANDARD_WALLET
+                            * 1 RATE_LIMITED
+                            * 2 ATOMIC_SWAP
+                            * 3 AUTHORIZED_PAYEE
+                            * 4 MULTI_SIG
+                            * 5 CUSTODY
+                            * 6 CAT
+                            * 7 RECOVERABLE
+                            * 8 DISTRIBUTED_ID
+                            * 9 POOLING_WALLET
+                            * 10 NFT
+                      origin:
+                        type: object
+                        properties: *ref_2
+                      pubkey:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: Response when a new DID wallet is created.
+                    properties:
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: *ref_13
+                        description: |-
+                          The type of wallet:
+                            * 0 STANDARD_WALLET
+                            * 1 RATE_LIMITED
+                            * 2 ATOMIC_SWAP
+                            * 3 AUTHORIZED_PAYEE
+                            * 4 MULTI_SIG
+                            * 5 CUSTODY
+                            * 6 CAT
+                            * 7 RECOVERABLE
+                            * 8 DISTRIBUTED_ID
+                            * 9 POOLING_WALLET
+                            * 10 NFT
+                      my_did:
+                        type: string
+                        format: hex
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: Response when a recovery DID wallet is created.
+                    properties:
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: *ref_13
+                        description: |-
+                          The type of wallet:
+                            * 0 STANDARD_WALLET
+                            * 1 RATE_LIMITED
+                            * 2 ATOMIC_SWAP
+                            * 3 AUTHORIZED_PAYEE
+                            * 4 MULTI_SIG
+                            * 5 CUSTODY
+                            * 6 CAT
+                            * 7 RECOVERABLE
+                            * 8 DISTRIBUTED_ID
+                            * 9 POOLING_WALLET
+                            * 10 NFT
+                      my_did:
+                        type: string
+                        format: hex
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                      coin_name:
+                        type: string
+                        format: hex
+                      coin_list:
+                        type: object
+                        properties: *ref_2
+                      newpuzhash:
+                        type: string
+                        format: hex
+                      pubkey:
+                        type: string
+                        format: hex
+                      backup_dids:
+                        type: array
+                        items:
+                          type: string
+                          format: hex
+                      num_verifications_required:
+                        type: integer
+                        format: uint64
+                  - type: object
+                    description: Response when a new pool wallet is created.
+                    properties:
+                      total_fee:
+                        type: integer
+                        format: uint64
+                      transaction:
+                        type: object
+                        description: >-
+                          Used for storing transaction data and status in
+                          wallets.
+                        properties: *ref_11
+                      launcher_id:
+                        type: string
+                        format: hex
+                      p2_singleton_puzzle_hash:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: Response when a new nft wallet is created.
+                    properties:
+                      type:
+                        type: integer
+                        format: uint8
+                        enum: *ref_13
+                        description: |-
+                          The type of wallet:
+                            * 0 STANDARD_WALLET
+                            * 1 RATE_LIMITED
+                            * 2 ATOMIC_SWAP
+                            * 3 AUTHORIZED_PAYEE
+                            * 4 MULTI_SIG
+                            * 5 CUSTODY
+                            * 6 CAT
+                            * 7 RECOVERABLE
+                            * 8 DISTRIBUTED_ID
+                            * 9 POOLING_WALLET
+                            * 10 NFT
+                      wallet_id:
+                        type: integer
+                        format: uint32
+                allOf:
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
