@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "chia-repl-tests",
   "version": "1.0.0",
   "description": "Unit test for chia-repl",
   "main": "index.js",

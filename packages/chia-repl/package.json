@@ -11,7 +11,7 @@
     "chia-repl": "index.js"
   },
   "author": "dkackman",
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "type": "module",
   "keywords": [
     "chia",

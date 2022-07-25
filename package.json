@@ -1,8 +1,8 @@
 {
     "name": "chia-repl-project",
     "workspaces": [
-        "src",
-        "test"
+        "packages/chia-repl",
+        "packages/chia-repl-tests"
     ],
     "version": "0.0.1"
 }

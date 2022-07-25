@@ -1,5 +1,5 @@
 import chai from 'chai';
-import createRepl from '../src/repl_factory.js';
+import createRepl from '../chia-repl/repl_factory.js';
 
 const expect = chai.expect;
 
