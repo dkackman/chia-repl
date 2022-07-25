@@ -13,7 +13,7 @@ export default async function listener(chia) {
     console.log('Listening...');
     console.log('Press any key to stop');
 
-    //stay here until we receive an event or timeout
+    //stay here until a keypress has happened
     while (!anykey) {
         await timer(100);
     }

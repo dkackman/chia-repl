@@ -18,7 +18,7 @@ export default function createCompleterProxy(completer) {
 const handler = {
     apply: function (target, thisArg, argumentsList) {
         if (_.get(thisArg, 'context.chia') !== undefined) {
-            const line = argumentsList[0].replace('await ', '');
+            const line = argumentsList[0].replace('await', '').trimStart();
             const hits = completions.filter((c) => c.indexOf(line) == 0);
 
             if (hits.length > 0) {

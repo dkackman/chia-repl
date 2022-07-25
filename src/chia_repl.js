@@ -47,9 +47,7 @@ class ChiaRepl {
 
     async connect(service_name = 'chia_repl') {
         const chiaDaemon = new ChiaDaemon(this.repl.context.connection, service_name);
-        chiaDaemon.once('connecting', (address) => {
-            console.log(`Connecting to ${address}...`);
-        });
+        chiaDaemon.once('connecting', (address) => console.log(`Connecting to ${address}...`));
 
         chiaDaemon.once('connected', () => {
             console.log('Connected');
