@@ -15,8 +15,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * @returns An object instance matching the payload schema with default poperty values set.
  */
 export function makePayload(service, endpoint, requiredOnly = true) {
-    const schema = getPayloadDescriptor(service, endpoint);
-    if ((_.isNil(_.get(schema, 'properties')) || Object.keys(schema.properties).length === 0) && _.isNil(_.get(schema, 'allOf'))) {
+    const schema = flattenSchema(getPayloadDescriptor(service, endpoint));
+    if ((_.isNil(_.get(schema, 'properties')) || Object.keys(schema.properties).length === 0)) {
         return undefined;
     }
 
@@ -32,6 +32,30 @@ export function makePayload(service, endpoint, requiredOnly = true) {
         }
     });
     return payload;
+}
+
+// flattens out a schema that includes an 'allOf' array of schemas
+function flattenSchema(schema) {
+    const allOf = _.get(schema, 'allOf'); // allOf requires sepcial handling
+    if (!_.isNil(allOf)) {
+        const flattenedSchema = {
+            type: 'object'
+        };
+
+        // combine all of the required arrays
+        flattenedSchema.required = allOf
+            .filter(item => item.required !== undefined)
+            .flatMap((value, /*key, collection*/) => value.required);
+
+        // combine all of the properties objects into one object
+        const properties = allOf
+            .flatMap((value, /*key, collection*/) => value.properties);
+        flattenedSchema.properties = _.merge({}, ...properties);
+
+        return flattenedSchema;
+    }
+
+    return schema;
 }
 
 /**

@@ -1,5 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import chai from 'chai';
+
 import { getPayloadDescriptor, makePayload } from '../chia-daemon//payload_generator.js';
 
 const expect = chai.expect;
@@ -16,9 +17,14 @@ describe('payload-generator', () => {
             expect(typeof payload.port).to.equal('number');
         });
         it('should make a payload from a schema that includes `allof` _DEBUG_', () => {
-            const payload = makePayload('full_node', 'get_coin_records_by_parent_ids');
+            const payload = makePayload('full_node', 'get_coin_records_by_parent_ids', false);
             expect(payload).to.not.equal(null);
             expect(payload).to.not.equal(undefined);
+            expect(payload.hasOwnProperty('parent_ids')).to.equal(true);
+            expect(payload.hasOwnProperty('start_height')).to.equal(true);
+            expect(payload.hasOwnProperty('end_height')).to.equal(true);
+            expect(payload.hasOwnProperty('include_spent_coins')).to.equal(true);
+
         });
         it('should respect default values', () => {
             const payload = makePayload('crawler', 'get_ips_after_timestamp', false);

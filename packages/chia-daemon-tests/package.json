@@ -4,8 +4,8 @@
   "description": "Tests for a JS daemon client for chia rpc with dynamically generated end points",
   "scripts": {
     "test": "mocha *.ci.test.js --exit",
-    "test-live": "mocha --exit",
-    "debug": "mocha -g '_DEBUG_' --exit"
+    "test-live": "mocha *.live.test.js --exit",
+    "debug": "mocha *.test.* -g '_DEBUG_' --exit"
   },
   "repository": {
     "type": "git",
