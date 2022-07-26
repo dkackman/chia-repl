@@ -1,6 +1,9 @@
 # chia-daemon
 
-[![NPM](https://nodei.co/npm/chia-daemon.png?mini=true)](https://npmjs.org/package/chia-daemon)
+  <a href="https://www.npmjs.com/package/chia-daemon"><img src="https://img.shields.io/npm/v/chia-daemon.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-daemon"><img src="https://img.shields.io/npm/l/chia-daemon.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-daemon"><img src="https://img.shields.io/npm/dm/chia-daemon.svg?sanitize=true" alt="Monthly Downloads"></a>
+  <a href="https://www.npmjs.com/package/chia-daemon"><img src="https://img.shields.io/npm/dt/chia-daemon.svg?sanitize=true" alt="Total Downloads"></a>
 
 A JS client for chia daemon with dynamically generated end points
 
