@@ -2,7 +2,10 @@
 
 [![CodeQL](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml)
 [![Node.js CI](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml)
-[![NPM](https://nodei.co/npm/chia-repl.png?mini=true)](https://npmjs.org/package/chia-repl)
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/v/chia-repl.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/l/chia-repl.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dm/chia-repl.svg?sanitize=true" alt="Monthly Downloads"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dt/chia-repl.svg?sanitize=true" alt="Total Downloads"></a>
 
 A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
 
