@@ -25,7 +25,7 @@ chia-repl
 
 ```shell
 npm install
-npm start -w packages/chia-repl
+npm start -w chia-repl
 > chia-repl@0.12.3 start
 > node index.js
 
