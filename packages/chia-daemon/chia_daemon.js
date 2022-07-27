@@ -50,7 +50,7 @@ class ChiaDaemon extends EventEmitter {
     /**
      * Property indicating whether the chia daemon websocket is currently conneted
      */
-     get connected() {
+    get connected() {
         return this.ws !== undefined;
     }
 
@@ -99,7 +99,7 @@ class ChiaDaemon extends EventEmitter {
             const msg = formatMessage('daemon', 'register_service', this._service_name, { service: this._service_name });
             ws.send(JSON.stringify(msg));
         });
-        
+
         ws.once('close', () => {
             this.emit('disconnected');
         });
@@ -161,7 +161,7 @@ class ChiaDaemon extends EventEmitter {
      * @param {string} destination - The destination service for the command. One of the known services like wallet or full_node
      * @param {string} command - The command to send, i.e. the rpc endpoint such as get_blockchain_state.
      * @param {Object} data - Any input arguments for the command. Omit if no rpc arguments are needed.
-     * @returns {*} Any response payload from the endpoint. 
+     * @returns {*} Any response payload from the endpoint.
      */
     async sendCommand(destination, command, data = {}) {
         if (!this.connected) {
