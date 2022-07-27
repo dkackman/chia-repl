@@ -55,6 +55,7 @@ function flattenSchema(schema) {
         return flattenedSchema;
     }
 
+    // the schema wasn't an 'allOf' - just return it
     return schema;
 }
 
