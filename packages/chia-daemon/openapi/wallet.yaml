@@ -9,7 +9,7 @@ info:
     [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
 
     The wallet uses port 9256 by default.
-  version: 1.4.0
+  version: 1.5.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -91,7 +91,7 @@ components:
               error:
                 type: string
                 description: Only present when success is false
-    fingerprint:
+    fingerprint_response:
       description: OK
       content: &ref_43
         application/json:
@@ -108,7 +108,7 @@ components:
                   responses
                 required: *ref_0
                 properties: *ref_1
-    transaction_record:
+    transaction_record_response:
       description: OK response with a transaction record and a transaction id.
       content: &ref_32
         application/json:
@@ -2048,6 +2048,14 @@ paths:
                 offer:
                   type: string
                   format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                min_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
       responses:
         '200':
           description: OK
@@ -2437,6 +2445,10 @@ paths:
                   type: object
                   additionalProperties:
                     type: string
+                min_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
       responses:
         '200':
           description: OK
@@ -2565,6 +2577,10 @@ paths:
                   type: array
                   items:
                     type: string
+                min_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
@@ -2972,6 +2988,72 @@ paths:
         '200':
           description: OK response with a transaction record and a transaction id.
           content: *ref_32
+  /get_current_derivation_index:
+    post:
+      tags:
+        - Wallet
+      summary: Gets the current derivation index.
+      description: Gets the current derivation index.
+      operationId: get_current_derivation_index
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      index:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /extend_derivation_index:
+    post:
+      tags:
+        - Wallet
+      summary: Extends the current derivation index.
+      description: Extends the current derivation index.
+      operationId: extend_derivation_index
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - index
+              properties:
+                index:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      index:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: >-
+                      Success indicator and optional error message included in
+                      all responses
+                    required: *ref_0
+                    properties: *ref_1
   /create_signed_transaction:
     post:
       tags:
@@ -2984,9 +3066,16 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: *ref_35
-              properties: *ref_36
+              allOf:
+                - type: object
+                  required: *ref_35
+                  properties: *ref_36
+                - type: object
+                  properties:
+                    min_coin_amount:
+                      type: integer
+                      format: uint128
+                      default: 0
       responses:
         '200':
           description: OK
@@ -3042,6 +3131,10 @@ paths:
                   type: array
                   items:
                     type: string
+                min_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
