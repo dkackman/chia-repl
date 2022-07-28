@@ -7,7 +7,6 @@ import _ from 'lodash';
 
 // this module is responsible for creating and configuring the repl and ChiaRepl
 // instances and then smashing them together
-
 export default function createRepl(cursor) {
     const chiaRepl = new ChiaRepl(start({ prompt: cursor, useColors: true }));
 
