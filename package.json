@@ -4,7 +4,9 @@
         "packages/chia-repl",
         "packages/chia-repl-tests",
         "packages/chia-daemon",
-        "packages/chia-daemon-tests"
+        "packages/chia-daemon-tests",
+        "packages/chia-nft-minter",
+        "packages/chia-nft-minter-tests"
     ],
     "version": "0.0.1"
 }

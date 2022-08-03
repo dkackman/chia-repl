@@ -1,36 +1,31 @@
 {
-  "name": "chia-daemon-tests",
-  "version": "0.3.5",
-  "description": "Tests for a JS daemon client for chia rpc with dynamically generated end points",
+  "name": "chia-nft-minter-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "mocha *.ci.test.js --exit",
-    "test-live": "mocha *.live.test.js --exit",
     "debug": "mocha *.test.* -g '_DEBUG_' --exit"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dkackman/chia-repl.git"
   },
-  "keywords": [
-    "chia",
-    "rpc",
-    "js",
-    "daemon"
-  ],
-  "type": "module",
-  "author": "dkackman",
+  "author": "",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/dkackman/chia-repl/issues"
   },
   "homepage": "https://github.com/dkackman/chia-repl#readme",
   "devDependencies": {
+    "chai": "^4.3.6",
     "eslint": "^8.21.0",
-    "jshint": "^2.13.5"
+    "jshint": "^2.13.5",
+    "mocha": "^10.0.0"
   },
   "dependencies": {
-    "chia-daemon": "file:../chia-daemon/package.json",
-    "chai": "^4.3.6",
-    "mocha": "^10.0.0"
-  }
+    "chia-nft-minter": "file:../chia-nft-minter/package.json",
+    "uuid": "^8.3.2"
+  },
+  "type": "module"
 }

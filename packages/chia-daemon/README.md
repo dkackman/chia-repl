@@ -28,8 +28,7 @@ Each service is a field on the `services` property of the `ChiaDaemon`.
 (i.e. if you invoke `daemon.wallet.foo()` it will call make an RPC to a function named `foo` at that endpoint and error if it doesn't exist there)
 
 ```javascript
-import loadUIConfig from 'config'
-import { ChiaDaemon } from 'chia-daemon';
+import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
 
 const daemon = new ChiaDaemon(loadUIConfig(), 'my-chia-app');
 const connected = await daemon.connect();

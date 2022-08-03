@@ -14,6 +14,8 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 - [clvm-js](https://github.com/Chia-Mine/clvm-js)
 - [chia-utils](https://github.com/CMEONE/chia-utils)
 - [@rigidity/bls-signatures](https://github.com/Rigidity/bls-signatures)
+- [chia-daemon](https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon)
+- [chia-nft-minter](https://github.com/dkackman/chia-repl/tree/nft/packages/chia-nft-minter)
 
 ## Packaged
 

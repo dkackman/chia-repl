@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon#readme",
   "devDependencies": {
-    "eslint": "^8.20.0",
+    "eslint": "^8.21.0",
     "jsdoc": "^3.6.10",
     "jshint": "^2.13.5"
   },
