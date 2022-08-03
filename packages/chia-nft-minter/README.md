@@ -28,8 +28,10 @@ You will need
 
 The full workflow will
 
+- Generate metadata for the NFT
 - Upload a file to [nft.storage](https://nft.storage) along with metadata
-- Use the resulting IPFS data to call `nft_mint_nft`
+- Supply information about the minting process
+- Use the minting information and IPFS data to call `nft_mint_nft`
 
 ```javascript
 import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
