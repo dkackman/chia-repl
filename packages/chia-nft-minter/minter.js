@@ -17,6 +17,7 @@ export async function create_nft_from_file(wallet, fileInfo, mintingInfo, metada
     if (_.isNil(ipfsToken)) {
         throw Error('ipfsToken cannot be nil');
     }
+
     const file = {
         name: fileInfo.name,
         type: fileInfo.type,
