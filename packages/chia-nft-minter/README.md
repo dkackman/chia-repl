@@ -9,6 +9,8 @@ A JS client to encapsulate minting CHIA NFT's.
 
 _Super rough ATM._
 
+Heavily informed by [mintgarden](https://github.com/mintgarden-io/mintgarden-studio)
+
 ## Getting Started
 
 ```bash
@@ -18,7 +20,11 @@ npm test
 
 ## Basic Usage
 
-You will need your own [nft.storage api key](https://nft.storage/docs/#get-an-api-token)
+You will need
+
+- Your own [nft.storage api key](https://nft.storage/docs/#get-an-api-token)
+- A valid chia node and its connection details
+- Pateince because this thing barely works right now
 
 The full workflow will
 
@@ -26,20 +32,17 @@ The full workflow will
 - Use the resulting IPFS data to call `nft_mint_nft`
 
 ```javascript
-const connection = {
-    host: 'wsl',
-    port: 55400,
-    key_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.key',
-    cert_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.crt',
-    timeout_seconds: 30,
-};
-const chia = new ChiaDaemon(connection, 'chia-nft-minter-tests');
+import loadUIConfig from 'config'
+import { ChiaDaemon } from 'chia-daemon';
+import { create_nft_from_file } from 'chia-nft-minter';
+
+const daemon = new ChiaDaemon(loadUIConfig(), 'my-chia-app');
 const connected = await chia.connect();
 
 const fileInfo = {
     name: 'test-nft-dkackman',
     type: 'image/png',
-    filepath: path.join(__dirname, 'content', 'flower.png')
+    filepath: 'C:\\path\\to\\some_file.png'
 };
 
 const mintingInfo = {
@@ -50,10 +53,10 @@ const mintingInfo = {
 };
 
 const factory = new MetadataFactory('chia-nft-minter-tests');
-const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-dkackman', collectionAttributes);
-const nftMetadata = factory.createNftMetadata('test-nft-dkackman', collectionMetaData);
+const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-by-you', collectionAttributes);
+const nftMetadata = factory.createNftMetadata('test-nft-by-you', collectionMetaData);
 
-const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();
+const ipfsToken = '_YOUR_API_KEY_';
 
 const result = await create_nft_from_file(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
 
