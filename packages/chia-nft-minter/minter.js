@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { upload } from './uploader.js';
+import fs from 'fs';
 
 export async function create_nft_from_file(wallet, fileInfo, mintingInfo, metadata, ipfsToken) {
     if (_.isNil(wallet)) {
