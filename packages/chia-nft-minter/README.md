@@ -32,8 +32,7 @@ The full workflow will
 - Use the resulting IPFS data to call `nft_mint_nft`
 
 ```javascript
-import loadUIConfig from 'config'
-import { ChiaDaemon } from 'chia-daemon';
+import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
 import { create_nft_from_file } from 'chia-nft-minter';
 
 const daemon = new ChiaDaemon(loadUIConfig(), 'my-chia-app');
