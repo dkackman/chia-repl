@@ -33,7 +33,7 @@ The full workflow will
 
 ```javascript
 import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
-import { create_nft_from_file } from 'chia-nft-minter';
+import { createNftFromFile } from 'chia-nft-minter';
 
 const daemon = new ChiaDaemon(loadUIConfig(), 'my-chia-app');
 const connected = await chia.connect();
@@ -45,7 +45,7 @@ const fileInfo = {
 };
 
 const mintingInfo = {
-    wallet_id: 1,
+    wallet_id: 2,
     royalty_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
     target_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
     royalty_percentage: 250,
@@ -57,7 +57,7 @@ const nftMetadata = factory.createNftMetadata('test-nft-by-you', collectionMetaD
 
 const ipfsToken = '_YOUR_API_KEY_';
 
-const result = await create_nft_from_file(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
+const result = await createNftFromFile(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
 
 console.log(result);
 ```
