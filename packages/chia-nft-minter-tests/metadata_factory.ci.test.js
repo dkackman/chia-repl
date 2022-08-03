@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { MetadataFactory } from '../chia-nft-minter/metadata_factory.js';
+import { MetadataFactory, NFT_FORMAT } from '../chia-nft-minter/metadata_factory.js';
 import { validate as uuidValidate } from 'uuid';
 import _ from 'lodash';
 
@@ -24,11 +24,17 @@ describe('chia-minter', () => {
             expect(collectionMetaData.name).to.equal('_COLLECTION_NAME_');
             expect(uuidValidate(collectionMetaData.id)).to.equal(true);
         });
-        it('createNftMetadata should respect minting_tool', () => {
+        it('createNftMetadata should respect minting_tool value', () => {
             const factory = new MetadataFactory('_MINING_TOOL_');
             const collectionMetaData = factory.createCollectionMetadata('_COLLECTION_NAME_');
             const nftMetadata = factory.createNftMetadata('_NFT_NAME_', collectionMetaData);
             expect(nftMetadata.minting_tool).to.equal('_MINING_TOOL_');
+        });
+        it('createNftMetadata should set the format', () => {
+            const factory = new MetadataFactory();
+            const collectionMetaData = factory.createCollectionMetadata('_COLLECTION_NAME_');
+            const nftMetadata = factory.createNftMetadata('_NFT_NAME_', collectionMetaData);
+            expect(nftMetadata.format).to.equal(NFT_FORMAT);
         });
         it('createAttributeArray should create an array of {type, value} objects', () => {
             const factory = new MetadataFactory();

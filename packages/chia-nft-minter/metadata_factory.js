@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
+export const NFT_FORMAT = 'CHIP-0007';
+
 class MetadataFactory {
     constructor(minting_tool = 'chia-repl') {
         this.minting_tool = minting_tool;
@@ -11,9 +13,9 @@ class MetadataFactory {
             throw Error('name cannot be nil');
         }
         return {
-            "name": name,
-            "id": uuidv4(),
-            "attributes": attributes
+            name: name,
+            id: uuidv4(),
+            attributes: attributes
         };
     }
 
@@ -25,13 +27,13 @@ class MetadataFactory {
             throw Error('collection cannot be nil');
         }
         return {
-            "format": "CHIP-0007",
-            "name": name,
-            "description": description,
-            "minting_tool": this.minting_tool,
-            "sensitive_content": sensitive_content,
-            "attributes": attributes,
-            "collection": collection
+            format: NFT_FORMAT,
+            name: name,
+            description: description,
+            minting_tool: this.minting_tool,
+            sensitive_content: sensitive_content,
+            attributes: attributes,
+            collection: collection
         };
     }
 
