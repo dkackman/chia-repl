@@ -24,7 +24,7 @@ You will need
 
 - Your own [nft.storage api key](https://nft.storage/docs/#get-an-api-token)
 - A valid chia node and its connection details
-- Pateince because this thing barely works right now
+- Patience because this thing just kinda works right now
 
 The full workflow will
 
@@ -35,11 +35,11 @@ The full workflow will
 import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
 import { createNftFromFile } from 'chia-nft-minter';
 
-const daemon = new ChiaDaemon(loadUIConfig(), 'my-chia-app');
+const daemon = new ChiaDaemon(loadUIConfig(), 'your-chia-nft-app');
 const connected = await chia.connect();
 
 const fileInfo = {
-    name: 'test-nft-dkackman',
+    name: 'test-nft-by-you',
     type: 'image/png',
     filepath: 'C:\\path\\to\\some_file.png'
 };
@@ -52,7 +52,7 @@ const mintingInfo = {
 };
 
 const factory = new MetadataFactory('chia-nft-minter-tests');
-const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-by-you', collectionAttributes);
+const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-by-you');
 const nftMetadata = factory.createNftMetadata('test-nft-by-you', collectionMetaData);
 
 const ipfsToken = '_YOUR_API_KEY_';
