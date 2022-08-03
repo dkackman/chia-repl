@@ -32,8 +32,8 @@ describe('chia-minter', () => {
 
             const mintingInfo = {
                 wallet_id: 1,
-                royalty_address: '',
-                target_address: '',
+                royalty_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
+                target_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
                 royalty_percentage: 250,
             };
 
