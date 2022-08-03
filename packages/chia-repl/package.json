@@ -28,7 +28,8 @@
     "clvm": "^2.0.0",
     "clvm_tools": "^0.9.5",
     "keypress": "^0.2.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "chia-nft-minter": "0.0.5"
   },
   "devDependencies": {
     "eslint": "^8.21.0",
