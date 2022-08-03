@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { upload } from './uploader.js';
 import fs from 'fs';
 
-export async function create_nft_from_file(wallet, fileInfo, mintingInfo, metadata, ipfsToken) {
+export async function createNftFromFile(wallet, fileInfo, mintingInfo, metadata, ipfsToken) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
     }
@@ -25,10 +25,10 @@ export async function create_nft_from_file(wallet, fileInfo, mintingInfo, metada
         content: fs.readFileSync(fileInfo.filepath)
     };
     const ipfsData = await upload(file, metadata, ipfsToken);
-    return await create_nft_from_ipfsData(wallet, mintingInfo, ipfsData);
+    return await createNftFromIpfs(wallet, mintingInfo, ipfsData);
 }
 
-export async function create_nft_from_ipfsData(wallet, mintingInfo, ipfsData) {
+export async function createNftFromIpfs(wallet, mintingInfo, ipfsData) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
     }

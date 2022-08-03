@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { create_nft_from_file } from '../chia-nft-minter/minter.js';
+import { createNftFromFile } from '../chia-nft-minter/minter.js';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
@@ -48,9 +48,9 @@ describe('chia-minter', () => {
 
             const chia = new ChiaDaemon(connection, 'chia-nft-minter-tests');
             const connected = await chia.connect();
-            expect(connected).to.equal(true); // this is asserted as part of chia-daemon's test but short circuit this too
+            expect(connected).to.equal(true); // short circuit the test if we can't connect
 
-            const result = await create_nft_from_file(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
+            const result = await createNftFromFile(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
 
             console.log(result);
         });

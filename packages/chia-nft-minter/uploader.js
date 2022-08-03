@@ -2,7 +2,10 @@ import crypto from 'crypto';
 import { File, NFTStorage } from 'nft.storage';
 import _ from 'lodash';
 
-//export async function upload(file: { name: string; type: string; content: Buffer }, metadata: { [key: string]: any }) {
+//
+// Adapted from https://github.com/mintgarden-io/mintgarden-studio/blob/main/src/helpers/nft-storage.ts
+//
+
 export async function upload(file, metadata, ipfsToken) {
     if (_.isNil(file)) {
         throw Error('file cannot be nil');
