@@ -36,6 +36,7 @@ export async function upload(file, metadata, ipfsToken) {
                 `ipfs://${cid}/${encodeURIComponent(dataFileName)}`,
             ],
             dataHash,
+            cid: cid,
             metadataUris: [`https://nftstorage.link/ipfs/${cid}/metadata.json`, `ipfs://${cid}/metadata.json`],
             metadataHash,
         };
