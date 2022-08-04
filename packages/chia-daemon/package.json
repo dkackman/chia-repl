@@ -2,7 +2,7 @@
   "name": "chia-daemon",
   "version": "0.4.0",
   "description": "A JS daemon client for chia rpc with dynamically generated end points",
-  "main": "chia_daemon.js",
+  "main": "index.js",
   "scripts": {
     "doc": "jsdoc . -d ../../docs/chia-daemon -R README.md"
   },

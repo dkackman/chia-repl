@@ -1,7 +1,7 @@
 /* eslint-disable no-prototype-builtins */
 import chai from 'chai';
 
-import { getPayloadDescriptor, makePayload } from '../chia-daemon//payload_generator.js';
+import { getPayloadDescriptor, makePayload } from 'chia-daemon';
 
 const expect = chai.expect;
 

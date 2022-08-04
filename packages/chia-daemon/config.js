@@ -13,7 +13,7 @@ const homeDirectory = os.homedir();
  * @param {string} net - The name of the network and ~/.chia/ file path to find the config file.
  * @returns Connection details.
  */
-export function loadUIConfig(net = 'mainnet') {
+export default function loadUIConfig(net = 'mainnet') {
     const config = readConfigFile(net);
 
     const selfHostname = _.get(config, 'ui.daemon_host', 'localhost');
@@ -52,7 +52,7 @@ export function loadUIConfig(net = 'mainnet') {
  * @param {string} net - The name of the network and ~/.chia/ file path to find the config file.
  * @returns The fully qualified path to the default config file.
  */
-export function getConfigRootDir(net = 'mainnet') {
+function getConfigRootDir(net = 'mainnet') {
     return 'CHIA_ROOT' in process.env ? untildify(process.env.CHIA_ROOT)
         : path.join(homeDirectory, '.chia', net);
 }

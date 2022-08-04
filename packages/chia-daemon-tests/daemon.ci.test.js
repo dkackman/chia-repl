@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { ChiaDaemon } from '../chia-daemon/chia_daemon.js';
+import { ChiaDaemon } from 'chia-daemon';
 
 const expect = chai.expect;
 const connection = {

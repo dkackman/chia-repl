@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { loadUIConfig } from '../chia-daemon//config.js';
+import { loadUIConfig } from 'chia-daemon';
 
 const expect = chai.expect;
 
