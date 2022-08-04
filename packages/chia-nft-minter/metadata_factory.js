@@ -26,6 +26,7 @@ export default class MetadataFactory {
         if (_.isNil(collection)) {
             throw Error('collection cannot be nil');
         }
+
         return {
             format: NFT_FORMAT,
             name: name,
