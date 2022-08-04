@@ -8,5 +8,5 @@
         "packages/chia-nft-minter",
         "packages/chia-nft-minter-tests"
     ],
-    "version": "0.0.1"
+    "version": "0.0.2"
 }
