@@ -6,7 +6,7 @@ import fs from 'fs';
 
 class ContentHasher {
     constructor(algorithm = 'sha256') {
-        this._hasher = crypto.createHash(algorithm);
+        this.algorithm = algorithm;
     }
     /**
      *
@@ -14,7 +14,8 @@ class ContentHasher {
      * @returns {string}
      */
     hash(content) {
-        return this._hasher
+        return crypto
+            .createHash(this.algorithm)
             .update(content)
             .digest('hex');
     }

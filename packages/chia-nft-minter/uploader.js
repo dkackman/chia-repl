@@ -46,8 +46,8 @@ export async function upload(dataFile, metadata, ipfsToken, licenseFile) {
     const hasher = new ContentHasher();
     return {
         dataUris: [
-            `https://nftstorage.link/ipfs/${cid}/${encodeURIComponent(dataFileName)}`,
-            `ipfs://${cid}/${encodeURIComponent(dataFileName)}`,
+            `https://nftstorage.link/ipfs/${cid}/${encodeURIComponent(dataFile.name)}`,
+            `ipfs://${cid}/${encodeURIComponent(dataFile.name)}`,
         ],
         dataHash: hasher.hash(dataFile.content),
         cid: cid,

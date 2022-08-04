@@ -5,7 +5,7 @@ const expect = chai.expect;
 
 describe('chia-minter', () => {
     describe('hasher', () => {
-        it('should hash remote file content _DEBUG_', async function () {
+        it('should hash remote file content', async function () {
             this.timeout(30 * 1000);
 
             const uri = 'https://bafybeigzcazxeu7epmm4vtkuadrvysv74lbzzbl2evphtae6k57yhgynp4.ipfs.nftstorage.link/license.pdf';

@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('minting', () => {
-        it('the full workflow', async function () {
+        it('the full workflow _DEBUG_', async function () {
             this.timeout(30 * 1000);
 
             const fileInfo = {
@@ -33,7 +33,7 @@ describe('chia-minter', () => {
                 royalty_percentage: 250,
             };
             const connection = {
-                host: '172.25.53.162',
+                host: '172.19.109.140',
                 port: 55400,
                 key_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.key',
                 cert_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.crt',
