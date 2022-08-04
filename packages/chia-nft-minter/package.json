@@ -29,6 +29,7 @@
     "chia-daemon": "^0.4.0",
     "lodash": "^4.17.21",
     "nft.storage": "^7.0.0",
+    "secure-string": "^1.2.1",
     "uuid": "^8.3.2"
   },
   "type": "module"

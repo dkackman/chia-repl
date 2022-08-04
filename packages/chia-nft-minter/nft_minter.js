@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import upload from './upload.js';
 import fs from 'fs';
-
+import SecureString from 'secure-string';
 export default class NftMinter {
     /**
      *
@@ -17,7 +17,10 @@ export default class NftMinter {
         }
 
         this.wallet = wallet;
-        this.ipfsToken = ipfsToken;
+        this.ipfsToken = new SecureString();
+        for (let i = 0; i < ipfsToken.length; ++i) {
+            this.ipfsToken.appendCodePoint(ipfsToken.codePointAt(i));
+        }
     }
 
     /**
@@ -55,8 +58,19 @@ export default class NftMinter {
         const dataFile = unpackFileInfo(dataFileInfo);
         const licenseFile = unpackFileInfo(this.licenseFileInfo);
 
-        const ipfsData = await upload(dataFile, JSON.stringify(metadata, null, 2), this.ipfsToken, licenseFile);
-        return await this.createNftFromIpfs(mintingInfo, ipfsData);
+        let token;
+        this.ipfsToken.value(plainText => token = plainText.toString());
+        const ipfsData = await upload(dataFile, JSON.stringify(metadata, null, 2), token, licenseFile);
+        try {
+            return await this.createNftFromIpfs(mintingInfo, ipfsData);
+        }
+        catch (e) {
+            // TODO figure out how to delete the uploaded files.
+            console.log('Files uploaded but NFT creation failed');
+            console.log(ipfsData);
+
+            throw e;
+        }
     }
 
     /**
@@ -78,16 +92,16 @@ export default class NftMinter {
             hash: ipfsData.dataHash,
             meta_uris: ipfsData.metadataUris,
             meta_hash: ipfsData.metadataHash,
-            license_uris: _.get(ipfsData, 'licenseUris', null),
-            license_hash: _.get(ipfsData, 'licenseHash', null),
+            license_uris: _.get(ipfsData, 'licenseUris', undefined),
+            license_hash: _.get(ipfsData, 'licenseHash', undefined),
 
             wallet_id: mintingInfo.wallet_id,
-            royalty_address: _.get(mintingInfo, 'royalty_address', null),
-            target_address: _.get(mintingInfo, 'target_address', null),
+            royalty_address: _.get(mintingInfo, 'royalty_address', undefined),
+            target_address: _.get(mintingInfo, 'target_address', undefined),
             edition_number: _.get(mintingInfo, 'edition_number', 1),
             edition_total: _.get(mintingInfo, 'edition_total', 1),
             royalty_percentage: _.get(mintingInfo, 'royalty_percentage', 0),
-            did_id: _.get(mintingInfo, 'did_id', null),
+            did_id: _.get(mintingInfo, 'did_id', undefined),
             fee: _.get(mintingInfo, 'fee', 0),
         };
 
