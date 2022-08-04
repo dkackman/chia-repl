@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('minting', () => {
-        it('the full workflow _DEBUG_', async function () {
+        it('the full workflow', async function () {
             this.timeout(30 * 1000);
 
             const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();

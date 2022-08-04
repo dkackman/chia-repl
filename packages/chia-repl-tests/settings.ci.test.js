@@ -30,7 +30,7 @@ describe('repl-factory', () => {
 
             expect(merged.ipfsToken).to.equal(defaults.ipfsToken);
         });
-        it('should not overwrite populated defaults _DEBUG_', () => {
+        it('should not overwrite populated defaults', () => {
             const defaults = {
                 host: 'localhost',
                 port: 55400,
