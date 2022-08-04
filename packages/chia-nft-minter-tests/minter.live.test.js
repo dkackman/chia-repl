@@ -18,10 +18,14 @@ describe('chia-minter', () => {
         it('the full workflow _DEBUG_', async function () {
             this.timeout(30 * 1000);
 
-            const fileInfo = {
+            const dataFileInfo = {
                 name: 'test-nft-dkackman',
-                type: 'image/png',
-                filepath: path.join(__dirname, 'content', 'flower.png')
+                type: 'image/jpg',
+                filepath: path.join(__dirname, 'content', 'flower.jpg')
+            };
+            const licenseFileInfo = {
+                type: 'application/pdf',
+                filepath: path.join(__dirname, 'content', 'Apache_License_v.2.0.pdf')
             };
             const factory = new MetadataFactory('chia-nft-minter-tests');
             const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-dkackman');
@@ -46,13 +50,12 @@ describe('chia-minter', () => {
 
             const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();
 
-            const minter = new NftMinter(chia.services.wallet, ipfsToken);
-            const result = await minter.createNftFromFile(fileInfo, mintingInfo, nftMetadata);
+            const minter = new NftMinter(chia.services.wallet, ipfsToken, licenseFileInfo);
+            const result = await minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadata);
 
             expect(result).to.not.equal(null);
             expect(result).to.not.equal(undefined);
-
-            console.log(result);
+            expect(result.success).to.equal(true);
         });
     });
 });
