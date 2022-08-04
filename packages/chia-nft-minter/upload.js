@@ -1,6 +1,6 @@
 import { File, NFTStorage } from 'nft.storage';
 import _ from 'lodash';
-import { ContentHasher } from './contentHasher.js';
+import ContentHasher from './content_hasher.js';
 
 //
 // Adapted from https://github.com/mintgarden-io/mintgarden-studio/blob/main/src/helpers/nft-storage.ts
@@ -19,7 +19,7 @@ import { ContentHasher } from './contentHasher.js';
  * @param {string} licenseFile.uri - The remote location of the license
  * @returns An object with the uris and hashes of all of the uploaded content
  */
-export async function upload(dataFile, metadataContent, ipfsToken, licenseFile) {
+export default async function upload(dataFile, metadataContent, ipfsToken, licenseFile) {
     if (_.isNil(dataFile)) {
         throw Error('dataFile cannot be nil');
     }

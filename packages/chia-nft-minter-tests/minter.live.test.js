@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
-import { NftMinter } from '../chia-nft-minter/nft_minter.js';
-import { MetadataFactory } from '../chia-nft-minter/metadata_factory.js';
+import { NftMinter } from 'chia-nft-minter';
+import { MetadataFactory } from 'chia-nft-minter';
 import { ChiaDaemon } from 'chia-daemon';
 
 const expect = chai.expect;

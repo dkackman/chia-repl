@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { upload } from './upload.js';
+import upload from './upload.js';
 import fs from 'fs';
 
-class NftMinter {
+export default class NftMinter {
     /**
      *
      * @param {Object} wallet - the chia wallet RPC service (retreived from the ChiaDaemon)
@@ -94,9 +94,6 @@ class NftMinter {
         return await this.wallet.nft_mint_nft(payload);
     }
 }
-
-const _NftMinter = NftMinter;
-export { _NftMinter as NftMinter };
 
 function unpackFileInfo(fileInfo) {
     if (fileInfo === undefined) {

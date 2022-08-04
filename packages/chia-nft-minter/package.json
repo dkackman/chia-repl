@@ -2,7 +2,7 @@
   "name": "chia-nft-minter",
   "version": "0.0.12",
   "description": "Utility to ease minting of Chia NFTs",
-  "main": "nft_minter.js",
+  "main": "index.js",
   "scripts": {},
   "repository": {
     "type": "git",

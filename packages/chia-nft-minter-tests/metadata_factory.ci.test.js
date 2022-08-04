@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { MetadataFactory, NFT_FORMAT } from '../chia-nft-minter/metadata_factory.js';
+import { MetadataFactory, NFT_FORMAT } from 'chia-nft-minter';
 import { validate as uuidValidate } from 'uuid';
 import _ from 'lodash';
 
