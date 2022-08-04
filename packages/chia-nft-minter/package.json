@@ -1,10 +1,9 @@
 {
   "name": "chia-nft-minter",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "Utility to ease minting of Chia NFTs",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dkackman/chia-repl.git"

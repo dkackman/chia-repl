@@ -16,7 +16,7 @@ describe('payload-generator', () => {
             expect(typeof payload.ip).to.equal('string');
             expect(typeof payload.port).to.equal('number');
         });
-        it('should make a payload from a schema that includes `allof` _DEBUG_', () => {
+        it('should make a payload from a schema that includes `allof`', () => {
             const payload = makePayload('full_node', 'get_coin_records_by_parent_ids', false);
             expect(payload).to.not.equal(null);
             expect(payload).to.not.equal(undefined);

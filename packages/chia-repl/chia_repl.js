@@ -86,8 +86,11 @@ class ChiaRepl {
 
     loadConnection() {
         const lastConnectionName = settings.getSetting('.lastConnectionName', '');
-        this.repl.context.connection = settings.getSetting(`${lastConnectionName}.connection`, localDaemonConnection);
-        settings.fixup(this.repl.context.connection, 'prefix', 'xch', 'Connection prefix not set. Setting to "xch". Double check the connection\'s properties and .save-connection.');
+
+        const defaultSettings = localDaemonConnection;
+        defaultSettings.prefix = 'xch';
+
+        this.repl.context.connection = settings.getSettingObject(`${lastConnectionName}.connection`, defaultSettings);
     }
 
     clearChiaContext() {

@@ -16,6 +16,21 @@ export function settingExists(name) {
     return fs.existsSync(path.join(settingsDir, name));
 }
 
+export function getSettingObject(name, def) {
+    try {
+        const json = fs.readFileSync(path.join(settingsDir, name));
+        const saved = JSON.parse(json);
+        return {
+            ...def,
+            ...saved
+        }; // merge saved setting with defaults in case a future version has added new fields
+    } catch (e) {
+        saveSetting(name, def);
+    }
+
+    return def;
+}
+
 export function getSetting(name, def) {
     try {
         const json = fs.readFileSync(path.join(settingsDir, name));
@@ -35,16 +50,6 @@ export function saveSetting(name, setting) {
         fs.writeFileSync(path.join(settingsDir, name), JSON.stringify(setting, null, 2));
     } catch (e) {
         console.log(e);
-    }
-}
-
-// this is to upgrade settings that might changed from earlier serialized versions
-export function fixup(settings, name, defaultValue, msg) {
-    if (settings[name] === undefined) {
-        settings[name] = defaultValue;
-        if (msg !== undefined) {
-            console.log(msg);
-        }
     }
 }
 

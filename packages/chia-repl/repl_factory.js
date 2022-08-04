@@ -65,7 +65,7 @@ export default function createRepl(cursor) {
             settings.listSettings().forEach(file => {
                 if (file.endsWith('.connection')) {
                     console.log(file.replace('.connection', ''));
-                    console.log(settings.getSetting(file));
+                    console.log(settings.getSettingObject(file));
                 }
             });
             chiaRepl.repl.displayPrompt();
