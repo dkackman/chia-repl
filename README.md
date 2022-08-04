@@ -78,12 +78,15 @@ Some of these configure the connection and REPL options, while other enable inte
 These global objects are available within the REPL environment
 bls             BLS signature functions
 chia            Chia node rpc services. This object is only availble after a successful .connect
-                All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
+                All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet, simulator
 clvm_tools      clvm_tools-js functions (run, brun, opc, opd, read_ir)
-clvm            clvm-js (Program, SExp, op_codes etc.)
+clvm            clvm-js (Program, SExp etc.)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
 options         Configurable REPL options
+contentHasher   A helper to generate NFT compatible hashes for files or remote resources
+metadataFactory A helper to generate NFT and Collection metadata
+minter          The NFT minter. Only availble when connected to the chia daemon
 repl.builtinModules
                 Show other available builtin node modules
 
@@ -92,6 +95,8 @@ compile(chiaLisp, prefix, ...compileArgs)
                 Compiles a chialisp program into its address, clvm, puzzle, and puzzle_hash
 test(chiaLisp, compileArgs = [], programArgs = []))
                 Runs a chialisp program and displays its output
+uploadNft(dataFile, metadataContent, ipfsToken, licenseFile)
+                Uploads nft files to nft.storage. The minter uses this internally.
 ```
 
 ## Examples
@@ -100,6 +105,31 @@ The global `connection` context object has the host, port, and path to cert file
 Once connected to the `daemon` each of the service endpoints becomes availalbe as an awaitable context function.
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
+
+### Mint a simple NFT
+
+```javascript
+🌿 let dataFileInfo = {
+    name: 'test-nft-by-you',
+    type: 'image/jpg',
+    filepath: 'E:\\nft\\flower.jpg'
+};
+🌿 let mintingInfo = {
+    wallet_id: 2,
+    target_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
+};
+🌿 let collectionMetaData = metadataFactory.createCollectionMetadata('test-nft-collection-by-you');
+🌿 let nftMetadata = metadataFactory.createNftMetadata('test-nft-by-you', collectionMetaData);
+🌿 await minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadata);
+{
+  spend_bundle: {
+    aggregated_signature: '0x99e39df189f009a4679067d212a6845b7bfec05452d9696de79907a861239de3cbd247a27c39b2ca2492740f9f4aab58028ebf035f40597d16ddeee5194f8dfaa8c8ec8e90b6c91fce60944f0e55997b443be63ed8e9dcb9d685a9b473e1b441',
+    coin_solutions: [ [Object], [Object], [Object] ]
+  },
+  success: true,
+  wallet_id: 2
+}
+```
 
 ### Run a CLVM Program
 

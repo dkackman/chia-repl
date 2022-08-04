@@ -2,7 +2,10 @@
 
 [![CodeQL](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/codeql.yml)
 [![Node.js CI](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml/badge.svg)](https://github.com/dkackman/chia-repl/actions/workflows/node.js.yml)
-[![NPM](https://nodei.co/npm/chia-repl.png?mini=true)](https://npmjs.org/package/chia-repl)
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/v/chia-repl.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/l/chia-repl.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dm/chia-repl.svg?sanitize=true" alt="Monthly Downloads"></a>
+  <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dt/chia-repl.svg?sanitize=true" alt="Total Downloads"></a>
 
 A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
 
@@ -11,6 +14,8 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 - [clvm-js](https://github.com/Chia-Mine/clvm-js)
 - [chia-utils](https://github.com/CMEONE/chia-utils)
 - [@rigidity/bls-signatures](https://github.com/Rigidity/bls-signatures)
+- [chia-daemon](https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon)
+- [chia-nft-minter](https://github.com/dkackman/chia-repl/tree/main/packages/chia-nft-minter)
 
 ## Packaged
 
@@ -73,12 +78,15 @@ Some of these configure the connection and REPL options, while other enable inte
 These global objects are available within the REPL environment
 bls             BLS signature functions
 chia            Chia node rpc services. This object is only availble after a successful .connect
-                All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet
+                All functions on these chia services are async & awaitable: crawler, daemon, farmer, full_node, harvester, wallet, simulator
 clvm_tools      clvm_tools-js functions (run, brun, opc, opd, read_ir)
-clvm            clvm-js (Program, SExp, op_codes etc.)
+clvm            clvm-js (Program, SExp etc.)
 utils           Chia-utils (bech32m and other helpers)
 connection      Properties of the current connection
 options         Configurable REPL options
+contentHasher   A helper to generate NFT compatible hashes for files or remote resources
+metadataFactory A helper to generate NFT and Collection metadata
+minter          The NFT minter. Only availble when connected to the chia daemon
 repl.builtinModules
                 Show other available builtin node modules
 
@@ -87,6 +95,8 @@ compile(chiaLisp, prefix, ...compileArgs)
                 Compiles a chialisp program into its address, clvm, puzzle, and puzzle_hash
 test(chiaLisp, compileArgs = [], programArgs = []))
                 Runs a chialisp program and displays its output
+uploadNft(dataFile, metadataContent, ipfsToken, licenseFile)
+                Uploads nft files to nft.storage. The minter uses this internally.
 ```
 
 ## Examples

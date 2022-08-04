@@ -140,6 +140,9 @@ export default function createRepl(cursor) {
             console.log(`${chalk.green('utils')}\t\tChia-utils (bech32m and other helpers)`);
             console.log(`${chalk.green('connection')}\tProperties of the current connection`);
             console.log(`${chalk.green('options')}\t\tConfigurable REPL options`);
+            console.log(`${chalk.green('contentHasher')}\tA helper to generate NFT compatible hashes for files or remote resources`);
+            console.log(`${chalk.green('metadataFactory')}\tA helper to generate NFT and Collection metadata`);
+            console.log(`${chalk.green('minter')}\t\tThe NFT minter. Only availble when connected to the chia daemon`);
             console.log(`${chalk.green('repl.builtinModules')}\n\t\tShow other available builtin node modules`);
 
             console.log('\nThese global functions are invocable within the REPL environment');
@@ -147,6 +150,8 @@ export default function createRepl(cursor) {
             console.log('\t\tCompiles a chialisp program into its address, clvm, puzzle, and puzzle_hash');
             console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
             console.log('\t\tRuns a chialisp program and displays its output');
+            console.log(`${chalk.green('uploadNft')}${chalk.gray('(dataFile, metadataContent, ipfsToken, licenseFile)')}`);
+            console.log('\t\tUploads nft files to nft.storage. The minter uses this internally.');
 
             chiaRepl.repl.displayPrompt();
         }
