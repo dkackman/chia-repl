@@ -1,6 +1,6 @@
 {
   "name": "chia-daemon-tests",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Tests for a JS daemon client for chia rpc with dynamically generated end points",
   "scripts": {
     "test": "mocha *.ci.test.js --exit",
