@@ -1,6 +1,6 @@
 import { File, NFTStorage } from 'nft.storage';
 import _ from 'lodash';
-import hash from './contentHasher.js';
+import { ContentHasher} from './contentHasher.js';
 
 //
 // Adapted from https://github.com/mintgarden-io/mintgarden-studio/blob/main/src/helpers/nft-storage.ts
@@ -43,22 +43,23 @@ export async function upload(dataFile, metadata, ipfsToken, licenseFile) {
     const client = new NFTStorage({ token: ipfsToken });
     const cid = await client.storeDirectory(files);
 
+    const hasher = new ContentHasher();
     return {
         dataUris: [
             `https://nftstorage.link/ipfs/${cid}/${encodeURIComponent(dataFileName)}`,
             `ipfs://${cid}/${encodeURIComponent(dataFileName)}`,
         ],
-        dataHash: hash(dataFile.content),
+        dataHash: hasher.hash(dataFile.content),
         cid: cid,
         metadataUris: [
             `https://nftstorage.link/ipfs/${cid}/metadata.json`,
             `ipfs://${cid}/metadata.json`
         ],
-        metadataHash: hash(metadataContent),
+        metadataHash: hasher.hash(metadataContent),
         licenseUris: _.isNil(licenseFile) ? null : [
             `https://nftstorage.link/ipfs/${cid}/license`,
             `ipfs://${cid}/license`,
         ],
-        licenseHash: _.isNil(licenseFile) ? null : hash(licenseFile.content)
+        licenseHash: _.isNil(licenseFile) ? null : hasher.hash(licenseFile.content)
     };
 }

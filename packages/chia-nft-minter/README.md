@@ -35,12 +35,9 @@ The full workflow will
 
 ```javascript
 import { ChiaDaemon, loadUIConfig } from 'chia-daemon';
-import { createNftFromFile } from 'chia-nft-minter';
+import { NftMinter, MetadataFactory } from 'chia-nft-minter';
 
-const daemon = new ChiaDaemon(loadUIConfig(), 'your-chia-nft-app');
-const connected = await chia.connect();
-
-const fileInfo = {
+const dataFileInfo = {
     name: 'test-nft-by-you',
     type: 'image/png',
     filepath: 'C:\\path\\to\\some_file.png'
@@ -57,9 +54,11 @@ const factory = new MetadataFactory('chia-nft-minter-tests');
 const collectionMetaData = factory.createCollectionMetadata('test-nft-collection-by-you');
 const nftMetadata = factory.createNftMetadata('test-nft-by-you', collectionMetaData);
 
-const ipfsToken = '_YOUR_API_KEY_';
+const daemon = new ChiaDaemon(loadUIConfig(), 'your-chia-nft-app');
+const connected = await chia.connect();
 
-const result = await createNftFromFile(chia.services.wallet, fileInfo, mintingInfo, nftMetadata, ipfsToken);
+const minter = new NftMinter(chia.services.wallet, '_YOUR_API_KEY_');
+const result = await minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadata);
 
 console.log(result);
 ```
