@@ -41,18 +41,21 @@ export async function createNftFromIpfs(wallet, mintingInfo, ipfsData) {
 
     const payload = {
         wallet_id: mintingInfo.wallet_id,
-        royalty_address: mintingInfo.royalty_address,
-        target_address: mintingInfo.target_address,
-        edition_number: _.get(mintingInfo, 'edition_number', 1),
-        edition_total: _.get(mintingInfo, 'edition_total', 1),
-        royalty_percentage: mintingInfo.royalty_percentage,
-        did_id: _.get(mintingInfo, 'did_id', null),
-        fee: _.get(mintingInfo, 'fee', 0),
         uris: ipfsData.dataUris,
         hash: ipfsData.dataHash,
         meta_uris: ipfsData.metadataUris,
         meta_hash: ipfsData.metadataHash,
-    }; // TODO - support license files
+
+        royalty_address: _.get(mintingInfo, 'royalty_address', null),
+        target_address: _.get(mintingInfo, 'target_address', null),
+        edition_number: _.get(mintingInfo, 'edition_number', 1),
+        edition_total: _.get(mintingInfo, 'edition_total', 1),
+        royalty_percentage: _.get(mintingInfo, 'royalty_percentage', 0),
+        did_id: _.get(mintingInfo, 'did_id', null),
+        fee: _.get(mintingInfo, 'fee', 0),
+        license_uris: _.get(mintingInfo.licenseUris, null),
+        license_hash: _.get(mintingInfo.licenseHash, null),
+    };
 
     return await wallet.nft_mint_nft(payload);
 }
