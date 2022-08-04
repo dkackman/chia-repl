@@ -24,12 +24,12 @@
     "@rigidity/bls-signatures": "^2.0.3",
     "chalk": "^5.0.1",
     "chia-daemon": "^0.4.0",
+    "chia-nft-minter": "^0.0.6",
     "chia-utils": "^1.0.10",
     "clvm": "^2.0.0",
     "clvm_tools": "^0.9.5",
     "keypress": "^0.2.1",
-    "lodash": "^4.17.21",
-    "chia-nft-minter": "^0.0.6"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "eslint": "^8.21.0",

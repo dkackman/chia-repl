@@ -6,6 +6,7 @@ import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
+import { ContentHasher } from 'chia-nft-minter';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -29,6 +30,9 @@ class ChiaRepl {
         this.repl.context.utils = _utils;
         this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
         this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
+
+        // this is nft stuff that doesn't need the connection
+        this.repl.context.hasher = new ContentHasher();
 
         this.loadConnection();
 

@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { upload } from '../chia-nft-minter/uploader.js';
+import { upload } from 'chia-nft-minter/upload.js';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';

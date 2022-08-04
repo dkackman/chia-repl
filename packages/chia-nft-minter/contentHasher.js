@@ -41,9 +41,6 @@ class ContentHasher {
     }
 }
 
-const _ContentHasher = ContentHasher;
-export { _ContentHasher as ContentHasher };
-
 async function get(uri) {
     return new Promise((resolve, reject) => {
         let client = uri.toString().indexOf("https") === 0 ? https : http;
@@ -61,3 +58,6 @@ async function get(uri) {
         });
     });
 }
+
+const _ContentHasher = ContentHasher;
+export { _ContentHasher as ContentHasher };

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { upload } from './uploader.js';
+import { upload } from './upload.js';
 import fs from 'fs';
 
 class NftMinter {
