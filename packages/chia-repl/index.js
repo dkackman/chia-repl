@@ -3,7 +3,6 @@ import createRepl from './repl_factory.js';
 import * as settings from './settings.js';
 import * as _options from './options.js';
 import _ from 'lodash';
-import { setPrintFunction } from 'clvm_tools';
 
 // application entry point only - don't put anything else in here
 const options = settings.getSettingObject('.options', _options.defaultOptions);

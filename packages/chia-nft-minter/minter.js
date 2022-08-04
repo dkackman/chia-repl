@@ -2,11 +2,21 @@ import _ from 'lodash';
 import { upload } from './uploader.js';
 import fs from 'fs';
 
-export async function createNftFromFile(wallet, fileInfo, mintingInfo, metadata, ipfsToken) {
+/**
+ *
+ * @param {Object} wallet - the chia wallet RPC service (retreived from the ChiaDaemon)
+ * @param {Object} dataFileInfo - information about the NFT data file
+ * @param {Object} mintingInfo - Information about the minting
+ * @param {string} metadata - NFT metadata
+ * @param {string} ipfsToken - nft.storage API token
+ * @param {Object} licenseFileInfo - optional information about the license (will be uploaded if present)
+ * @returns A spend_bundle
+ */
+export async function createNftFromFile(wallet, dataFileInfo, mintingInfo, metadata, ipfsToken, licenseFileInfo) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
     }
-    if (_.isNil(fileInfo)) {
+    if (_.isNil(dataFileInfo)) {
         throw Error('fileInfo cannot be nil');
     }
     if (_.isNil(mintingInfo)) {
@@ -19,15 +29,32 @@ export async function createNftFromFile(wallet, fileInfo, mintingInfo, metadata,
         throw Error('ipfsToken cannot be nil');
     }
 
-    const file = {
-        name: fileInfo.name,
-        type: fileInfo.type,
-        content: fs.readFileSync(fileInfo.filepath)
-    };
-    const ipfsData = await upload(file, metadata, ipfsToken);
+    const dataFile = unpackFileInfo(dataFileInfo);
+    const licenseFile = unpackFileInfo(licenseFileInfo);
+
+    const ipfsData = await upload(dataFile, metadata, ipfsToken, licenseFile);
     return await createNftFromIpfs(wallet, mintingInfo, ipfsData);
 }
 
+function unpackFileInfo(fileInfo) {
+    if (fileInfo === undefined) {
+        return undefined;
+    }
+
+    return {
+        name: fileInfo.name,
+        type: fileInfo.type,
+        content: fs.readFileSync(fileInfo.filepath),
+    };
+}
+
+/**
+ *
+ * @param {Object} wallet - the chia wallet RPC service (retreived from the ChiaDaemon)
+ * @param {Object} mintingInfo - Information about the minting
+ * @param {Object} ipfsData - Uris and hashes for the uploaded content
+ * @returns A spend_bundle
+ */
 export async function createNftFromIpfs(wallet, mintingInfo, ipfsData) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
