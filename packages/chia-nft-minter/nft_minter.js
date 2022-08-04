@@ -7,28 +7,30 @@ class NftMinter {
      *
      * @param {Object} wallet - the chia wallet RPC service (retreived from the ChiaDaemon)
      * @param {string} ipfsToken - nft.storage API token
-     * @param {Object} licenseFileInfo - optional information about the license (will be uploaded with each NFT file if present)
      */
-    constructor(wallet, ipfsToken, licenseFileInfo) {
+    constructor(wallet, ipfsToken) {
         if (_.isNil(wallet)) {
             throw Error('wallet cannot be nil');
         }
         if (_.isNil(ipfsToken)) {
             throw Error('ipfsToken cannot be nil');
         }
+
         this.wallet = wallet;
         this.ipfsToken = ipfsToken;
-        this._licenseFileInfo = licenseFileInfo;
     }
 
     /**
-     * Location and mime type of the optional license file (will be uploaded with each NFT file if present)
+     * Location and mime type of the optional license file.
+     * If filepath is populated that file Will be uploaded with each NFT
+     * otherwise referenced by the uri.
      */
     get licenseFileInfo() { return this._licenseFileInfo; }
     /**
      * @param {Object} value
      * @param {string} value.type - the MIME type of the license file
      * @param {string} value.filepath - the full path to the license file
+     * @param {string} value.uri - the remote uri of the license file
      */
     set licenseFileInfo(value) { this._licenseFileInfo = value; }
 
@@ -36,11 +38,10 @@ class NftMinter {
      *
      * @param {Object} dataFileInfo - information about the NFT data file
      * @param {Object} mintingInfo - Information about the minting
-     * @param {string} metadata - NFT metadata
+     * @param {Object} metadata - NFT metadata object
      * @returns A spend_bundle
      */
     async createNftFromFile(dataFileInfo, mintingInfo, metadata) {
-
         if (_.isNil(dataFileInfo)) {
             throw Error('fileInfo cannot be nil');
         }
@@ -51,11 +52,10 @@ class NftMinter {
             throw Error('metadata cannot be nil');
         }
 
-
         const dataFile = unpackFileInfo(dataFileInfo);
         const licenseFile = unpackFileInfo(this.licenseFileInfo);
 
-        const ipfsData = await upload(dataFile, metadata, this.ipfsToken, licenseFile);
+        const ipfsData = await upload(dataFile, JSON.stringify(metadata, null, 2), this.ipfsToken, licenseFile);
         return await this.createNftFromIpfs(mintingInfo, ipfsData);
     }
 
@@ -74,12 +74,14 @@ class NftMinter {
         }
 
         const payload = {
-            wallet_id: mintingInfo.wallet_id,
             uris: ipfsData.dataUris,
             hash: ipfsData.dataHash,
             meta_uris: ipfsData.metadataUris,
             meta_hash: ipfsData.metadataHash,
+            license_uris: _.get(ipfsData, 'licenseUris', null),
+            license_hash: _.get(ipfsData, 'licenseHash', null),
 
+            wallet_id: mintingInfo.wallet_id,
             royalty_address: _.get(mintingInfo, 'royalty_address', null),
             target_address: _.get(mintingInfo, 'target_address', null),
             edition_number: _.get(mintingInfo, 'edition_number', 1),
@@ -87,8 +89,6 @@ class NftMinter {
             royalty_percentage: _.get(mintingInfo, 'royalty_percentage', 0),
             did_id: _.get(mintingInfo, 'did_id', null),
             fee: _.get(mintingInfo, 'fee', 0),
-            license_uris: _.get(mintingInfo.licenseUris, null),
-            license_hash: _.get(mintingInfo.licenseHash, null),
         };
 
         return await this.wallet.nft_mint_nft(payload);
@@ -103,9 +103,11 @@ function unpackFileInfo(fileInfo) {
         return undefined;
     }
 
+    // the fileInfo might have either a local file path or a uri
     return {
         name: fileInfo.name,
         type: fileInfo.type,
-        content: fs.readFileSync(fileInfo.filepath),
+        content: fileInfo.filepath !== undefined ? fs.readFileSync(fileInfo.filepath) : undefined,
+        uri: fileInfo.uri,
     };
 }
