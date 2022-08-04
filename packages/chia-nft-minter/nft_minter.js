@@ -18,8 +18,19 @@ class NftMinter {
         }
         this.wallet = wallet;
         this.ipfsToken = ipfsToken;
-        this.licenseFileInfo = licenseFileInfo;
+        this._licenseFileInfo = licenseFileInfo;
     }
+
+    /**
+     * Location and mime type of the optional license file (will be uploaded with each NFT file if present)
+     */
+    get licenseFileInfo() { return this._licenseFileInfo; }
+    /**
+     * @param {Object} value
+     * @param {string} value.type - the MIME type of the license file
+     * @param {string} value.filepath - the full path to the license file
+     */
+    set licenseFileInfo(value) { this._licenseFileInfo = value; }
 
     /**
      *
