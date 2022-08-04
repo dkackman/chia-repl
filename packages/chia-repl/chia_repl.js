@@ -14,7 +14,7 @@ await clvm.initialize();
 
 // this exists in order to bring together the node repl, the chia deamon
 // and all the other chia specific tools and utilities
-class ChiaRepl {
+export default class ChiaRepl {
     constructor(repl) {
         this._repl = repl;
     }
@@ -112,6 +112,3 @@ class ChiaRepl {
         process.exit();
     }
 }
-
-const _ChiaRepl = ChiaRepl;
-export { _ChiaRepl as default };
