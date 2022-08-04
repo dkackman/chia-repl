@@ -1,4 +1,4 @@
-# chia-daemon
+# chia-nft-minter
 
   <a href="https://www.npmjs.com/package/chia-nft-minter"><img src="https://img.shields.io/npm/v/chia-nft-minter.svg?sanitize=true" alt="Version"></a>
   <a href="https://www.npmjs.com/package/chia-nft-minter"><img src="https://img.shields.io/npm/l/chia-nft-minter.svg?sanitize=true" alt="Version"></a>
