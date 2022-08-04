@@ -4,7 +4,7 @@ import https from 'https';
 import url from 'url';
 import fs from 'fs';
 
-class ContentHasher {
+export default class ContentHasher {
     constructor(algorithm = 'sha256') {
         this.algorithm = algorithm;
     }
@@ -40,9 +40,6 @@ class ContentHasher {
         return this.hash(content);
     }
 }
-
-const _ContentHasher = ContentHasher;
-export { _ContentHasher as ContentHasher };
 
 async function get(uri) {
     return new Promise((resolve, reject) => {

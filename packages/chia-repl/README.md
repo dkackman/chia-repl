@@ -96,6 +96,31 @@ Once connected to the `daemon` each of the service endpoints becomes availalbe a
 
 Knowing [the chia rpc api](https://dkackman.github.io/chia-api/) will help immensely. All endpoints and data payloads should work. Since it is a full nodejs REPL environment, core modules like `fs` and `http` are available.
 
+### Mint a simple NFT
+
+```javascript
+🌿 let dataFileInfo = {
+    name: 'test-nft-by-you',
+    type: 'image/jpg',
+    filepath: 'E:\\nft\\flower.jpg'
+};
+🌿 let mintingInfo = {
+    wallet_id: 2,
+    target_address: 'txch10kn82kl6hqv47qzeh4ugmqjr5mmdcnrlymfx8wl9nrhhkyxnzfkspna7l9',
+};
+🌿 let collectionMetaData = metadataFactory.createCollectionMetadata('test-nft-collection-by-you');
+🌿 let nftMetadata = metadataFactory.createNftMetadata('test-nft-by-you', collectionMetaData);
+🌿 await minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadata);
+{
+  spend_bundle: {
+    aggregated_signature: '0x99e39df189f009a4679067d212a6845b7bfec05452d9696de79907a861239de3cbd247a27c39b2ca2492740f9f4aab58028ebf035f40597d16ddeee5194f8dfaa8c8ec8e90b6c91fce60944f0e55997b443be63ed8e9dcb9d685a9b473e1b441',
+    coin_solutions: [ [Object], [Object], [Object] ]
+  },
+  success: true,
+  wallet_id: 2
+}
+```
+
 ### Run a CLVM Program
 
 ```javascript

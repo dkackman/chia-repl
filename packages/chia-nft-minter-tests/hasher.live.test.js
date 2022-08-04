@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { ContentHasher } from '../chia-nft-minter/contentHasher.js';
+import { ContentHasher } from 'chia-nft-minter';
 
 const expect = chai.expect;
 

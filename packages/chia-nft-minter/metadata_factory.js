@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const NFT_FORMAT = 'CHIP-0007';
 
-class MetadataFactory {
+export default class MetadataFactory {
     constructor(minting_tool = 'chia-repl') {
         this.minting_tool = minting_tool;
     }
@@ -26,6 +26,7 @@ class MetadataFactory {
         if (_.isNil(collection)) {
             throw Error('collection cannot be nil');
         }
+
         return {
             format: NFT_FORMAT,
             name: name,
@@ -66,6 +67,3 @@ class MetadataFactory {
         });
     }
 }
-
-const _MetadataFactory = MetadataFactory;
-export { _MetadataFactory as MetadataFactory };

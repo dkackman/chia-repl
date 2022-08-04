@@ -19,7 +19,7 @@ export let localDaemonConnection = {
  * which in turn proxies communication to the other chia services.
  * @extends EventEmitter
  */
-class ChiaDaemon extends EventEmitter {
+export default class ChiaDaemon extends EventEmitter {
     /**
      * Create a ChiaDaemon.
      * @param {Object} connection - Details of the connection.
@@ -213,9 +213,6 @@ function formatMessage(destination, command, origin, data = {}) {
         data: data,
     };
 }
-
-const _Chia = ChiaDaemon;
-export { _Chia as ChiaDaemon };
 
 /**
  * connecting event. Fires just before the WebSocket is created

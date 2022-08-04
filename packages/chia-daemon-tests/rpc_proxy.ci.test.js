@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import chai from 'chai';
-import createRpcProxy from '../chia-daemon//rpc_proxy.js';
+import { createRpcProxy } from 'chia-daemon';
 
 const expect = chai.expect;
 

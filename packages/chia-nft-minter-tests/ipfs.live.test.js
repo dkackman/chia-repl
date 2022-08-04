@@ -1,10 +1,10 @@
 import chai from 'chai';
-import { upload } from '../chia-nft-minter/uploader.js';
+import { upload } from 'chia-nft-minter';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
-import { MetadataFactory } from '../chia-nft-minter/metadata_factory.js';
+import { MetadataFactory } from 'chia-nft-minter';
 
 const expect = chai.expect;
 
@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('ipfs', () => {
-        it('should upload file', async function() {
+        it('should upload file _DEBUG_', async function() {
             this.timeout(30 * 1000);
             const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();
             const buffer = fs.readFileSync(path.join(__dirname, 'content', 'flower.png'));

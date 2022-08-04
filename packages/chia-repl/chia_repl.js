@@ -6,6 +6,7 @@ import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
+import { ContentHasher, MetadataFactory, upload, NftMinter } from 'chia-nft-minter';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -13,7 +14,7 @@ await clvm.initialize();
 
 // this exists in order to bring together the node repl, the chia deamon
 // and all the other chia specific tools and utilities
-class ChiaRepl {
+export default class ChiaRepl {
     constructor(repl) {
         this._repl = repl;
     }
@@ -29,6 +30,11 @@ class ChiaRepl {
         this.repl.context.utils = _utils;
         this.repl.context.compile = (chiaLisp, prefix, ...args) => compiler.compile(chiaLisp, prefix !== undefined ? prefix : this.repl.context.connection.prefix, ...args);
         this.repl.context.test = (chiaLisp, compileArgs, programArgs) => compiler.test(chiaLisp, compileArgs, programArgs);
+
+        // this is nft stuff that doesn't need the connection
+        this.repl.context.contentHasher = new ContentHasher();
+        this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
+        this.repl.context.uploadNft = upload;
 
         this.loadConnection();
 
@@ -49,10 +55,7 @@ class ChiaRepl {
         const chiaDaemon = new ChiaDaemon(this.repl.context.connection, service_name);
         chiaDaemon.once('connecting', (address) => console.log(`Connecting to ${address}...`));
 
-        chiaDaemon.once('connected', () => {
-            console.log('Connected');
-            this.repl.displayPrompt();
-        });
+        chiaDaemon.once('connected', () => console.log('Connected'));
 
         chiaDaemon.once('disconnected', () => {
             this.clearChiaContext();
@@ -72,6 +75,14 @@ class ChiaRepl {
             this.repl.context.chiaDaemon = chiaDaemon;
             this.repl.context.chia = chiaDaemon.services;
 
+            const ipfsToken = this.repl.context.options.ipfsToken;
+            if (ipfsToken !== undefined && ipfsToken.length > 0) {
+                this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
+            } else if (this.repl.context.options.verbosity !== 'quiet') {
+                console.log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'));
+            }
+
+            this.repl.displayPrompt();
             return true;
         }
 
@@ -100,6 +111,7 @@ class ChiaRepl {
 
         // clear all these out so they aren't available in the repl when not connected
         this.repl.context.chiaDaemon = undefined;
+        this.repl.context.minter = undefined;
         this.repl.context.chia = undefined;
     }
 
@@ -108,6 +120,3 @@ class ChiaRepl {
         process.exit();
     }
 }
-
-const _ChiaRepl = ChiaRepl;
-export { _ChiaRepl as default };
