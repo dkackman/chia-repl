@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { setPrintFunction } from 'clvm_tools';
 
 // application entry point only - don't put anything else in here
-const options = settings.getSetting('.options', _options.defaultOptions);
+const options = settings.getSettingObject('.options', _options.defaultOptions);
 const chiaRepl = createRepl(options.cursor);
 chiaRepl.ready(options);
 

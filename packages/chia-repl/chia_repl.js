@@ -90,7 +90,7 @@ class ChiaRepl {
         const defaultSettings = localDaemonConnection;
         defaultSettings.prefix = 'xch';
 
-        this.repl.context.connection = settings.getSetting(`${lastConnectionName}.connection`, defaultSettings);
+        this.repl.context.connection = settings.getSettingObject(`${lastConnectionName}.connection`, defaultSettings);
     }
 
     clearChiaContext() {

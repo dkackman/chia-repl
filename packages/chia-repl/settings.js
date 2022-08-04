@@ -16,7 +16,7 @@ export function settingExists(name) {
     return fs.existsSync(path.join(settingsDir, name));
 }
 
-export function getSetting(name, def) {
+export function getSettingObject(name, def) {
     try {
         const json = fs.readFileSync(path.join(settingsDir, name));
         const saved = JSON.parse(json);
@@ -24,6 +24,17 @@ export function getSetting(name, def) {
             ...def,
             ...saved
         }; // merge saved setting with defaults in case a future version has added new fields
+    } catch (e) {
+        saveSetting(name, def);
+    }
+
+    return def;
+}
+
+export function getSetting(name, def) {
+    try {
+        const json = fs.readFileSync(path.join(settingsDir, name));
+        return JSON.parse(json);
     } catch (e) {
         saveSetting(name, def);
     }
