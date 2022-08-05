@@ -18,12 +18,12 @@ npm test
 
 ## Basic Usage
 
-You will need
+You will need:
 
 - Your own [nft.storage api key](https://nft.storage/docs/#get-an-api-token)
 - A valid chia node and its connection details
 
-The full workflow will
+The full workflow will:
 
 - Generate metadata for the NFT
 - Upload a file to [nft.storage](https://nft.storage) along with metadata
