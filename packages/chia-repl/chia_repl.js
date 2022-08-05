@@ -6,7 +6,7 @@ import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
-import { ContentHasher, MetadataFactory, upload, NftMinter } from 'chia-nft-minter';
+import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -34,7 +34,6 @@ export default class ChiaRepl {
         // this is nft stuff that doesn't need the connection
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
-        this.repl.context.uploadNft = upload;
 
         this.loadConnection();
 

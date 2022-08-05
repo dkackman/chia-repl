@@ -95,8 +95,6 @@ compile(chiaLisp, prefix, ...compileArgs)
                 Compiles a chialisp program into its address, clvm, puzzle, and puzzle_hash
 test(chiaLisp, compileArgs = [], programArgs = []))
                 Runs a chialisp program and displays its output
-uploadNft(dataFile, metadataContent, ipfsToken, licenseFile)
-                Uploads nft files to nft.storage. The minter uses this internally.
 ```
 
 ## Examples

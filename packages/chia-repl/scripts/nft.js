@@ -18,12 +18,12 @@ let collectionMetaData = metadataFactory.createCollectionMetadata('chia-repl-nft
         ['twitter', '@dkackman'],
         ['website', 'https://github.com/dkackman/chia-repl'],
     ]);
+
 let nftMetadata = metadataFactory.createNftMetadata('test-nft-by-you',
     collectionMetaData,
     [
-        ['trait_type', 'number'],
-        ['twitter', '@dkackman'],
-        ['website', 'https://github.com/dkackman/chia-repl'],
+        ['subject', 'flower'],
+        ['color', 'red'],
     ],
     'That picture is from my garden');
 
