@@ -16,6 +16,8 @@ npm install
 npm test
 ```
 
+Check out the [examples of using this from with the chia-repl](https://github.com/dkackman/chia-repl/wiki/NFT-Examples).
+
 ## Basic Usage
 
 You will need:
