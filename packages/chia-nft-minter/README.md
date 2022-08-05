@@ -7,8 +7,6 @@
 
 A JS client to encapsulate minting CHIA NFT's.
 
-_Super rough ATM._
-
 Heavily informed by [mintgarden](https://github.com/mintgarden-io/mintgarden-studio)
 
 ## Getting Started
@@ -24,7 +22,6 @@ You will need
 
 - Your own [nft.storage api key](https://nft.storage/docs/#get-an-api-token)
 - A valid chia node and its connection details
-- Patience because this thing just kinda works right now
 
 The full workflow will
 
