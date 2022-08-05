@@ -38,7 +38,7 @@ describe('chia-minter', () => {
         });
         it('createAttributeArray should create an array of {type, value} objects', () => {
             const factory = new MetadataFactory();
-            const attributeArray = factory.createAttributeArray([['_TYPE0_', '_VALUE0_'], ['_TYPE1_', '_VALUE1_']]);
+            const attributeArray = factory.createAttributeArray([['_TYPE0_', '_VALUE0_'], ['_TYPE1_', '_VALUE1_']], 'type');
             expect(_.isArray(attributeArray)).to.equal(true);
             expect(attributeArray.length).to.equal(2);
 
@@ -52,13 +52,48 @@ describe('chia-minter', () => {
         });
         it('addAttribute should append a new attribute object', () => {
             const factory = new MetadataFactory();
-            const attributeArray = factory.createAttributeArray([['_TYPE0_', '_VALUE0_'], ['_TYPE1_', '_VALUE1_']]);
-            factory.addAttribute(attributeArray, '_NEW_TYPE_', '_NEW_VALUE_');
+            const attributeArray = factory.createAttributeArray([['_TYPE0_', '_VALUE0_'], ['_TYPE1_', '_VALUE1_']], 'type');
+            factory.addAttribute(attributeArray, '_NEW_TYPE_', '_NEW_VALUE_', 'type');
             expect(attributeArray.length).to.equal(3);
 
             const attribute0 = attributeArray[2];
             expect(attribute0.type).to.equal('_NEW_TYPE_');
             expect(attribute0.value).to.equal('_NEW_VALUE_');
+        });
+        it('createCollectionMetadata should add attributes from name value pairs', () => {
+            const factory = new MetadataFactory();
+            const collectionMetadata = factory.createCollectionMetadata('_COLLECTION_NAME_',
+                [
+                    ['_TYPE0_', '_VALUE0_'],
+                    ['_TYPE1_', '_VALUE1_']
+                ]);
+            expect(_.isNil(collectionMetadata)).to.equal(false);
+            expect(_.isNil(collectionMetadata.attributes)).to.equal(false);
+            expect(collectionMetadata.attributes.length).to.equal(2);
+
+            const attribute0 = collectionMetadata.attributes[0];
+            expect(_.isNil(attribute0)).to.equal(false);
+            expect(_.isNil(attribute0.type)).to.equal(false);
+            expect(_.isNil(attribute0.value)).to.equal(false);
+        });
+        it('createCollectionMetadata should add attributes from array of attribute objects', () => {
+            const factory = new MetadataFactory();
+            const attributes = factory.createAttributeArray(
+                [
+                    ['_TYPE0_', '_VALUE0_'],
+                    ['_TYPE1_', '_VALUE1_']
+                ],
+                'type'
+            );
+            const collectionMetadata = factory.createCollectionMetadata('_COLLECTION_NAME_', attributes);
+            expect(_.isNil(collectionMetadata)).to.equal(false);
+            expect(_.isNil(collectionMetadata.attributes)).to.equal(false);
+            expect(collectionMetadata.attributes.length).to.equal(2);
+
+            const attribute0 = collectionMetadata.attributes[0];
+            expect(_.isNil(attribute0)).to.equal(false);
+            expect(_.isNil(attribute0.type)).to.equal(false);
+            expect(_.isNil(attribute0.value)).to.equal(false);
         });
     });
 });

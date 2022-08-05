@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('ipfs', () => {
-        it('should upload file _DEBUG_', async function() {
+        it('should upload file', async function() {
             this.timeout(30 * 1000);
             const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();
             const buffer = fs.readFileSync(path.join(__dirname, 'content', 'flower.png'));
