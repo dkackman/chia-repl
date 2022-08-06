@@ -151,6 +151,8 @@ export default function createRepl(cursor) {
             console.log(`${chalk.green('test')}${chalk.gray('(chiaLisp, compileArgs = [], programArgs = []))')}`);
             console.log('\t\tRuns a chialisp program and displays its output');
 
+            console.log(chalk.green('\nSee the chia-repl wiki for more help and examples'));
+            console.log(chalk.green('https://github.com/dkackman/chia-repl/wiki'));
             chiaRepl.repl.displayPrompt();
         }
     });
