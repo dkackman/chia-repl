@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
 import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
+import { loadScripts } from './scriptLoader.js';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -21,7 +22,7 @@ export default class ChiaRepl {
 
     get repl() { return this._repl; }
 
-    ready(options) {
+    async ready(options) {
         // these are the various helper modules that don't require the websocket connection
         this.repl.context.bls = bls;
         this.repl.context.options = options;
@@ -35,6 +36,8 @@ export default class ChiaRepl {
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
 
+        loadScripts(this.repl, options.scriptFolder);
+
         this.loadConnection();
 
         console.log(chalk.green('Welcome to Chia!'));
@@ -44,7 +47,7 @@ export default class ChiaRepl {
         }
 
         if (options.autoConnect) {
-            this.connect();
+            await this.connect();
         } else {
             this.repl.displayPrompt();
         }
