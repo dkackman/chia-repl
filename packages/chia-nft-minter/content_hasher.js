@@ -25,8 +25,17 @@ export default class ContentHasher {
      * @param {string} filepath - full path to a file
      * @returns The hash of the file contents
      */
-    hashFileContent(filepath) {
-        const content = fs.readFileSync(filepath);
+    async hashFileContent(filepath) {
+        const content = await new Promise(function (resolve, reject) {
+            fs.readFile(filepath, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+
         return this.hash(content);
     }
 
