@@ -3,11 +3,14 @@ import http from 'http';
 import https from 'https';
 import url from 'url';
 import fs from 'fs';
+import { promisify } from 'util';
 
 export default class ContentHasher {
     constructor(algorithm = 'sha256') {
         this.algorithm = algorithm;
+        this.readFile = promisify(fs.readFile);
     }
+
     /**
      *
      * @param {crypto.BinaryLike} content - The content to hash
@@ -26,15 +29,7 @@ export default class ContentHasher {
      * @returns The hash of the file contents
      */
     async hashFileContent(filepath) {
-        const content = await new Promise(function (resolve, reject) {
-            fs.readFile(filepath, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
-        });
+        const content = await this.readFile(filepath);
 
         return this.hash(content);
     }
