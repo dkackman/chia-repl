@@ -161,7 +161,7 @@ export default class NftMinter {
                 ];
                 licenseHash = hasher.hash(licenseFile.content);
             } else {
-                // in this case the license is elsewhere so refrence it and its content hash
+                // in this case the license is elsewhere so reference it and its content hash
                 licenseUris = [licenseFile.uri];
                 licenseHash = await hasher.hashUriContent(licenseFile.uri);
             }

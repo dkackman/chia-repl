@@ -1,6 +1,7 @@
-let collectionMetaData = metadataFactory.createCollectionMetadata('my-folder-collection',
-    ['Twitter', '@dkackman']
-    ['webstite', 'https://github.com/dkackman/chia-repl']);
+let collectionMetaData = metadataFactory.createCollectionMetadata('my-folder-collection', [
+    ['Twitter', '@dkackman'],
+    ['webstite', 'https://github.com/dkackman/chia-repl']
+]);
 
 await mintHelper.mintCollectionFromFolder(2,
     'txch1ysc4yqr20m27lwfag2ukx6vdktdlrt40zulfntrfy350sxsdlcjqrw5rz9',

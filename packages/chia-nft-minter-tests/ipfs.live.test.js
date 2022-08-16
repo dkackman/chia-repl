@@ -1,10 +1,9 @@
 import chai from 'chai';
-import { upload } from 'chia-nft-minter';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
-import { MetadataFactory } from 'chia-nft-minter';
+import { NftMinter, MetadataFactory } from 'chia-nft-minter';
 
 const expect = chai.expect;
 
@@ -30,7 +29,8 @@ describe('chia-minter', () => {
             const nftAttributes = factory.createAttributeArray([['trait_type0', 'trait_value0']]);
             const nftMetadata = factory.createNftMetadata('test-nft-dkackman', collectionMetaData, nftAttributes);
 
-            const result = await upload(file, nftMetadata, ipfsToken);
+            const minter = new NftMinter();
+            const result = await minter.upload(file, nftMetadata, ipfsToken);
             expect(result).to.not.equal(null);
             expect(result).to.not.equal(undefined);
 
