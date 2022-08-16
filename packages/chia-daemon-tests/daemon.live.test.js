@@ -13,10 +13,10 @@ const bad_connection = {
 
 // some tests assume that a daemon is reachable with these details
 const valid_connection = {
-    host: 'former',
+    host: '172.21.88.37',
     port: 55400,
-    key_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.key',
-    cert_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.crt',
+    key_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.key',
+    cert_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.crt',
     timeout_seconds: 10,
 };
 

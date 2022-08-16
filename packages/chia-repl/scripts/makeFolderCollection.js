@@ -7,6 +7,6 @@ await mintHelper.mintCollectionFromFolder(2,
     collectionMetaData,
     'C:\\tmp\\nft',
     '.jpg',
-    0,
+    10,
     'txch1ysc4yqr20m27lwfag2ukx6vdktdlrt40zulfntrfy350sxsdlcjqrw5rz9',
     150);

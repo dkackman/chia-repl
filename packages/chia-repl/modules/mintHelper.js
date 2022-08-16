@@ -48,8 +48,15 @@ export default class MintHelper {
     }
 
     async mintNFT(walletId, targetAddress, fullFilePath, collectionMetaData, editionNumber, editionTotal, fee, royaltyAddress, royaltyPercentage) {
-        const detectFile = promisify(this.magic.detectFile);
-        const type = await detectFile(fullFilePath);
+        const type = await new Promise((resolve, reject) => {
+            this.magic.detectFile(fullFilePath, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
 
         let dataFileInfo = {
             name: path.basename(fullFilePath, path.extname(fullFilePath)),
@@ -63,24 +70,35 @@ export default class MintHelper {
             royalty_address: royaltyAddress,
             royalty_percentage: royaltyPercentage,
             fee: fee,
-            editionNumber: editionNumber,
-            editionTotal: editionTotal,
+            edition_number: editionNumber,
+            edition_total: editionTotal,
         };
 
-        let nftMetadataStub = this.metadataFactory.createNftMetadata(dataFileInfo.name, collectionMetaData);
-        const metedataFileName = `${path.join(path.dirname(fullFilePath), path.basename(fullFilePath, path.extname(fullFilePath)))}.metadata.json`;
-
-        const readfile = promisify(fs.readfile);
-        const metadataFileContents = await readfile(metedataFileName);
-        if (metadataFileContents.code === undefined) {
-            metadata = JSON.parse(file);
-            nftMetadataStub = {
-                ...nftMetadataStub,
-                ...metadata
-            };
-        }
+        const metadata = await getMetadata(this.metadataFactory.createNftMetadata(dataFileInfo.name, collectionMetaData));
 
         console.log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
-        return await this.minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadataStub);
+        return await this.minter.createNftFromFile(dataFileInfo, mintingInfo, metadata);
     }
+}
+
+async function getMetadata(nftMetadataStub, fullFilePath) {
+    try {
+        // this will look for a file with the same base name as the main nft file but with '.metadata.json' as an exptension
+        // if present it will merge the contents of that file with the metadata stub we created above
+        const metadataFileName = `${path.join(path.dirname(fullFilePath), path.basename(fullFilePath, path.extname(fullFilePath)))}.metadata.json`;
+        const readFile = promisify(fs.readFile);
+
+        const metadataFileContents = await readFile(metadataFileName);
+        metadata = JSON.parse(metadataFileContents);
+
+        return {
+            ...nftMetadataStub,
+            ...metadata
+        };
+    } catch {
+        console.debug(`No metadata file for ${fullFilePath}`);
+    }
+
+    return nftMetadataStub;
+
 }
