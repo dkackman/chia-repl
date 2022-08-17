@@ -2,13 +2,11 @@ import crypto from 'crypto';
 import http from 'http';
 import https from 'https';
 import url from 'url';
-import fs from 'fs';
-import { promisify } from 'util';
+import { readFile } from 'fs/promises';
 
 export default class ContentHasher {
     constructor(algorithm = 'sha256') {
         this.algorithm = algorithm;
-        this.readFile = promisify(fs.readFile);
     }
 
     /**
@@ -29,7 +27,7 @@ export default class ContentHasher {
      * @returns The hash of the file contents
      */
     async hashFileContent(filepath) {
-        const content = await this.readFile(filepath);
+        const content = await readFile(filepath);
 
         return this.hash(content);
     }

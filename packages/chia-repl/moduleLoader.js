@@ -1,5 +1,5 @@
 import path from 'path';
-import { readdir } from 'fs/promises'
+import { readdir } from 'fs/promises';
 import os from 'os';
 import chalk from 'chalk';
 
