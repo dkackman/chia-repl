@@ -5,16 +5,19 @@ import _ from 'lodash';
 import { promisify } from 'util';
 
 export default class MintHelper {
-    constructor(minter, metadataFactory) {
-        if (_.isNil(minter)) {
-            throw Error('minter cannot be nil');
+    constructor(context) {
+        if (_.isNil(context)) {
+            throw Error('context cannot be nil');
         }
-        if (_.isNil(metadataFactory)) {
-            throw Error('metadataFactory cannot be nil');
+        if (_.isNil(context.minter)) {
+            throw Error('context.minter cannot be nil');
+        }
+        if (_.isNil(context.metadataFactory)) {
+            throw Error('context.metadataFactory cannot be nil');
         }
 
-        this.minter = minter;
-        this.metadataFactory = metadataFactory;
+        this.minter = context.minter;
+        this.metadataFactory = context.metadataFactory;
         this.magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
     }
 
