@@ -1,4 +1,4 @@
-import fs, { readFile } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import mmm from 'mmmagic';
 import _ from 'lodash';

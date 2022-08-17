@@ -8,7 +8,6 @@ import listener from './listen.js';
 import clvm from 'clvm';
 import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
 import loadModules from './moduleLoader.js';
-import MintHelper from './modules/mintHelper.js';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -36,8 +35,6 @@ export default class ChiaRepl {
         // this is nft stuff that doesn't need the connection
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
-
-        //loadScripts(this.repl, options.scriptFolder);
 
         this.loadConnection();
 
@@ -83,7 +80,6 @@ export default class ChiaRepl {
             if (ipfsToken !== undefined && ipfsToken.length > 0) {
                 this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
                 await loadModules(this.repl.context, this.repl.context.options.scriptFolder);
-                //this.repl.context.mintHelper = new MintHelper(this.repl.context);
             } else if (this.repl.context.options.verbosity !== 'quiet') {
                 console.log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'));
             }

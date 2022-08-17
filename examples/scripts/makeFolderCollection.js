@@ -1,3 +1,7 @@
+//
+// this is an example of how to call the mintHelper user module
+//
+
 let collectionMetaData = metadataFactory.createCollectionMetadata('my-folder-collection', [
     ['Twitter', '@dkackman'],
     ['webstite', 'https://github.com/dkackman/chia-repl']

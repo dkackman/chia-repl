@@ -1,0 +1,19 @@
+{
+  "name": "minthelper",
+  "version": "1.0.0",
+  "description": "chia-repl helper module for minting NFTs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chia",
+    "nft"
+  ],
+  "author": "dkackman@gmail.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "mmmagic": "^0.5.3"
+  }
+}
