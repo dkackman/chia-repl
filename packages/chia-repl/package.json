@@ -30,7 +30,8 @@
     "clvm": "^2.0.0",
     "clvm_tools": "^0.9.5",
     "keypress": "^0.2.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "mmmagic": "^0.5.3"
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",

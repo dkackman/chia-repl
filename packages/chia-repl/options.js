@@ -3,4 +3,5 @@ export let defaultOptions = {
     autoConnect: false,
     verbosity: 'normal',
     ipfsToken: '',
+    scriptFolder: '~/.chia-repl/scripts'
 };

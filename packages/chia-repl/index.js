@@ -7,7 +7,7 @@ import _ from 'lodash';
 // application entry point only - don't put anything else in here
 const options = settings.getSettingObject('.options', _options.defaultOptions);
 const chiaRepl = createRepl(options.cursor);
-chiaRepl.ready(options);
+await chiaRepl.ready(options);
 
 // this is used by the test script to see if we can start cleanly
 // and exit from the CI build.

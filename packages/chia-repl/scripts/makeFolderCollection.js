@@ -3,11 +3,11 @@ let collectionMetaData = metadataFactory.createCollectionMetadata('my-folder-col
     ['webstite', 'https://github.com/dkackman/chia-repl']
 ]);
 
-await mintCollectionFromFolder(2,
-    'txch1ysc4yqr20m27lwfag2ukx6vdktdlrt40zulfntrfy350sxsdlcjqrw5rz9',
+await mintHelper.mintCollectionFromFolder(2,
+    'txch1xvggspky3kh2tdwd252j04d6mjytsryexkpmgf4s22utu4qjvmfq5dfkzy',
     collectionMetaData,
     'C:\\tmp\\nft',
     '.jpg',
-    0,
-    'txch1ysc4yqr20m27lwfag2ukx6vdktdlrt40zulfntrfy350sxsdlcjqrw5rz9',
+    10,
+    'txch1xvggspky3kh2tdwd252j04d6mjytsryexkpmgf4s22utu4qjvmfq5dfkzy',
     150);
