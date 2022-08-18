@@ -1,8 +1,7 @@
-import fs from 'fs';
+import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import mmm from 'mmmagic';
 import _ from 'lodash';
-import { promisify } from 'util';
 
 export default class MintHelper {
     constructor(context) {
@@ -26,28 +25,36 @@ export default class MintHelper {
         this.minter.licenseFileInfo = { type: 'application/pdf', uri: 'https://bafybeibbnjrv3nwlq6gnx3bd5l2uwozxek4sm6ad4j2gazgv3paouldvai.ipfs.nftstorage.link/license' };
 
         const spendBundles = [];
-
-        const readdir = promisify(fs.readdir);
         const fileList = await readdir(folderPath);
+        const files = fileList.filter(file => path.extname(file).toLowerCase() === nftFileExt);
+        const editionTotal = files.length;
 
-        let editionNumber = 1;
-        const editionTotal = fileList.length;
-        for await (let file of fileList.filter(file => path.extname(file).toLowerCase() === nftFileExt)) {
-            const sb = await this.mintNFT(walletId,
-                targetAddress,
-                path.join(folderPath, file),
-                collectionMetaData,
-                editionNumber,
-                editionTotal,
-                fee,
-                royaltyAddress,
-                royaltyPercentage);
+        try {
+            let editionNumber = 1;
+            for await (const file of asyncIterator(files)) {
+                const sb = await this.mintNFT(walletId,
+                    targetAddress,
+                    path.join(folderPath, file),
+                    collectionMetaData,
+                    editionNumber,
+                    editionTotal,
+                    fee,
+                    royaltyAddress,
+                    royaltyPercentage);
 
-            spendBundles.push(sb);
-            editionNumber++;
+                spendBundles.push(sb);
+                editionNumber++;
+            }
+
+            return spendBundles;
+        } catch (e) {
+            console.log(e);
+            if (e.message.indexOf('Can\'t select amount higher than our spendable balance') > -1) {
+                console.log('Make sure your main wallet is funded and is divided into a number of small coins.');
+            }
         }
 
-        return spendBundles;
+        return [];
     }
 
     async mintNFT(walletId, targetAddress, fullFilePath, collectionMetaData, editionNumber, editionTotal, fee, royaltyAddress, royaltyPercentage) {
@@ -78,9 +85,14 @@ export default class MintHelper {
         };
 
         const metadata = await getMetadata(this.metadataFactory.createNftMetadata(dataFileInfo.name, collectionMetaData));
-
         console.log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
         return await this.minter.createNftFromFile(dataFileInfo, mintingInfo, metadata);
+    }
+}
+
+async function* asyncIterator(list) {
+    for (let i = 0; i < list.length; i++) {
+        yield list[i];
     }
 }
 
@@ -89,7 +101,6 @@ async function getMetadata(nftMetadataStub, fullFilePath) {
         // this will look for a file with the same base name as the main nft file but with '.metadata.json' as an exptension
         // if present it will merge the contents of that file with the metadata stub we created above
         const metadataFileName = `${path.join(path.dirname(fullFilePath), path.basename(fullFilePath, path.extname(fullFilePath)))}.metadata.json`;
-        const readFile = promisify(fs.readFile);
 
         const metadataFileContents = await readFile(metadataFileName);
         metadata = JSON.parse(metadataFileContents);
@@ -103,5 +114,4 @@ async function getMetadata(nftMetadataStub, fullFilePath) {
     }
 
     return nftMetadataStub;
-
 }

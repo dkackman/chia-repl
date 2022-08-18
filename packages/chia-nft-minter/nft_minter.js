@@ -63,14 +63,19 @@ export default class NftMinter {
 
         let token;
         this.ipfsToken.value(plainText => token = plainText.toString());
+        console.log(`Uploading ${dataFile.name}...`);
+
         const ipfsData = await this.upload(dataFile, JSON.stringify(metadata, null, 2), token, licenseFile);
         try {
+            console.log(`Minting ${dataFile.name}...`);
+
             return await this.createNftFromIpfs(mintingInfo, ipfsData);
         }
         catch (e) {
             // TODO figure out how to delete the uploaded files.
-            console.log('Files uploaded but NFT creation failed');
-            console.log(ipfsData);
+            console.log('Files uploaded but NFT creation failed.\nUndoing upload. The original files remain.');
+            const client = new NFTStorage({ token: token });
+            await client.delete(ipfsData.cid);
 
             throw e;
         }
@@ -168,6 +173,7 @@ export default class NftMinter {
         }
 
         return {
+            cid: cid,
             dataUris: [
                 `https://nftstorage.link/ipfs/${cid}/${encodeURIComponent(dataFile.name)}`,
                 `ipfs://${cid}/${encodeURIComponent(dataFile.name)}`,
