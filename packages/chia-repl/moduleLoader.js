@@ -23,7 +23,7 @@ export default async function loadModules(context, scriptFolder) {
         if (context[moduleName] === undefined) {
             try {
                 // this requires that the following e true:
-                // - `dir` (ie the folder name) is considered the name of the module
+                // - `dir` (ie the folder name) is used as the name of the module
                 // - in the dir we're looking at, there is a file with the same name and the mjs extension
                 // - the mjs module has all of its dependencies installed
                 // - the mjs module has a default export
