@@ -4,6 +4,7 @@ import * as settings from './settings.js';
 import chalk from 'chalk';
 import ChiaRepl from './chia_repl.js';
 import _ from 'lodash';
+import log from './logger.js';
 
 // this module is responsible for creating and configuring the repl and ChiaRepl
 // instances and then smashing them together
@@ -23,7 +24,7 @@ export default function createRepl(cursor) {
         help: 'Opens the websocket connection to the chia daemon using the currently loaded connection',
         async action() {
             if (chiaRepl.repl.context.chiaDaemon !== undefined) {
-                console.log('Already connected. Use .disconnect first');
+                log('Already connected. Use .disconnect first', 'warning');
                 chiaRepl.repl.displayPrompt();
             } else {
                 await chiaRepl.connect();
@@ -35,7 +36,7 @@ export default function createRepl(cursor) {
         help: 'Closes the websocket connection to the chia daemon',
         action() {
             if (chiaRepl.repl.context.chiaDaemon === undefined) {
-                console.log('Not connected');
+                log('Not connected', 'warning');
                 chiaRepl.repl.displayPrompt();
             } else {
                 chiaRepl.disconnect();
@@ -47,9 +48,9 @@ export default function createRepl(cursor) {
         help: 'Loads a saved connection with an optional name',
         action(name) {
             if (chiaRepl.repl.context.chiaDaemon !== undefined) {
-                console.log('Currently connected. Use .disconnect first');
+                log('Currently connected. Use .disconnect first', 'warning');
             } else if (name !== undefined && !settings.settingExists(`${name}.connection`)) {
-                console.log(`No connection named ${name} found`);
+                log(`No connection named ${name} found`, 'error');
             } else {
                 settings.saveSetting('.lastConnectionName', name);
                 chiaRepl.loadConnection();

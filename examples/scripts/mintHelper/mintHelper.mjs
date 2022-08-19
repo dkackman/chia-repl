@@ -17,6 +17,7 @@ export default class MintHelper {
 
         this.minter = context.minter;
         this.metadataFactory = context.metadataFactory;
+        this.log = context.log;
         this.magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
     }
 
@@ -50,7 +51,7 @@ export default class MintHelper {
         } catch (e) {
             console.log(e);
             if (e.message.indexOf('Can\'t select amount higher than our spendable balance') > -1) {
-                console.log('Make sure your main wallet is funded and is divided into a number of small coins.');
+                this.log('Make sure your main wallet is funded and is divided into a number of small coins.', 'warning');
             }
         }
 
@@ -85,7 +86,7 @@ export default class MintHelper {
         };
 
         const metadata = await getMetadata(this.metadataFactory.createNftMetadata(dataFileInfo.name, collectionMetaData));
-        console.log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
+        log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
         return await this.minter.createNftFromFile(dataFileInfo, mintingInfo, metadata);
     }
 }

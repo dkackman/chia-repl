@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
+import log from './logger.js';
 
 /* jshint ignore:start */
 export const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,7 +50,7 @@ export function saveSetting(name, setting) {
         }
         fs.writeFileSync(path.join(settingsDir, name), JSON.stringify(setting, null, 2));
     } catch (e) {
-        console.log(e);
+        log(e, 'error');
     }
 }
 

@@ -40,6 +40,6 @@ function loadCompletions(rootDir) {
         completions.push(...c);
     }
     catch (err) {
-        console.log(err);
+        console.debug(err);
     }
 }

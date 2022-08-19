@@ -8,6 +8,8 @@ import listener from './listen.js';
 import clvm from 'clvm';
 import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
 import loadModules from './moduleLoader.js';
+import log from './logger.js';
+import { setVerbosity } from './logger.js';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -38,11 +40,12 @@ export default class ChiaRepl {
 
         this.loadConnection();
 
-        console.log(chalk.green('Welcome to Chia!'));
-        if (options.verbosity !== 'quiet') {
-            console.log(chalk.gray('Type .help or .more-help to get started'));
-            console.log(`\nCurrent connection address is wss://${chalk.blue(this.repl.context.connection.host)}:${this.repl.context.connection.port}`);
-        }
+        setVerbosity(options.verbosity);
+        log(chalk.green('Welcome to Chia!'));
+        log('Type .help or .more-help to get started', 'status');
+        log(`\nCurrent connection address is wss://${chalk.blue(this.repl.context.connection.host)}:${this.repl.context.connection.port}`);
+
+        this.repl.context.log = log; // save the logger function so that scripts & modules can share verbosity levels with the main app
 
         if (options.autoConnect) {
             await this.connect();
@@ -53,24 +56,23 @@ export default class ChiaRepl {
 
     async connect(service_name = 'chia_repl') {
         const chiaDaemon = new ChiaDaemon(this.repl.context.connection, service_name);
-        chiaDaemon.once('connecting', (address) => console.log(`Connecting to ${address}...`));
+        chiaDaemon.once('connecting', (address) => log(`Connecting to ${address}...`, 'status'));
 
-        chiaDaemon.once('connected', () => console.log('Connected'));
+        chiaDaemon.once('connected', () => log('Connected'));
 
         chiaDaemon.once('disconnected', () => {
             this.clearChiaContext();
-            console.log('Disconnected');
+            log('Disconnected');
             this.repl.displayPrompt();
         });
 
         chiaDaemon.on('socket-error', (e) => {
             this.clearChiaContext();
-            console.log(e);
+            log(e, 'error');
             this.repl.displayPrompt();
         });
 
         chiaDaemon.listen = async () => await listener(chiaDaemon);
-
 
         if (await chiaDaemon.connect()) {
             this.repl.context.chiaDaemon = chiaDaemon;
@@ -80,8 +82,8 @@ export default class ChiaRepl {
             if (ipfsToken !== undefined && ipfsToken.length > 0) {
                 this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
                 await loadModules(this.repl.context, this.repl.context.options.scriptFolder);
-            } else if (this.repl.context.options.verbosity !== 'quiet') {
-                console.log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'));
+            } else {
+                log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'), 'status');
             }
 
             this.repl.displayPrompt();

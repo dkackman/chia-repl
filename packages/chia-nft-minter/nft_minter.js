@@ -72,8 +72,7 @@ export default class NftMinter {
             return await this.createNftFromIpfs(mintingInfo, ipfsData);
         }
         catch (e) {
-            // TODO figure out how to delete the uploaded files.
-            console.log('Files uploaded but NFT creation failed.\nUndoing upload. The original files remain.');
+            console.log('Files uploaded but NFT creation failed.\nUndoing upload.');
             const client = new NFTStorage({ token: token });
             await client.delete(ipfsData.cid);
 

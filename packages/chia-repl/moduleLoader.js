@@ -1,7 +1,7 @@
 import path from 'path';
 import { readdir } from 'fs/promises';
 import os from 'os';
-import chalk from 'chalk';
+import log from './logger.js';
 
 const homeDirectory = os.homedir();
 
@@ -34,13 +34,13 @@ export default async function loadModules(context, scriptFolder) {
 
                 const ctor = module.default;
                 context[moduleName] = new ctor(context);
-                console.log(chalk.gray(`Loaded ${moduleName} module`));
+                log(`Loaded ${moduleName} module`, 'status');
             } catch (e) {
-                console.log(`Could not load module ${moduleName}`);
-                console.log(e);
+                log(`Could not load module ${moduleName}`, 'warning');
+                log(e, 'error');
             }
         } else {
-            console.log(`${moduleName} already exists. This module has been skipped.`);
+            log(`${moduleName} already exists. This module has been skipped.`, 'warning');
         }
     }
 }
