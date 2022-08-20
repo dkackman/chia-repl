@@ -17,6 +17,8 @@ A REPL tool for Chia that incorporates various chia and crypto utilities in a si
 - [chia-daemon](https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon)
 - [chia-nft-minter](https://github.com/dkackman/chia-repl/tree/main/packages/chia-nft-minter)
 
+The wiki has [more examples and detail](https://github.com/dkackman/chia-repl/wiki).
+
 ## Packaged
 
 ```shell
