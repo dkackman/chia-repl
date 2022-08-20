@@ -17,7 +17,6 @@ export default class MintHelper {
 
         this.minter = context.minter;
         this.metadataFactory = context.metadataFactory;
-        this.log = context.log;
         this.magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
     }
 
@@ -86,7 +85,7 @@ export default class MintHelper {
         };
 
         const metadata = await getMetadata(this.metadataFactory.createNftMetadata(dataFileInfo.name, collectionMetaData));
-        log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
+        console.log(`Minting ${dataFileInfo.name} (${editionNumber} of ${editionTotal})...`);
         return await this.minter.createNftFromFile(dataFileInfo, mintingInfo, metadata);
     }
 }
