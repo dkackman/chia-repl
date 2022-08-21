@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
 import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
-import loadModules from './moduleLoader.js';
+import ModuleManager from './moduleManager.js';
 import log from './logger.js';
 import { setVerbosity } from './logger.js';
 
@@ -37,6 +37,7 @@ export default class ChiaRepl {
         // this is nft stuff that doesn't need the connection
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
+        this.moduleManager = new ModuleManager(options.scriptFolder);
 
         this.loadConnection();
 
@@ -81,7 +82,7 @@ export default class ChiaRepl {
             const ipfsToken = this.repl.context.options.ipfsToken;
             if (ipfsToken !== undefined && ipfsToken.length > 0) {
                 this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
-                await loadModules(this.repl.context, this.repl.context.options.scriptFolder);
+                await this.moduleManager.loadModules(this.repl.context);
             } else {
                 log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'), 'status');
             }
@@ -96,6 +97,7 @@ export default class ChiaRepl {
     disconnect() {
         if (this.repl.context.chiaDaemon !== undefined) {
             this.repl.context.chiaDaemon.disconnect();
+            this.moduleManager.unloadModules(this.repl.context);
         }
     }
 
