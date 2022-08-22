@@ -25,6 +25,8 @@ export default class ChiaRepl {
     get repl() { return this._repl; }
 
     async ready(options) {
+        setVerbosity(options.verbosity);
+
         // these are the various helper modules that don't require the websocket connection
         this.repl.context.bls = bls;
         this.repl.context.options = options;
@@ -41,7 +43,6 @@ export default class ChiaRepl {
 
         this.loadConnection();
 
-        setVerbosity(options.verbosity);
         log(chalk.green('Welcome to Chia!'));
         log('Type .help or .more-help to get started', 'status');
         log(`\nCurrent connection address is wss://${chalk.blue(this.repl.context.connection.host)}:${this.repl.context.connection.port}`);

@@ -8,9 +8,13 @@ const homeDirectory = os.homedir();
 
 export default class ModuleManager {
     constructor(scriptFolder) {
+        if (scriptFolder === undefined) {
+            log('No script folder set. User modules will not be loaded.', 'debug');
+        } else {
+            log(`Script folder set to ${scriptFolder}`, 'debug');
+        }
         this.scriptFolder = scriptFolder;
-        // this keeps the list of modules loaded so they can be cleared out later
-        this.modules = [];
+        this.modules = []; // this keeps the list of modules loaded so they can be cleared out later
     }
 
     unloadModules(context) {
