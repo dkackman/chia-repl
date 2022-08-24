@@ -1,7 +1,7 @@
 {
   "name": "chia-repl",
   "version": "0.14.0",
-  "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.",
+  "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environment.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

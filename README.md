@@ -7,7 +7,7 @@
   <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dm/chia-repl.svg?sanitize=true" alt="Monthly Downloads"></a>
   <a href="https://www.npmjs.com/package/chia-repl"><img src="https://img.shields.io/npm/dt/chia-repl.svg?sanitize=true" alt="Total Downloads"></a>
 
-A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environent.
+A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environment.
 
 - [Chia RPC](https://dkackman.github.io/chia-api/)
 - [clvm_tools-js](https://github.com/Chia-Mine/clvm_tools-js)
