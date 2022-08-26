@@ -175,12 +175,13 @@ export default class ChiaDaemon extends EventEmitter {
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
         const start = Date.now();
+        const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
 
         // wait here until an incoming response shows up
         while (!this.incoming.has(outgoingMsg.request_id)) {
             await timer(100);
             const elapsed = Date.now() - start;
-            if (elapsed / 1000 > this.connection.timeout_seconds) {
+            if (elapsed > timeoutMilliseconds) {
                 //clean up anything lingering for this message
                 if (this.outgoing.has(outgoingMsg.request_id)) {
                     this.outgoing.delete(outgoingMsg.request_id);
