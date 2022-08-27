@@ -7,7 +7,7 @@ let collectionMetaData = metadataFactory.createCollectionMetadata('my-folder-col
     ['webstite', 'https://github.com/dkackman/chia-repl']
 ]);
 
-await mintHelper.mintCollectionFromFolder(2,
+await mintHelper.mintCollectionFromFolder(1,
     'txch1xvggspky3kh2tdwd252j04d6mjytsryexkpmgf4s22utu4qjvmfq5dfkzy',
     collectionMetaData,
     'C:\\tmp\\nft',
