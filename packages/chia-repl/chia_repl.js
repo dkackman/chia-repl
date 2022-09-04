@@ -83,10 +83,10 @@ export default class ChiaRepl {
             const ipfsToken = this.repl.context.options.ipfsToken;
             if (ipfsToken !== undefined && ipfsToken.length > 0) {
                 this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
-                await this.moduleManager.loadModules(this.repl.context);
             } else {
                 log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'), 'status');
             }
+            await this.moduleManager.loadModules(this.repl.context);
 
             this.repl.displayPrompt();
             return true;

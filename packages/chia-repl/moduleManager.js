@@ -18,13 +18,11 @@ export default class ModuleManager {
     }
 
     unloadModules(context) {
-        if (this.scriptFolder === undefined) {
-            return;
-        }
         if (_.isNil(context)) {
             throw new Error('context cannot be nil');
         }
 
+        // clear any loaded modules from the context
         this.modules.forEach(item => context[item] = undefined);
         this.modules = [];
     }
@@ -39,13 +37,7 @@ export default class ModuleManager {
 
         const fullFolderPath = untildify(this.scriptFolder);
 
-        const getDirectories = async source =>
-            (await readdir(source, { withFileTypes: true }))
-                .filter(dirent => dirent.isDirectory())
-                .map(dirent => dirent.name);
-        const modules = await getDirectories(fullFolderPath);
-
-        for await (const moduleName of asyncIterator(modules)) {
+        for await (const moduleName of asyncIterator(getDirectories(fullFolderPath))) {
             // make sure we don't overwrite anything
             if (context[moduleName] === undefined) {
                 try {
@@ -61,7 +53,7 @@ export default class ModuleManager {
 
                     const ctor = module.default;
                     context[moduleName] = new ctor(context);
-                    this.modules.push(moduleName)
+                    this.modules.push(moduleName);
                     log(`Loaded ${moduleName} module`, 'status');
                 } catch (e) {
                     log(`Could not load module ${moduleName}`, 'warning');
@@ -79,6 +71,13 @@ async function* asyncIterator(list) {
         yield list[i];
     }
 }
+
+async function getDirectories(source) {
+    return (await readdir(source, { withFileTypes: true }))
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => dirent.name);
+}
+
 
 function untildify(pathWithTilde) {
     if (typeof pathWithTilde !== 'string') {
