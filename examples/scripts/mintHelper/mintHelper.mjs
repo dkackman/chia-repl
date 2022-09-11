@@ -85,7 +85,7 @@ export default class MintHelper {
 
         try {
             let editionNumber = 1;
-            for await (const file of asyncIterator(files)) {
+            for (const file of files) {
                 const sb = await this.mintNFT(walletId,
                     targetAddress,
                     path.join(folderPath, file),
@@ -163,10 +163,3 @@ export default class MintHelper {
         return nftMetadataStub;
     }
 }
-
-async function* asyncIterator(list) {
-    for (let i = 0; i < list.length; i++) {
-        yield list[i];
-    }
-}
-

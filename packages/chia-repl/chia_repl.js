@@ -10,6 +10,7 @@ import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
 import ModuleManager from './moduleManager.js';
 import log from './logger.js';
 import { setVerbosity } from './logger.js';
+import axios from 'axios';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -28,6 +29,7 @@ export default class ChiaRepl {
         setVerbosity(options.verbosity);
 
         // these are the various helper modules that don't require the websocket connection
+        this.repl.context.axios = axios;
         this.repl.context.bls = bls;
         this.repl.context.options = options;
         this.repl.context.clvm_tools = compiler.clvm_tools;
