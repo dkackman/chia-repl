@@ -24,7 +24,7 @@ async function txt2nft(prompt, wallet_id, fee = 1000, collectionName = "An NFT C
     traits.push(['unet', `${image_data.data.model.unet[0]}-${image_data.data.model.unet[1]}`]);
     traits.push(['vae', `${image_data.data.model.vae[0]}-${image_data.data.model.vae[1]}`]);
 
-    traits.push(['guidance_scale', image_data.data.parameters.guidance_scale]);
+    traits.push(['guidance_scale', image_data.data.parameters.guidance_scale.toString()]); // CHIPS-0007 schema doesn't allow floats
     traits.push(['height', image_data.data.parameters.height]);
     traits.push(['num_images', image_data.data.parameters.num_images]);
     traits.push(['num_inference_steps', image_data.data.parameters.num_inference_steps]);
