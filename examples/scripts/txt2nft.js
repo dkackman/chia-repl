@@ -1,13 +1,14 @@
-
-
-async function txt2nft(prompt, wallet_id, fee = 1000, collectionName = "An NFT Collection from stable diffusion") {
+//
+// A minimal demostration of how to use fing and chia-repl to generate a stable-diffusion image and create an NFT
+// 1. Generate image & metadat from text
+// 2. Transform meta data into traits
+// 3. Push metadata and image to nft.storage
+// 4. Mint NFT with the resulting links
+//
+async function txt2nft(prompt, wallet_id, target_address, fee = 1000, collectionName = "An NFT Collection from stable diffusion") {
+    // this first part is using fing to generate the image and meta data
+    // https://github.com/dkackman/fing
     const image_data = await axios.get(`http://localhost:9147/txt2img_metadata?prompt=${prompt}`);
-
-    const collection = metadataFactory.createCollectionMetadata(collectionName, [
-        ['description', 'An NFT collection of generative art'],
-        ['twitter', '@dkackman'],
-        ['website', 'https://github.com/dkackman/fing'],
-    ]);
 
     const traits = [];
     traits.push(['model_name', image_data.data.model._class_name]);
@@ -31,6 +32,14 @@ async function txt2nft(prompt, wallet_id, fee = 1000, collectionName = "An NFT C
     traits.push(['prompt', image_data.data.parameters.prompt]);
     traits.push(['width', image_data.data.parameters.width]);
 
+    // evverything form here on down assumes you are in the chia-repl
+    // the same concepts would apply with any other integration to nft.storage and chia rpc
+    const collection = metadataFactory.createCollectionMetadata(collectionName, [
+        ['description', 'An NFT collection of generative art made with fing and chia-repl'],
+        ['twitter', '@dkackman'],
+        ['website', 'https://github.com/dkackman/fing'],
+    ]);
+
     const metadata = metadataFactory.createNftMetadata(prompt, collection, traits);
     const dataFile = {
         name: `${prompt}.jpg`,
@@ -44,7 +53,7 @@ async function txt2nft(prompt, wallet_id, fee = 1000, collectionName = "An NFT C
 
     const mingtingInfo = {
         wallet_id: wallet_id,
-        target_address: 'txch1xll7nsjvssha50p2ahczgenrnvz3ejrkkxg8ppq4uqm47mf2np8qlmkyvu',
+        target_address: target_address,
         fee: fee,
     };
 
