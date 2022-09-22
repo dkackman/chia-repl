@@ -1,15 +1,9 @@
 openapi: 3.0.3
 info:
-  description: >-
-    The Chia node and services come with a JSON RPC API server that allows you
-    to access information and control the services.  These are accessible via
-    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
-    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
-    to the internet. TLS certificates are used to secure the communication 
-    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
-
+  description: |-
+    The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The daemon uses port 55400 by default.
-  version: 1.5.1
+  version: 1.6.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -52,9 +46,7 @@ components:
         application/json:
           schema:
             type: object
-            description: >-
-              Success indicator and optional error message included in all
-              responses
+            description: Success indicator and optional error message included in all responses
             required: &ref_1
               - success
             properties: &ref_2
@@ -67,9 +59,7 @@ components:
   schemas:
     k_size: &ref_3
       type: integer
-      description: >-
-        Defines the size of a plot. 25 is used for testing only.
-        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
       enum: &ref_0
         - 25
@@ -94,9 +84,7 @@ components:
           description: The number of plots that will be made, in sequence.
         k:
           type: integer
-          description: >-
-            Defines the size of a plot. 25 is used for testing only.
-            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
           default: 32
           enum: *ref_0
         queue:
@@ -104,74 +92,44 @@ components:
           default: default
         t:
           type: string
-          description: >
-            Define the temporary directory for plot creation. This is where
-            Plotting  Phase 1 (Forward Propagation) and Phase 2
-            (Backpropagation) both occur.  The -t dir requires the largest
-            working space: normally about 2.5 times the size of the final plot.
+          description: |
+            Define the temporary directory for plot creation. This is where Plotting  Phase 1 (Forward Propagation) and Phase 2 (Backpropagation) both occur.  The -t dir requires the largest working space: normally about 2.5 times the size of the final plot.
         t2:
           type: string
-          description: >-
-            Define a secondary temporary directory for plot creation. This is
-            where Plotting Phase 3 (Compression) and Phase 4 (Checkpoints)
-            occur.
+          description: Define a secondary temporary directory for plot creation. This is where Plotting Phase 3 (Compression) and Phase 4 (Checkpoints) occur.
         d:
           type: string
-          description: >-
-            Define the final location for plot(s). Of course, -d should have
-            enough free space as the final size of the plot. This directory is
-            automatically added to your ~/.chia/VERSION/config/config.yaml file.
+          description: Define the final location for plot(s). Of course, -d should have enough free space as the final size of the plot. This directory is automatically added to your ~/.chia/VERSION/config/config.yaml file.
         b:
           type: integer
           format: int32
           default: 4608
-          description: >-
-            Define memory/RAM usage. Default is 4608 (4.6 GiB). More RAM will
-            marginally increase speed of plot creation. Please bear in mind that
-            this is what is allocated to the plotting algorithm alone. Code,
-            container, libraries etc. will require additional RAM from your
-            system.
+          description: Define memory/RAM usage. Default is 4608 (4.6 GiB). More RAM will marginally increase speed of plot creation. Please bear in mind that this is what is allocated to the plotting algorithm alone. Code, container, libraries etc. will require additional RAM from your system.
         u:
           type: integer
           format: int32
           default: 128
-          description: >-
-            More buckets require less RAM but more random seeks to disk. With
-            spinning disks you want less buckets and with NVMe more buckets.
-            There is no significant benefit from using smaller buckets - just
-            use 128
+          description: More buckets require less RAM but more random seeks to disk. With spinning disks you want less buckets and with NVMe more buckets. There is no significant benefit from using smaller buckets - just use 128
         a:
           type: integer
           format: uint32
           nullable: true
-          description: >-
-            This is the key Fingerprint used to select both the Farmer and Pool
-            Public Keys to use. Utilize this when you want to select one key out
-            of several in your keychain.
+          description: This is the key Fingerprint used to select both the Farmer and Pool Public Keys to use. Utilize this when you want to select one key out of several in your keychain.
         c:
           type: string
           description: The pool contract address.
         p:
           type: string
-          description: >-
-            This is your "Pool Public Key". Utilise this when you want to create
-            plots on other machines for which you do not want to give full chia
-            account access.
+          description: This is your "Pool Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access.
         f:
           type: string
-          description: >-
-            This is your "Farmer Public Key". Utilise this when you want to
-            create plots on other machines for which you do not want to give
-            full chia account access
+          description: This is your "Farmer Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access
         memo:
           type: string
         e:
           type: boolean
           default: false
-          description: >-
-            Setting to true will disable the bitfield plotting algorithm, and
-            revert back to the older b17 plotting style. After 1.0.4 it's better
-            to use bitfield for most cases
+          description: Setting to true will disable the bitfield plotting algorithm, and revert back to the older b17 plotting style. After 1.0.4 it's better to use bitfield for most cases
         r:
           type: integer
           format: int32
@@ -241,9 +199,7 @@ components:
           type: string
         size:
           type: integer
-          description: >-
-            Defines the size of a plot. 25 is used for testing only.
-            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
           default: 32
           enum: *ref_0
         state:
@@ -300,15 +256,10 @@ components:
     bearerAuth:
       type: http
       scheme: mutual
-      description: >-
-        -> Chia uses [mutualTLS
-        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
-        client and server share TLS keys.
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Daemon
-    description: >-
-      The daemon interface is exposed on port 55400 by default and uses
-      WebSockets only. It can be used to interact with other service endpoints.
+    description: The daemon interface is exposed on port 55400 by default and uses WebSockets only. It can be used to interact with other service endpoints.
   - name: Key Ring
     description: Methods for managing keys and the keyring.
   - name: Plotter
@@ -319,9 +270,7 @@ paths:
       tags:
         - Daemon
       summary: Registers this daemon to receive messages.
-      description: >-
-        Registers this daemon to receive messages. This is needed to receive
-        responses from services other than the daemon.
+      description: Registers this daemon to receive messages. This is needed to receive responses from services other than the daemon.
       operationId: register_service
       requestBody:
         description: Request body with the name of a service
@@ -338,17 +287,13 @@ paths:
                     properties:
                       queue:
                         type: array
-                        description: >-
-                          Only present when the registered service name is
-                          'chia_plotter'
+                        description: Only present when the registered service name is 'chia_plotter'
                         items:
                           type: object
                           description: An entry in the plot queue.
                           properties: *ref_5
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /start_service:
@@ -401,10 +346,7 @@ paths:
       tags:
         - Daemon
       summary: Tells the daemon at the RPC endpoint to exit.
-      description: >-
-        Tells the daemon at the RPC endpoint to exit. There isn't a way to start
-        the daemon remotely via RPC, so take care that you have access to the
-        RPC host if needed.
+      description: Tells the daemon at the RPC endpoint to exit. There isn't a way to start the daemon remotely via RPC, so take care that you have access to the RPC host if needed.
       operationId: exit
       requestBody:
         description: Empty request body
@@ -437,9 +379,7 @@ paths:
                       is_running:
                         type: boolean
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /get_version:
@@ -465,9 +405,7 @@ paths:
                       version:
                         type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /get_status:
@@ -493,9 +431,7 @@ paths:
                       genesis_initialized:
                         type: boolean
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /get_plotters:
@@ -524,9 +460,7 @@ paths:
                           type: object
                           properties: *ref_8
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /start_plotting:
@@ -534,9 +468,7 @@ paths:
       tags:
         - Plotter
       summary: Starts plotting.
-      description: >-
-        Starts plotting. Returns after request is added to the plotting queue.
-        Does not wait for plotting to finish.
+      description: Starts plotting. Returns after request is added to the plotting queue. Does not wait for plotting to finish.
       operationId: start_plotting
       requestBody:
         description: Options for creating the plots
@@ -560,9 +492,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /stop_plotting:
@@ -593,10 +523,7 @@ paths:
       tags:
         - Key Ring
       summary: Returns whether the keyring is in a locked state.
-      description: >-
-        Returns whether the keyring is in a locked state. If the keyring doesn't
-        have a master passphrase set, or if a master passphrase is set and the
-        cached passphrase is valid, the keyring is "unlocked".
+      description: Returns whether the keyring is in a locked state. If the keyring doesn't have a master passphrase set, or if a master passphrase is set and the cached passphrase is valid, the keyring is "unlocked".
       operationId: is_keyring_locked
       requestBody:
         description: Empty request body
@@ -614,9 +541,7 @@ paths:
                       is_keyring_locked:
                         type: boolean
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /keyring_status:
@@ -640,9 +565,7 @@ paths:
                   - type: object
                     properties: *ref_10
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /unlock_keyring:
@@ -777,10 +700,7 @@ paths:
       tags:
         - Key Ring
       summary: Adds a private key to the keychain.
-      description: >-
-        Adds a private key to the keychain, with the given entropy and
-        passphrase. The keychain itself will store the public key, and the
-        entropy bytes, but not the passphrase.
+      description: Adds a private key to the keychain, with the given entropy and passphrase. The keychain itself will store the public key, and the entropy bytes, but not the passphrase.
       operationId: add_private_key
       requestBody:
         description: The private key
@@ -805,9 +725,7 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
                   - type: object
@@ -840,9 +758,7 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
                   - type: object
@@ -891,9 +807,7 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
                   - type: object
@@ -903,13 +817,8 @@ paths:
     post:
       tags:
         - Key Ring
-      summary: >-
-        Returns all private keys which can be retrieved, with the given
-        passphrases.
-      description: >-
-        Returns all private keys which can be retrieved, with the given
-        passphrases. A tuple of key, and entropy bytes (i.e. mnemonic) is
-        returned for each key.
+      summary: Returns all private keys which can be retrieved, with the given passphrases.
+      description: Returns all private keys which can be retrieved, with the given passphrases. A tuple of key, and entropy bytes (i.e. mnemonic) is returned for each key.
       operationId: get_all_private_keys
       requestBody:
         description: Empty request body
@@ -930,9 +839,7 @@ paths:
                           type: object
                           properties: *ref_12
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /get_first_private_key:
@@ -957,9 +864,7 @@ paths:
                   - type: object
                     properties: *ref_12
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /get_key_for_fingerprint:
@@ -993,9 +898,7 @@ paths:
                   - type: object
                     properties: *ref_12
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
 externalDocs:

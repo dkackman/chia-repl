@@ -1,6 +1,6 @@
 {
   "name": "chia-repl",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environment.",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
     "@rigidity/bls-signatures": "^2.0.3",
     "axios": "^0.27.2",
     "chalk": "^5.0.1",
-    "chia-daemon": "^0.5.0",
+    "chia-daemon": "^0.6.0",
     "chia-nft-minter": "^0.2.1",
     "chia-utils": "^1.0.10",
     "clvm": "^2.0.0",

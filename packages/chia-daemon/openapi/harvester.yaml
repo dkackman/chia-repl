@@ -1,15 +1,9 @@
 openapi: 3.0.3
 info:
-  description: >-
-    The Chia node and services come with a JSON RPC API server that allows you
-    to access information and control the services.  These are accessible via
-    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
-    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
-    to the internet. TLS certificates are used to secure the communication 
-    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
-
+  description: |-
+    The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The harvester uses port 8560 by default.
-  version: 1.5.1
+  version: 1.6.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -40,9 +34,7 @@ components:
         application/json:
           schema:
             type: object
-            description: >-
-              Success indicator and optional error message included in all
-              responses
+            description: Success indicator and optional error message included in all responses
             required: &ref_1
               - success
             properties: &ref_2
@@ -113,9 +105,7 @@ components:
               * 6 WALLET
     k_size: &ref_5
       type: integer
-      description: >-
-        Defines the size of a plot. 25 is used for testing only.
-        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
       enum: &ref_0
         - 25
@@ -144,9 +134,7 @@ components:
           nullable: true
         size:
           type: integer
-          description: >-
-            Defines the size of a plot. 25 is used for testing only.
-            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
           default: 32
           enum: *ref_0
         time_modified:
@@ -174,17 +162,12 @@ components:
     bearerAuth:
       type: http
       scheme: mutual
-      description: >-
-        -> Chia uses [mutualTLS
-        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
-        client and server share TLS keys.
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Harvester
-    description: >-
-      The harvester RPC API is exposed, by default, on port 8560 and contains
-      methods for managing plot files and directories.
+    description: The harvester RPC API is exposed, by default, on port 8560 and contains methods for managing plot files and directories.
 paths:
   /stop_node:
     post:
@@ -275,14 +258,10 @@ paths:
                         type: array
                         items:
                           type: object
-                          description: >-
-                            Chia's representation of a connection from node to
-                            node.
+                          description: Chia's representation of a connection from node to node.
                           properties: *ref_8
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /healthz:
@@ -303,9 +282,7 @@ paths:
             application/json:
               schema:
                 type: object
-                description: >-
-                  Success indicator and optional error message included in all
-                  responses
+                description: Success indicator and optional error message included in all responses
                 required: *ref_1
                 properties: *ref_2
   /get_routes:
@@ -333,9 +310,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /add_plot_directory:
@@ -409,9 +384,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /refresh_plots:
@@ -464,9 +437,7 @@ paths:
                           description: Info about a plot file
                           properties: *ref_9
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
   /delete_plot:
@@ -489,8 +460,7 @@ paths:
                 filename:
                   type: string
             example:
-              filename: >-
-                plot-k33-2021-06-12-03-55-1d5a2afe637578d6c9dfa04484854831012b678921a8dce5a8aee9c0fd3c1470.plot
+              filename: plot-k33-2021-06-12-03-55-1d5a2afe637578d6c9dfa04484854831012b678921a8dce5a8aee9c0fd3c1470.plot
       responses:
         '200':
           description: OK response without return values

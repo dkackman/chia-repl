@@ -1,15 +1,9 @@
 openapi: 3.0.3
 info:
-  description: >-
-    The Chia node and services come with a JSON RPC API server that allows you
-    to access information and control the services.  These are accessible via
-    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
-    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
-    to the internet. TLS certificates are used to secure the communication 
-    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
-
+  description: |-
+    The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The full node uses port 8555 by default.
-  version: 1.5.1
+  version: 1.6.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -70,9 +64,7 @@ components:
         application/json:
           schema:
             type: object
-            description: >-
-              Success indicator and optional error message included in all
-              responses
+            description: Success indicator and optional error message included in all responses
             required: &ref_0
               - success
             properties: &ref_1
@@ -119,9 +111,7 @@ components:
                       format: uint64
             allOf:
               - type: object
-                description: >-
-                  Success indicator and optional error message included in all
-                  responses
+                description: Success indicator and optional error message included in all responses
                 required: *ref_0
                 properties: *ref_1
   schemas:
@@ -138,9 +128,7 @@ components:
           type: string
         size:
           type: integer
-          description: >-
-            Defines the size of a plot. 25 is used for testing only.
-            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
           default: 32
           enum: &ref_24
             - 25
@@ -183,31 +171,21 @@ components:
         peak:
           nullable: true
           type: object
-          description: >-
-            This class is not included or hashed into the blockchain, but it is
-            kept in memory as a more efficient way to maintain data about the
-            blockchain. This allows us to validate future blocks, difficulty
-            adjustments, etc, without saving the whole header block in memory.
+          description: This class is not included or hashed into the blockchain, but it is kept in memory as a more efficient way to maintain data about the blockchain. This allows us to validate future blocks, difficulty adjustments, etc, without saving the whole header block in memory.
           properties: &ref_2
             challenge_block_info_hash:
               type: string
-              description: >-
-                Hash of challenge chain data, used to validate end of slots in
-                the future.
+              description: Hash of challenge chain data, used to validate end of slots in the future.
             challenge_vdf_output:
               type: object
-              description: >-
-                This is the intermediary VDF output at ip_iters in challenge
-                chain.
+              description: This is the intermediary VDF output at ip_iters in challenge chain.
               properties:
                 data:
                   type: string
             deficit:
               type: integer
               format: uint8
-              description: >-
-                A deficit of 16 is an overflow block after an infusion. Deficit
-                of 15 is a challenge block.
+              description: A deficit of 16 is an overflow block after an infusion. Deficit of 15 is a challenge block.
             farmer_puzzle_hash:
               type: string
             fees:
@@ -235,21 +213,15 @@ components:
             infused_challenge_vdf_output:
               type: string
               format: nullable
-              description: >-
-                This is the intermediary VDF output at ip_iters in infused cc,
-                if deficit less than or equal to 3.
+              description: This is the intermediary VDF output at ip_iters in infused cc, if deficit less than or equal to 3.
             overflow:
               type: boolean
             pool_puzzle_hash:
               type: string
-              description: >-
-                Need to keep track of these because Coins are created in a
-                future block.
+              description: Need to keep track of these because Coins are created in a future block.
             prev_hash:
               type: string
-              description: >-
-                Header hash of the previous block. Transaction block (present
-                iff is_transaction_block).
+              description: Header hash of the previous block. Transaction block (present iff is_transaction_block).
             prev_transaction_block_hash:
               type: string
               format: nullable
@@ -282,9 +254,7 @@ components:
             total_iters:
               type: integer
               format: bigint
-              description: >-
-                Total number of VDF iterations since genesis, including this
-                block
+              description: Total number of VDF iterations since genesis, including this block
             weight:
               type: integer
               format: bigint
@@ -310,11 +280,7 @@ components:
               type: boolean
     block_record:
       type: object
-      description: >-
-        This class is not included or hashed into the blockchain, but it is kept
-        in memory as a more efficient way to maintain data about the blockchain.
-        This allows us to validate future blocks, difficulty adjustments, etc,
-        without saving the whole header block in memory.
+      description: This class is not included or hashed into the blockchain, but it is kept in memory as a more efficient way to maintain data about the blockchain. This allows us to validate future blocks, difficulty adjustments, etc, without saving the whole header block in memory.
       properties: *ref_2
     coin: &ref_31
       type: object
@@ -471,12 +437,7 @@ components:
                         format: uint64
                       output:
                         type: object
-                        description: >-
-                          Represents a classgroup element (a,b,c) where a, b,
-                          and c are 512 bit signed integers. However this is
-                          using a compressed representation. VDF outputs are a
-                          single classgroup element. VDF proofs can also be one
-                          classgroup element(or multiple).
+                        description: Represents a classgroup element (a,b,c) where a, b, and c are 512 bit signed integers. However this is using a compressed representation. VDF outputs are a single classgroup element. VDF proofs can also be one classgroup element(or multiple).
                         properties: &ref_16
                           data:
                             type: string
@@ -810,11 +771,7 @@ components:
     node_type_node_type: *ref_15
     classgroup_element:
       type: object
-      description: >-
-        Represents a classgroup element (a,b,c) where a, b, and c are 512 bit
-        signed integers. However this is using a compressed representation. VDF
-        outputs are a single classgroup element. VDF proofs can also be one
-        classgroup element(or multiple).
+      description: Represents a classgroup element (a,b,c) where a, b, and c are 512 bit signed integers. However this is using a compressed representation. VDF outputs are a single classgroup element. VDF proofs can also be one classgroup element(or multiple).
       properties: *ref_16
     vdf_info_vdf_info: *ref_17
     challenge_chain_sub_slot:
@@ -833,9 +790,7 @@ components:
     end_of_sub_slot_bundle_end_of_sub_slot_bundle: *ref_23
     k_size:
       type: integer
-      description: >-
-        Defines the size of a plot. 25 is used for testing only.
-        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
       enum: *ref_24
     proof_of_space_proof_of_space: *ref_25
@@ -874,10 +829,7 @@ components:
     bearerAuth:
       type: http
       scheme: mutual
-      description: >-
-        -> Chia uses [mutualTLS
-        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
-        client and server share TLS keys.
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Blocks
     description: Methods for managing blocks.
@@ -886,9 +838,7 @@ tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Full Node
-    description: >-
-      The full node RPC API is exposed, by default, on port 8555. This port must
-      not be exposed publicly for security concerns.
+    description: The full node RPC API is exposed, by default, on port 8555. This port must not be exposed publicly for security concerns.
   - name: Mempool
     description: Get information about the mempool.
 paths:
@@ -981,14 +931,10 @@ paths:
                         type: array
                         items:
                           type: object
-                          description: >-
-                            Chia's representation of a connection from node to
-                            node.
+                          description: Chia's representation of a connection from node to node.
                           properties: *ref_41
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /healthz:
@@ -1009,9 +955,7 @@ paths:
             application/json:
               schema:
                 type: object
-                description: >-
-                  Success indicator and optional error message included in all
-                  responses
+                description: Success indicator and optional error message included in all responses
                 required: *ref_0
                 properties: *ref_1
   /get_routes:
@@ -1039,9 +983,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block_count_metrics:
@@ -1074,9 +1016,7 @@ paths:
                           hint_count:
                             type: integer
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block_record:
@@ -1101,18 +1041,10 @@ paths:
                     properties:
                       block_record:
                         type: object
-                        description: >-
-                          This class is not included or hashed into the
-                          blockchain, but it is kept in memory as a more
-                          efficient way to maintain data about the blockchain.
-                          This allows us to validate future blocks, difficulty
-                          adjustments, etc, without saving the whole header
-                          block in memory.
+                        description: This class is not included or hashed into the blockchain, but it is kept in memory as a more efficient way to maintain data about the blockchain. This allows us to validate future blocks, difficulty adjustments, etc, without saving the whole header block in memory.
                         properties: *ref_2
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block_records:
@@ -1139,18 +1071,10 @@ paths:
                         type: array
                         items:
                           type: object
-                          description: >-
-                            This class is not included or hashed into the
-                            blockchain, but it is kept in memory as a more
-                            efficient way to maintain data about the blockchain.
-                            This allows us to validate future blocks, difficulty
-                            adjustments, etc, without saving the whole header
-                            block in memory.
+                          description: This class is not included or hashed into the blockchain, but it is kept in memory as a more efficient way to maintain data about the blockchain. This allows us to validate future blocks, difficulty adjustments, etc, without saving the whole header block in memory.
                           properties: *ref_2
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block_record_by_height:
@@ -1158,10 +1082,7 @@ paths:
       tags:
         - Blocks
       summary: Retrieves a block record by height.
-      description: >-
-        Retrieves a block record by height (assuming the height <= peak height).
-        Note that not all blocks will have all fields set here (depending on
-        transaction block, finishing sub epoch, etc).
+      description: Retrieves a block record by height (assuming the height <= peak height). Note that not all blocks will have all fields set here (depending on transaction block, finishing sub epoch, etc).
       operationId: get_block_record_by_height
       requestBody:
         required: true
@@ -1187,18 +1108,10 @@ paths:
                     properties:
                       block_record:
                         type: object
-                        description: >-
-                          This class is not included or hashed into the
-                          blockchain, but it is kept in memory as a more
-                          efficient way to maintain data about the blockchain.
-                          This allows us to validate future blocks, difficulty
-                          adjustments, etc, without saving the whole header
-                          block in memory.
+                        description: This class is not included or hashed into the blockchain, but it is kept in memory as a more efficient way to maintain data about the blockchain. This allows us to validate future blocks, difficulty adjustments, etc, without saving the whole header block in memory.
                         properties: *ref_2
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block:
@@ -1225,9 +1138,7 @@ paths:
                         type: object
                         properties: *ref_44
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_block_spends:
@@ -1256,9 +1167,7 @@ paths:
                           type: object
                           properties: *ref_11
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_blocks:
@@ -1306,9 +1215,7 @@ paths:
                           type: object
                           properties: *ref_44
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_unfinished_block_headers:
@@ -1337,9 +1244,7 @@ paths:
                           type: object
                           properties: *ref_45
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_additions_and_removals:
@@ -1347,9 +1252,7 @@ paths:
       tags:
         - Blocks
       summary: Retrieves the additions and removals for a certain block.
-      description: >-
-        Retrieves the additions and removals (state transitions) for a certain
-        block. Returns coin records for each addition and removal.
+      description: Retrieves the additions and removals (state transitions) for a certain block. Returns coin records for each addition and removal.
       operationId: get_additions_and_removals
       requestBody:
         required: true
@@ -1375,9 +1278,7 @@ paths:
                           type: object
                           properties: *ref_4
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_recent_signage_point_or_eos:
@@ -1389,9 +1290,7 @@ paths:
       operationId: get_recent_signage_point_or_eos
       requestBody:
         required: true
-        description: >-
-          The signage point hash or challenge hash. If both are present sp_hash
-          takes precedence.
+        description: The signage point hash or challenge hash. If both are present sp_hash takes precedence.
         content:
           application/json:
             schema:
@@ -1420,9 +1319,7 @@ paths:
                         type: object
                         properties: *ref_46
                   - type: object
-                    description: >-
-                      Type returned when a challenge_hash is provided in the
-                      request
+                    description: Type returned when a challenge_hash is provided in the request
                     properties:
                       eos:
                         type: object
@@ -1436,21 +1333,15 @@ paths:
                       reverted:
                         type: boolean
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_blockchain_state:
     post:
       tags:
         - Full Node
-      summary: >-
-        Retrieves a summary of the current state of the blockchain and full
-        node.
-      description: >-
-        Retrieves a summary of the current state of the blockchain and full
-        node.
+      summary: Retrieves a summary of the current state of the blockchain and full node.
+      description: Retrieves a summary of the current state of the blockchain and full node.
       operationId: get_blockchain_state
       requestBody:
         description: Empty request body
@@ -1470,9 +1361,7 @@ paths:
                         description: The node's view of the blockchain.
                         properties: *ref_47
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_network_info:
@@ -1498,18 +1387,14 @@ paths:
                     required: *ref_48
                     properties: *ref_49
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_network_space:
     post:
       tags:
         - Full Node
-      description: >-
-        Retrieves an estimate of total space validating the chain between two
-        block header hashes.
+      description: Retrieves an estimate of total space validating the chain between two block header hashes.
       summary: Retrieves an estimate of total space.
       operationId: get_network_space
       requestBody:
@@ -1542,18 +1427,14 @@ paths:
                         type: integer
                         format: bigint
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_all_mempool_tx_ids:
     post:
       tags:
         - Mempool
-      description: >-
-        Returns a list of all transaction IDs (spend bundle hashes) in the
-        mempool.
+      description: Returns a list of all transaction IDs (spend bundle hashes) in the mempool.
       summary: Returns a list of all transaction IDs in the mempool.
       operationId: get_all_mempool_tx_ids
       requestBody:
@@ -1575,9 +1456,7 @@ paths:
                           type: string
                           format: hex
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_all_mempool_items:
@@ -1606,9 +1485,7 @@ paths:
                           type: object
                           properties: *ref_50
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_mempool_item_by_tx_id:
@@ -1644,18 +1521,14 @@ paths:
                         type: object
                         properties: *ref_50
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_coin_records_by_puzzle_hash:
     post:
       tags:
         - Coins
-      description: >-
-        Retrieves the coins for a given puzzlehash, by default returns unspent
-        coins.
+      description: Retrieves the coins for a given puzzlehash, by default returns unspent coins.
       summary: Retrieves the coins for a given puzzlehash.
       operationId: get_coin_records_by_puzzle_hash
       requestBody:
@@ -1682,9 +1555,7 @@ paths:
     post:
       tags:
         - Coins
-      description: >-
-        Retrieves the coins for a given puzzlehashes, by default returns unspent
-        coins.
+      description: Retrieves the coins for a given puzzlehashes, by default returns unspent coins.
       summary: Retrieves the coins for a given puzzlehashes
       operationId: get_coin_records_by_puzzle_hashes
       requestBody:
@@ -1769,18 +1640,14 @@ paths:
                         type: object
                         properties: *ref_4
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_coin_records_by_names:
     post:
       tags:
         - Coins
-      description: >-
-        Retrieves the coins for given coin IDs, by default returns unspent
-        coins.
+      description: Retrieves the coins for given coin IDs, by default returns unspent coins.
       summary: Retrieves the coins for given coin IDs.
       operationId: get_coin_records_by_names
       requestBody:
@@ -1809,9 +1676,7 @@ paths:
     post:
       tags:
         - Coins
-      description: >-
-        Retrieves the coins for given parent coin IDs, by default returns
-        unspent coins.
+      description: Retrieves the coins for given parent coin IDs, by default returns unspent coins.
       summary: Retrieves the coins for given parent coin IDs.
       operationId: get_coin_records_by_parent_ids
       requestBody:
@@ -1873,18 +1738,14 @@ paths:
                         type: object
                         properties: *ref_11
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /push_tx:
     post:
       tags:
         - Coins
-      description: >-
-        Pushes a transaction/spend bundle to the mempool and blockchain. Returns
-        whether the spend bundle was successfully included into the mempool.
+      description: Pushes a transaction/spend bundle to the mempool and blockchain. Returns whether the spend bundle was successfully included into the mempool.
       summary: Pushes a transaction/spend bundle to the mempool and blockchain.
       operationId: push_tx
       requestBody:
@@ -1912,9 +1773,7 @@ paths:
                       status:
                         type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
 externalDocs:

@@ -1,15 +1,9 @@
 openapi: 3.0.3
 info:
-  description: >-
-    The Chia node and services come with a JSON RPC API server that allows you
-    to access information and control the services.  These are accessible via
-    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
-    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
-    to the internet. TLS certificates are used to secure the communication 
-    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
-
+  description: |-
+    The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The crawler uses port 8561 by default.
-  version: 1.5.1
+  version: 1.6.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -32,9 +26,7 @@ components:
         application/json:
           schema:
             type: object
-            description: >-
-              Success indicator and optional error message included in all
-              responses
+            description: Success indicator and optional error message included in all responses
             required: &ref_0
               - success
             properties: &ref_1
@@ -132,17 +124,12 @@ components:
     bearerAuth:
       type: http
       scheme: mutual
-      description: >-
-        -> Chia uses [mutualTLS
-        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
-        client and server share TLS keys.
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Crawler
-    description: >-
-      The crawler RPC API is exposed, by default, on port 8561 and contains peer
-      metrics.
+    description: The crawler RPC API is exposed, by default, on port 8561 and contains peer metrics.
 paths:
   /stop_node:
     post:
@@ -233,14 +220,10 @@ paths:
                         type: array
                         items:
                           type: object
-                          description: >-
-                            Chia's representation of a connection from node to
-                            node.
+                          description: Chia's representation of a connection from node to node.
                           properties: *ref_6
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /healthz:
@@ -261,9 +244,7 @@ paths:
             application/json:
               schema:
                 type: object
-                description: >-
-                  Success indicator and optional error message included in all
-                  responses
+                description: Success indicator and optional error message included in all responses
                 required: *ref_0
                 properties: *ref_1
   /get_routes:
@@ -291,9 +272,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_peer_counts:
@@ -332,9 +311,7 @@ paths:
                             additionalProperties:
                               type: integer
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
   /get_ips_after_timestamp:
@@ -383,9 +360,7 @@ paths:
                       total:
                         type: integer
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
 externalDocs:

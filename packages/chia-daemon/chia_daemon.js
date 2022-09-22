@@ -68,6 +68,7 @@ export default class ChiaDaemon extends EventEmitter {
             harvester: createRpcProxy(this, 'chia_harvester'),
             crawler: createRpcProxy(this, 'chia_crawler'),
             simulator: createRpcProxy(this, 'chia_full_node_simulator'),
+            data_layer: createRpcProxy(this, 'chia_data_layer'),
         };
     }
 

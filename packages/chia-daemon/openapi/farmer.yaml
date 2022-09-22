@@ -1,15 +1,9 @@
 openapi: 3.0.3
 info:
-  description: >-
-    The Chia node and services come with a JSON RPC API server that allows you
-    to access information and control the services.  These are accessible via
-    HTTPS, WebSockets, or via client SDKs. The ports can be configured in
-    `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed
-    to the internet. TLS certificates are used to secure the communication 
-    [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
-
+  description: |-
+    The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The farmer uses port 8559 by default.
-  version: 1.5.1
+  version: 1.6.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -40,9 +34,7 @@ components:
         application/json:
           schema:
             type: object
-            description: >-
-              Success indicator and optional error message included in all
-              responses
+            description: Success indicator and optional error message included in all responses
             required: &ref_6
               - success
             properties: &ref_7
@@ -172,9 +164,7 @@ components:
                 nullable: true
               size:
                 type: integer
-                description: >-
-                  Defines the size of a plot. 25 is used for testing only.
-                  https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
                 default: 32
                 enum: &ref_3
                   - 25
@@ -291,9 +281,7 @@ components:
           format: uint64
         pool_config:
           type: object
-          description: >-
-            This is what goes into the user's config file, to communicate
-            between the wallet and the farmer processes.
+          description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
           properties: &ref_11
             launcher_id:
               type: string
@@ -381,18 +369,14 @@ components:
           type: string
         size:
           type: integer
-          description: >-
-            Defines the size of a plot. 25 is used for testing only.
-            https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
           default: 32
           enum: *ref_3
         proof:
           type: string
     farmer_signage_point:
       type: object
-      description: >-
-        The farmer api's defintion of a signage point. Not the same as
-        signage_point.
+      description: The farmer api's defintion of a signage point. Not the same as signage_point.
       properties: &ref_4
         challenge_chain_sp:
           type: string
@@ -414,9 +398,7 @@ components:
       properties: &ref_22
         signage_point:
           type: object
-          description: >-
-            The farmer api's defintion of a signage point. Not the same as
-            signage_point.
+          description: The farmer api's defintion of a signage point. Not the same as signage_point.
           properties: *ref_4
         proofs:
           type: array
@@ -449,9 +431,7 @@ components:
       properties: *ref_0
     k_size:
       type: integer
-      description: >-
-        Defines the size of a plot. 25 is used for testing only.
-        https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
       enum: *ref_3
     plot_info:
@@ -466,9 +446,7 @@ components:
       properties: *ref_2
     pool_wallet_config:
       type: object
-      description: >-
-        This is what goes into the user's config file, to communicate between
-        the wallet and the farmer processes.
+      description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
       properties: *ref_11
     error_response:
       type: object
@@ -478,17 +456,12 @@ components:
     bearerAuth:
       type: http
       scheme: mutual
-      description: >-
-        -> Chia uses [mutualTLS
-        bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where
-        client and server share TLS keys.
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Farmer
-    description: >-
-      The farmer RPC API is exposed, by default, on port 8559 and contains
-      methods for managing the farmer.
+    description: The farmer RPC API is exposed, by default, on port 8559 and contains methods for managing the farmer.
 paths:
   /stop_node:
     post:
@@ -579,14 +552,10 @@ paths:
                         type: array
                         items:
                           type: object
-                          description: >-
-                            Chia's representation of a connection from node to
-                            node.
+                          description: Chia's representation of a connection from node to node.
                           properties: *ref_15
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /healthz:
@@ -607,9 +576,7 @@ paths:
             application/json:
               schema:
                 type: object
-                description: >-
-                  Success indicator and optional error message included in all
-                  responses
+                description: Success indicator and optional error message included in all responses
                 required: *ref_6
                 properties: *ref_7
   /get_routes:
@@ -637,9 +604,7 @@ paths:
                         items:
                           type: string
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /set_reward_targets:
@@ -709,9 +674,7 @@ paths:
                       have_pool_sk:
                         type: boolean
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvesters:
@@ -740,9 +703,7 @@ paths:
                           type: object
                           properties: *ref_16
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvesters_summary:
@@ -750,9 +711,7 @@ paths:
       tags:
         - Farmer
       summary: Get a summary of harvesters.
-      description: >-
-        Get a summary of harvesters, similar to get_harvests but with plot
-        counts only.
+      description: Get a summary of harvesters, similar to get_harvests but with plot counts only.
       operationId: get_harvesters_summary
       requestBody:
         description: Empty request body
@@ -773,9 +732,7 @@ paths:
                           type: object
                           properties: *ref_17
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvester_plots_valid:
@@ -803,9 +760,7 @@ paths:
                   - type: object
                     properties: *ref_19
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvester_plots_invalid:
@@ -833,9 +788,7 @@ paths:
                   - type: object
                     properties: *ref_19
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvester_plots_keys_missing:
@@ -863,9 +816,7 @@ paths:
                   - type: object
                     properties: *ref_19
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_harvester_plots_duplicates:
@@ -893,9 +844,7 @@ paths:
                   - type: object
                     properties: *ref_19
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_pool_login_link:
@@ -930,9 +879,7 @@ paths:
                         type: string
                         format: url
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_pool_state:
@@ -959,9 +906,7 @@ paths:
                         type: object
                         properties: *ref_21
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /set_payout_instructions:
@@ -1019,9 +964,7 @@ paths:
                   - type: object
                     properties: *ref_22
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
   /get_signage_points:
@@ -1050,9 +993,7 @@ paths:
                           type: object
                           properties: *ref_22
                   - type: object
-                    description: >-
-                      Success indicator and optional error message included in
-                      all responses
+                    description: Success indicator and optional error message included in all responses
                     required: *ref_6
                     properties: *ref_7
 externalDocs:
