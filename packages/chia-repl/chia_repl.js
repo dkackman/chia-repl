@@ -97,7 +97,6 @@ export default class ChiaRepl {
                         nft_description,
                         collection_name,
                         collection_description,
-                        this.repl.context.options.ipfsToken,
                         this.repl.context.options.x_api_key,
                         this.repl.context.metadataFactory,
                         this.repl.context.minter);

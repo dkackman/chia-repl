@@ -16,7 +16,6 @@ export default async function txt2nft(
     nft_description,
     collection_name,
     collection_description,
-    ipfsToken,
     x_api_key,
     metadataFactory,
     minter,
@@ -79,7 +78,7 @@ export default async function txt2nft(
     const licenseFile = {
         uri: license_file
     };
-    const ipfs = await minter.upload(dataFile, JSON.stringify(metadata, null, 2), ipfsToken, licenseFile);
+    const ipfs = await minter.upload(dataFile, JSON.stringify(metadata, null, 2), licenseFile);
 
     const mingtingInfo = {
         wallet_id: wallet_id,
