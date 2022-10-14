@@ -1,6 +1,6 @@
 {
   "name": "chia-nft-minter",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Utility to ease minting of Chia NFTs",
   "main": "index.js",
   "scripts": {},

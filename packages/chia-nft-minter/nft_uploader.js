@@ -13,7 +13,6 @@ export default class NftUploader {
             throw Error('ipfsToken cannot be nil');
         }
 
-        this.wallet = wallet;
         const _ipfsToken = new SecureString();
         for (let i = 0; i < ipfsToken.length; ++i) {
             _ipfsToken.appendCodePoint(ipfsToken.codePointAt(i));
@@ -66,9 +65,9 @@ export default class NftUploader {
             files.push(new File([licenseFile.content], 'license', { type: licenseFile.type }));
         }
 
-        let ipfsToken;
+        let token;
         this.ipfsToken.value(plainText => token = plainText.toString());
-        const client = new NFTStorage({ token: ipfsToken });
+        const client = new NFTStorage({ token: token });
         const cid = await client.storeDirectory(files);
         const hasher = new ContentHasher();
 
