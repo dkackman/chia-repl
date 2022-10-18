@@ -81,6 +81,9 @@ export default class NftUploader {
             throw Error('metadataContent cannot be nil');
         }
 
+        if (!_.isString(metadataContent)) {
+            metadataContent = JSON.stringify(metadataContent, null, 2);
+        }
         const files = [];
 
         files.push(new File([dataFile.content], dataFile.name, { type: dataFile.type }));

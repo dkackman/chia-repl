@@ -3,9 +3,11 @@ import path from 'path';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
 import BulkNftMinter from '../chia-nft-minter/nft_bulk_minter.js';
+import NftCollectionMinter from '../chia-nft-minter/nft_collection_minter.js';
 import { NftUploader, MetadataFactory } from 'chia-nft-minter';
 import { ChiaDaemon } from 'chia-daemon';
 import fs from 'fs';
+import { createCanvas } from 'canvas';
 
 const expect = chai.expect;
 
@@ -15,7 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('bulk-minting', () => {
-        it('mint one with nft_mint_bulk _DEBUG_', async function () {
+        it('mint a set of NFTs with one nft_mint_bulk', async function () {
             this.timeout(300 * 1000);
 
             const dataFileInfo = {
@@ -106,5 +108,92 @@ describe('chia-minter', () => {
                 expect(push.status).to.equal('SUCCESS');
             }
         });
+    });
+    describe('collection-minting', () => {
+        it('mint an entire collection in one go _DEBUG_', async function () {
+            this.timeout(300 * 1000);
+
+            const connection = {
+                host: 'chiapas',
+                port: 55400,
+                key_path: '~/.chia/mainnet - chiapas/config/ssl/daemon/private_daemon.key',
+                cert_path: '~/.chia/mainnet - chiapas/config/ssl/daemon/private_daemon.crt',
+                timeout_seconds: 30,
+            };
+            const chia = new ChiaDaemon(connection, 'chia-nft-minter-tests');
+            const connected = await chia.connect();
+            expect(connected).to.equal(true); // short circuit the test if we can't connect
+
+            const licenseFileInfo = {
+                type: 'application/pdf',
+                filepath: path.join(__dirname, 'content', 'Apache_License_v.2.0.pdf')
+            };
+
+            const baseName = new Date().toISOString();
+            const factory = new MetadataFactory('chia-nft-bulk-minter-tests');
+            const collectionMetaData = factory.createCollectionMetadata(baseName);
+
+            const ipfsToken = fs.readFileSync("C:\\tmp\\secrets\\ipfs.test-key.txt").toString();
+            const uploader = new NftUploader(ipfsToken);
+
+            const licenseFile = uploader.unpackFileInfo(licenseFileInfo);
+            const timer = ms => new Promise(res => setTimeout(res, ms));
+            const mint_total = 25;
+            const nftList = [];
+            for (let i = 1; i <= mint_total; i++) {
+                console.log(`making nft ${i}...`);
+                const image = makeImage(i.toString());
+                const fileNumber = `${i.toString().padStart(2, '0')}`;
+                const nftMetadata = factory.createNftMetadata(`${baseName} #${fileNumber}`, collectionMetaData);
+
+                const nftFile = {
+                    name: `${fileNumber}.png`,
+                    type: 'image/png',
+                    content: image,
+                };
+                const ipfs = await uploader.upload(nftFile, nftMetadata, licenseFile);
+
+                nftList.push({
+                    uris: ipfs.dataUris,
+                    hash: ipfs.dataHash,
+                    meta_uris: ipfs.metadataUris,
+                    meta_hash: ipfs.metadataHash,
+                    license_uris: ipfs.licenseUris,
+                    license_hash: ipfs.licenseHash,
+                    edition_number: i,
+                    edition_total: mint_total,
+                });
+                await timer(100); // to prevent spamming nft.storage
+            }
+
+            console.log(`minting...`);
+            const collectionMinter = new NftCollectionMinter(
+                chia.services.wallet,
+                6,
+                10,
+                "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
+                250);
+            const bulk_info = collectionMinter.createMintInfo(collectionMetaData, nftList);
+            const mint = await collectionMinter.mint(bulk_info);
+            expect(_.isNil(mint)).to.equal(false);
+            expect(mint.success).to.equal(true);
+
+            console.log(`transacting...`);
+            const push = await chia.services.full_node.push_tx({
+                spend_bundle: mint.spend_bundle,
+            });
+            expect(_.isNil(push)).to.equal(false);
+            expect(push.status).to.equal('SUCCESS');
+        });
+
+        function makeImage(text) {
+            const canvas = createCanvas(200, 200);
+            const ctx = canvas.getContext('2d');
+
+            ctx.font = '150px Impact';
+            ctx.fillText(text, 50, 160);
+
+            return canvas.toBuffer('image/png');
+        }
     });
 });
