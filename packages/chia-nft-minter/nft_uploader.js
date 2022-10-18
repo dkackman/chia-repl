@@ -2,6 +2,7 @@ import _ from 'lodash';
 import SecureString from 'secure-string';
 import { File, NFTStorage } from 'nft.storage';
 import ContentHasher from './content_hasher.js';
+import fs from 'fs';
 
 export default class NftUploader {
     /**
@@ -12,12 +13,15 @@ export default class NftUploader {
         if (_.isNil(ipfsToken)) {
             throw Error('ipfsToken cannot be nil');
         }
-
-        const _ipfsToken = new SecureString();
-        for (let i = 0; i < ipfsToken.length; ++i) {
-            _ipfsToken.appendCodePoint(ipfsToken.codePointAt(i));
+        if (typeof ipfsToken !== 'string') {
+            this.ipfsToken = ipfsToken;
+        } else {
+            const _ipfsToken = new SecureString();
+            for (let i = 0; i < ipfsToken.length; ++i) {
+                _ipfsToken.appendCodePoint(ipfsToken.codePointAt(i));
+            }
+            this.ipfsToken = _ipfsToken;
         }
-        this.ipfsToken = _ipfsToken;
     }
 
     /**
@@ -33,6 +37,27 @@ export default class NftUploader {
      * @param {string} value.uri - the remote uri of the license file
      */
     set licenseFileInfo(value) { this._licenseFileInfo = value; }
+
+    async delete(cid) {
+        let token;
+        this.ipfsToken.value(plainText => token = plainText.toString());
+        const client = new NFTStorage({ token: token });
+        await client.delete(cid);
+    }
+
+    unpackFileInfo(fileInfo) {
+        if (fileInfo === undefined) {
+            return undefined;
+        }
+
+        // the fileInfo might have either a local file path or a uri
+        return {
+            name: fileInfo.name,
+            type: fileInfo.type,
+            content: fileInfo.filepath !== undefined ? fs.readFileSync(fileInfo.filepath) : undefined,
+            uri: fileInfo.uri,
+        };
+    }
 
     /**
      *

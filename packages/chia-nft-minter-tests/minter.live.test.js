@@ -48,7 +48,7 @@ describe('chia-minter', () => {
             const connected = await chia.connect();
             expect(connected).to.equal(true); // short circuit the test if we can't connect
 
-            const ipfsToken = fs.readFileSync("E:\\tmp\\secrets\\ipfs.test-key.txt").toString();
+            const ipfsToken = fs.readFileSync("C:\\tmp\\secrets\\ipfs.test-key.txt").toString();
 
             const minter = new NftMinter(chia.services.wallet, ipfsToken, licenseFileInfo);
             const result = await minter.createNftFromFile(dataFileInfo, mintingInfo, nftMetadata);
