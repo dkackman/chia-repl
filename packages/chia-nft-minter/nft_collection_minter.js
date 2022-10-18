@@ -2,22 +2,14 @@ import _ from 'lodash';
 import NftBulkMinter from './nft_bulk_minter.js';
 
 export default class NftCollectionMinter {
-    constructor(wallet, walletId, fee = 0, royaltyAddress = '', royaltyPercentage = 0) {
-        if (_.isNil(wallet)) {
-            throw Error('wallet cannot be nil');
-        }
-
-        this.wallet = wallet;
-        this.walletId = walletId;
+    constructor(wallet, fullNode, walletId, didWalletId = -1, fee = 0, royaltyAddress = '', royaltyPercentage = 0) {
+        this.minter = new NftBulkMinter(wallet, fullNode, walletId, didWalletId);
         this.fee = fee;
         this.royaltyAddress = royaltyAddress;
         this.royaltyPercentage = royaltyPercentage;
     }
 
-    createMintInfo(collection, nftInfos) {
-        if (_.isNil(collection)) {
-            throw Error('collection cannot be nil');
-        }
+    createMintInfo(nftInfos) {
         if (_.isNil(nftInfos)) {
             throw Error('nftInfos cannot be nil');
         }
@@ -28,7 +20,7 @@ export default class NftCollectionMinter {
             throw Error('Only collection of 25 or less supported right now');
         }
         return {
-            wallet_id: this.walletId,
+            wallet_id: this.minter.walletId,
             royalty_address: this.royaltyPercentage > 0 ? this.royaltyAddress : undefined,
             royalty_percentage: this.royaltyPercentage,
             fee: this.fee,
@@ -43,7 +35,6 @@ export default class NftCollectionMinter {
             throw Error('mintInfo cannot be nil');
         }
 
-        const minter = new NftBulkMinter(this.wallet);
-        return await minter.mint(mintInfo);
+        return await this.minter.mint(mintInfo);
     }
 }
