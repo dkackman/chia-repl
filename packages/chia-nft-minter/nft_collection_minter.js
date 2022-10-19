@@ -30,11 +30,11 @@ export default class NftCollectionMinter {
         };
     }
 
-    async mint(mintInfo) {
-        if (_.isNil(mintInfo)) {
-            throw Error('mintInfo cannot be nil');
-        }
+    async mint(bulkMintInfo) {
+        return await this.minter.mint(bulkMintInfo);
+    }
 
-        return await this.minter.mint(mintInfo);
+    async mintAndSubmit(bulkMintInfo) {
+        return await this.minter.mintAndSubmit(bulkMintInfo);
     }
 }

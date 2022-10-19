@@ -17,17 +17,34 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('bulk-minting', () => {
-        it('mint a set of NFTs with nft_mint_bulk', async function () {
+        it('mint a set of NFTs with nft_mint_bulk _DEBUG_', async function () {
             this.timeout(300 * 1000);
             const bulk_info = {
                 royalty_address: "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
                 royalty_percentage: 250,
-                fee: 10,
+                fee: 10000000000000,
                 metadata_list: [],
                 mint_number_start: 1,
-                mint_total: 2,
+                mint_total: 1,
             };
-            const ipfs = await uoloadOne();
+            const ipfs = {
+                cid: "bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy",
+                dataUris: [
+                    "https://nftstorage.link/ipfs/bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/test-nft-bulk-dkackman",
+                    "ipfs://bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/test-nft-bulk-dkackman",
+                ],
+                dataHash: "8cfc885ad68385dfbe0c2c9f88408d4574319e7b580a4ee545e0d60520878f50",
+                metadataUris: [
+                    "https://nftstorage.link/ipfs/bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/metadata.json",
+                    "ipfs://bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/metadata.json",
+                ],
+                metadataHash: "eebb12efa05d3416005a1fbdf8d3ce03a69e2ce692326c8f50796a5a5de84690",
+                licenseUris: [
+                    "https://nftstorage.link/ipfs/bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/license",
+                    "ipfs://bafybeif6oijllffhcqw6poqfva6jyly7rtjoegk5b4yufp4qyc6ikut5uy/license",
+                ],
+                licenseHash: "738742c6e00fada211d0a16dd472c1b4eb4191e9ca3de85a60e2d53a0252e8c7",
+            };
             for (let i = 0; i < bulk_info.mint_total; i++) {
                 bulk_info.metadata_list.push({
                     uris: ipfs.dataUris,
@@ -52,39 +69,10 @@ describe('chia-minter', () => {
             const connected = await chia.connect();
             expect(connected).to.equal(true); // short circuit the test if we can't connect
 
-            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 6);
+            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 3);
+            const status = await bulkMinter.mintAndSubmit(bulk_info);
 
-            const mint = await bulkMinter.mint(bulk_info);
-            expect(_.isNil(mint)).to.equal(false);
-            expect(mint.success).to.equal(true);
-
-            if (false) { // this is what the bulk minting tool does - not sure it's needed
-                const spend_bundles = [mint.spend_bundle];
-                const total_fee_to_pay = spend_bundles.length * fee;
-                const fee_coins = await chia.services.wallet.select_coins({
-                    amount: total_fee_to_pay,
-                    wallet_id: wallet_id,
-                    excluded_coins: bulk_info.xch_coin_list,
-                });
-                const fee_coin = fee_coins[0];
-                const fee_tx = await chia.services.wallet.create_signed_transaction({
-                    additions: [
-                        {
-                            amount: fee_coin.amount - fee,
-                            puzzle_hash: fee_coin.puzzle_hash,
-                        }
-                    ],
-                    coins: [fee_coin],
-                    fee: uint64(fee),
-                });
-                spend_bundles.push(fee_tx.signed_tx.spend_bundle);
-            } else {
-                const push = await chia.services.full_node.push_tx({
-                    spend_bundle: mint.spend_bundle,
-                });
-                expect(_.isNil(push)).to.equal(false);
-                expect(push.status).to.equal('SUCCESS');
-            }
+            expect(status.status).to.equal('SUCCESS');
         });
         it('mint a DID NFT with nft_mint_bulk', async function () {
             this.timeout(300 * 1000);
@@ -103,10 +91,10 @@ describe('chia-minter', () => {
             const bulk_info = {
                 royalty_address: "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
                 royalty_percentage: 250,
-                fee: 10,
+                fee: 100000,
                 metadata_list: [],
                 mint_number_start: 1,
-                mint_total: 1,
+                mint_total: 5,
             };
 
             const ipfs = await uoloadOne();
@@ -124,20 +112,14 @@ describe('chia-minter', () => {
                 });
             }
 
-            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 8, 4);
-            const mint = await bulkMinter.mint(bulk_info);
-            expect(_.isNil(mint)).to.equal(false);
-            expect(mint.success).to.equal(true);
+            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 3, 2);
+            const status = await bulkMinter.mintAndSubmit(bulk_info);
 
-            const push = await chia.services.full_node.push_tx({
-                spend_bundle: mint.spend_bundle,
-            });
-            expect(_.isNil(push)).to.equal(false);
-            expect(push.status).to.equal('SUCCESS');
+            expect(status.status).to.equal('SUCCESS');
         });
     });
     describe('collection-minting', () => {
-        it('mint an entire DID collection in one go_DEBUG_', async function () {
+        it('mint an entire DID collection in one go', async function () {
             this.timeout(300 * 1000);
 
             const connection = {
@@ -194,7 +176,7 @@ describe('chia-minter', () => {
             }
 
             console.log(`minting...`);
-            const collectionMinter = new NftCollectionMinter(
+            const bulkMinter = new NftCollectionMinter(
                 chia.services.wallet,
                 chia.services.full_node,
                 8, // walletId
@@ -202,17 +184,10 @@ describe('chia-minter', () => {
                 10, // fee
                 "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
                 250);
-            const bulk_info = collectionMinter.createMintInfo(nftList);
-            const mint = await collectionMinter.mint(bulk_info);
-            expect(_.isNil(mint)).to.equal(false);
-            expect(mint.success).to.equal(true);
+            const bulk_info = bulkMinter.createMintInfo(nftList);
+            const status = await bulkMinter.mintAndSubmit(bulk_info);
 
-            console.log(`transacting...`);
-            const push = await chia.services.full_node.push_tx({
-                spend_bundle: mint.spend_bundle,
-            });
-            expect(_.isNil(push)).to.equal(false);
-            expect(push.status).to.equal('SUCCESS');
+            expect(status.status).to.equal('SUCCESS');
         });
         it('mint an entire collection in one go', async function () {
             this.timeout(300 * 1000);
@@ -271,25 +246,18 @@ describe('chia-minter', () => {
             }
 
             console.log(`minting...`);
-            const collectionMinter = new NftCollectionMinter(
+            const bulkMinter = new NftCollectionMinter(
                 chia.services.wallet,
                 chia.services.full_node,
-                6, // walletId
+                3, // walletId
                 -1, // didWalletId
                 10, // fee
                 "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
                 250);
             const bulk_info = collectionMinter.createMintInfo(nftList);
-            const mint = await collectionMinter.mint(bulk_info);
-            expect(_.isNil(mint)).to.equal(false);
-            expect(mint.success).to.equal(true);
+            const status = await bulkMinter.mintAndSubmit(bulk_info);
 
-            console.log(`transacting...`);
-            const push = await chia.services.full_node.push_tx({
-                spend_bundle: mint.spend_bundle,
-            });
-            expect(_.isNil(push)).to.equal(false);
-            expect(push.status).to.equal('SUCCESS');
+            expect(status.status).to.equal('SUCCESS');
         });
     });
 });
