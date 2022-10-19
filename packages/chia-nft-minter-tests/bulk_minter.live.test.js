@@ -8,6 +8,7 @@ import { NftUploader, MetadataFactory } from 'chia-nft-minter';
 import { ChiaDaemon } from 'chia-daemon';
 import fs from 'fs';
 import { createCanvas } from 'canvas';
+import getMintingWallet from 'chia-nft-minter/mintingWallet.js';
 
 const expect = chai.expect;
 
@@ -17,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('chia-minter', () => {
     describe('bulk-minting', () => {
-        it('mint a set of NFTs with nft_mint_bulk _DEBUG_', async function () {
+        it('mint a set of NFTs with nft_mint_bulk', async function () {
             this.timeout(300 * 1000);
             const bulk_info = {
                 royalty_address: "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
@@ -69,7 +70,13 @@ describe('chia-minter', () => {
             const connected = await chia.connect();
             expect(connected).to.equal(true); // short circuit the test if we can't connect
 
-            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 3);
+            const mintingWallet = await getMintingWallet(
+                chia.services.wallet,
+                chia.services.full_node);
+            const bulkMinter = new BulkNftMinter(
+                chia.services.wallet,
+                chia.services.full_node,
+                mintingWallet.wallet_id);
             const status = await bulkMinter.mintAndSubmit(bulk_info);
 
             expect(status.status).to.equal('SUCCESS');
@@ -94,7 +101,7 @@ describe('chia-minter', () => {
                 fee: 100000,
                 metadata_list: [],
                 mint_number_start: 1,
-                mint_total: 5,
+                mint_total: 1,
             };
 
             const ipfs = await uoloadOne();
@@ -111,15 +118,24 @@ describe('chia-minter', () => {
                     edition_total: bulk_info.mint_total,
                 });
             }
-
-            const bulkMinter = new BulkNftMinter(chia.services.wallet, chia.services.full_node, 3, 2);
+            const mintingWallet = await getMintingWallet(
+                chia.services.wallet,
+                chia.services.full_node,
+                'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
+            );
+            const bulkMinter = new BulkNftMinter(
+                chia.services.wallet,
+                chia.services.full_node,
+                mintingWallet.wallet_id,
+                mintingWallet.did_coin
+            );
             const status = await bulkMinter.mintAndSubmit(bulk_info);
 
             expect(status.status).to.equal('SUCCESS');
         });
     });
     describe('collection-minting', () => {
-        it('mint an entire DID collection in one go', async function () {
+        it('mint an entire DID collection in one go _DEBUG_', async function () {
             this.timeout(300 * 1000);
 
             const connection = {
@@ -175,17 +191,25 @@ describe('chia-minter', () => {
                 await timer(100); // to prevent spamming nft.storage
             }
 
-            console.log(`minting...`);
-            const bulkMinter = new NftCollectionMinter(
+            const mintingWallet = await getMintingWallet(
                 chia.services.wallet,
                 chia.services.full_node,
-                8, // walletId
-                4, // didWalletId
+                'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
+            );
+            const bulkMinter = new NftBulkMinter(
+                chia.services.wallet,
+                chia.services.full_node,
+                mintingWallet.wallet_id,
+                mintingWallet.did_coin,
+            );
+            const collectionMinter = new NftCollectionMinter(
+                bulkMinter,
                 10, // fee
-                "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
-                250);
-            const bulk_info = bulkMinter.createMintInfo(nftList);
-            const status = await bulkMinter.mintAndSubmit(bulk_info);
+                "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53", //royalty address
+                250, //royalty percentage
+            );
+            const bulk_info = collectionMinter.createMintInfo(nftList);
+            const status = await collectionMinter.mintAndSubmit(bulk_info);
 
             expect(status.status).to.equal('SUCCESS');
         });
@@ -245,17 +269,23 @@ describe('chia-minter', () => {
                 await timer(100); // to prevent spamming nft.storage
             }
 
-            console.log(`minting...`);
-            const bulkMinter = new NftCollectionMinter(
+            const mintingWallet = await getMintingWallet(
+                chia.services.wallet,
+                chia.services.full_node
+            );
+            const bulkMinter = new NftBulkMinter(
                 chia.services.wallet,
                 chia.services.full_node,
-                3, // walletId
-                -1, // didWalletId
+                mintingWallet.wallet_id
+            );
+            const collectionMinter = new NftCollectionMinter(
+                bulkMinter,
                 10, // fee
-                "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53",
-                250);
+                "txch1f7r8hk7hwvqwr977ftxkdllvjgagm76cdf0yydht7s6za6nfzk0q8rcy53", //royalty address
+                250, //royalty percentage
+            );
             const bulk_info = collectionMinter.createMintInfo(nftList);
-            const status = await bulkMinter.mintAndSubmit(bulk_info);
+            const status = await collectionMinter.mintAndSubmit(bulk_info);
 
             expect(status.status).to.equal('SUCCESS');
         });

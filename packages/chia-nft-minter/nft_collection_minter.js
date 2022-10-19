@@ -2,8 +2,11 @@ import _ from 'lodash';
 import NftBulkMinter from './nft_bulk_minter.js';
 
 export default class NftCollectionMinter {
-    constructor(wallet, fullNode, walletId, didWalletId = -1, fee = 0, royaltyAddress = '', royaltyPercentage = 0) {
-        this.minter = new NftBulkMinter(wallet, fullNode, walletId, didWalletId);
+    constructor(minter, fee = 0, royaltyAddress = '', royaltyPercentage = 0) {
+        if (_.isNil(minter)) {
+            throw Error('minter cannot be nil');
+        }
+        this.minter = minter;
         this.fee = fee;
         this.royaltyAddress = royaltyAddress;
         this.royaltyPercentage = royaltyPercentage;
