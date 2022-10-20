@@ -192,13 +192,13 @@ describe('chia-minter', () => {
             }
 
             const mintingWallet = await getMintingWallet(
-                chia.wallet,
-                chia.full_node,
+                chia.service.wallet,
+                chia.service.full_node,
                 'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
             );
             const bulkMinter = new NftBulkMinter(
-                chia.wallet,
-                chia.full_node,
+                chia.service.wallet,
+                chia.service.full_node,
                 mintingWallet.wallet_id,
                 mintingWallet.did_coin,
             );
