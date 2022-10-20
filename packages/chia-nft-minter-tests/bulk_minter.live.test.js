@@ -135,7 +135,7 @@ describe('chia-minter', () => {
         });
     });
     describe('collection-minting', () => {
-        it('mint an entire DID collection in one go _DEBUG_', async function () {
+        it('mint an entire DID collection in one go', async function () {
             this.timeout(300 * 1000);
 
             const connection = {
@@ -163,7 +163,7 @@ describe('chia-minter', () => {
 
             const licenseFile = uploader.unpackFileInfo(licenseFileInfo);
             const timer = ms => new Promise(res => setTimeout(res, ms));
-            const mint_total = 25;
+            const mint_total = 2;
             const nftList = [];
             for (let i = 1; i <= mint_total; i++) {
                 console.log(`uploading #${i}...`);
@@ -196,7 +196,7 @@ describe('chia-minter', () => {
                 chia.services.full_node,
                 'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
             );
-            const bulkMinter = new NftBulkMinter(
+            const bulkMinter = new BulkNftMinter(
                 chia.services.wallet,
                 chia.services.full_node,
                 mintingWallet.wallet_id,
@@ -241,7 +241,7 @@ describe('chia-minter', () => {
 
             const licenseFile = uploader.unpackFileInfo(licenseFileInfo);
             const timer = ms => new Promise(res => setTimeout(res, ms));
-            const mint_total = 25;
+            const mint_total = 2;
             const nftList = [];
             for (let i = 1; i <= mint_total; i++) {
                 console.log(`making nft ${i}...`);
@@ -273,7 +273,7 @@ describe('chia-minter', () => {
                 chia.services.wallet,
                 chia.services.full_node
             );
-            const bulkMinter = new NftBulkMinter(
+            const bulkMinter = new BulkNftMinter(
                 chia.services.wallet,
                 chia.services.full_node,
                 mintingWallet.wallet_id
