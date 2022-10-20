@@ -2,7 +2,7 @@ import chai from 'chai';
 import path from 'path';
 import _ from 'lodash';
 import { fileURLToPath } from 'url';
-import BulkNftMinter from '../chia-nft-minter/nft_bulk_minter.js';
+import NftBulkMinter from '../chia-nft-minter/nft_bulk_minter.js';
 import NftCollectionMinter from '../chia-nft-minter/nft_collection_minter.js';
 import { NftUploader, MetadataFactory } from 'chia-nft-minter';
 import { ChiaDaemon } from 'chia-daemon';
@@ -123,7 +123,7 @@ describe('chia-minter', () => {
                 chia.services.full_node,
                 'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
             );
-            const bulkMinter = new BulkNftMinter(
+            const bulkMinter = new NftBulkMinter(
                 chia.services.wallet,
                 chia.services.full_node,
                 mintingWallet.wallet_id,
@@ -192,13 +192,13 @@ describe('chia-minter', () => {
             }
 
             const mintingWallet = await getMintingWallet(
-                chia.services.wallet,
-                chia.services.full_node,
+                chia.wallet,
+                chia.full_node,
                 'did:chia:1w4tuxuw622qncpqlwl5j4s62zm9ju5dvgyjl0q7fvqtfnmwjffmqwfkqjg'
             );
-            const bulkMinter = new BulkNftMinter(
-                chia.services.wallet,
-                chia.services.full_node,
+            const bulkMinter = new NftBulkMinter(
+                chia.wallet,
+                chia.full_node,
                 mintingWallet.wallet_id,
                 mintingWallet.did_coin,
             );
@@ -273,7 +273,7 @@ describe('chia-minter', () => {
                 chia.services.wallet,
                 chia.services.full_node
             );
-            const bulkMinter = new BulkNftMinter(
+            const bulkMinter = new NftBulkMinter(
                 chia.services.wallet,
                 chia.services.full_node,
                 mintingWallet.wallet_id

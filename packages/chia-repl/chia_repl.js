@@ -6,7 +6,7 @@ import _utils from 'chia-utils';
 import chalk from 'chalk';
 import listener from './listen.js';
 import clvm from 'clvm';
-import { ContentHasher, MetadataFactory, NftMinter } from 'chia-nft-minter';
+import { ContentHasher, MetadataFactory, NftMinter, NftBulkMinter, NftCollectionMinter, getMintingWallet } from 'chia-nft-minter';
 import ModuleManager from './moduleManager.js';
 import log from './logger.js';
 import { setVerbosity } from './logger.js';
@@ -42,6 +42,14 @@ export default class ChiaRepl {
         // this is nft stuff that doesn't need the connection
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
+
+        // expose these types to thecontext so they can be used in the repl
+        this.repl.context.NftMinter = NftMinter;
+        this.repl.context.NftBulkMinter = NftBulkMinter;
+        this.repl.context.NftCollectionMinter = NftCollectionMinter;
+        this.repl.context.getMintingWallet = getMintingWallet;
+        this.repl.context.NftMinter = NftMinter;
+
         this.moduleManager = new ModuleManager(options.scriptFolder);
 
         this.loadConnection();
