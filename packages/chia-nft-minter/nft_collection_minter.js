@@ -16,7 +16,7 @@ export default class NftCollectionMinter {
         if (_.isNil(nftInfos)) {
             throw Error('nftInfos cannot be nil');
         }
-        if (!_.isArray(nftInfos)) {
+        if (!_.isArrayLike(nftInfos)) {
             throw Error('nftInfos must be an array');
         }
         if (nftInfos.length > 25) {

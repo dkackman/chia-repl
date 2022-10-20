@@ -5,6 +5,7 @@ import NftBulkMinter from './nft_bulk_minter.js';
 import ContentHasher from './content_hasher.js';
 import NftUploader from './nft_uploader.js';
 import NftCollectionMinter from './nft_collection_minter.js';
+import getMintingWallet from './getMintingWallet.js';
 
 export {
     MetadataFactory,
@@ -14,4 +15,5 @@ export {
     NftUploader,
     NftBulkMinter,
     NftCollectionMinter,
+    getMintingWallet,
 };

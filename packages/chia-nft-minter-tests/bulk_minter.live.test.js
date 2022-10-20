@@ -8,7 +8,7 @@ import { NftUploader, MetadataFactory } from 'chia-nft-minter';
 import { ChiaDaemon } from 'chia-daemon';
 import fs from 'fs';
 import { createCanvas } from 'canvas';
-import getMintingWallet from 'chia-nft-minter/mintingWallet.js';
+import getMintingWallet from 'chia-nft-minter/getMintingWallet.js';
 
 const expect = chai.expect;
 

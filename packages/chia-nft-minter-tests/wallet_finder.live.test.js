@@ -1,6 +1,6 @@
 import chai from 'chai';
 import _ from 'lodash';
-import getMintingWallet from 'chia-nft-minter/mintingWallet.js';
+import getMintingWallet from 'chia-nft-minter/getMintingWallet';
 import { ChiaDaemon } from 'chia-daemon';
 
 const expect = chai.expect;

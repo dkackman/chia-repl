@@ -3,8 +3,8 @@ import _ from 'lodash';
 
 // this looks up the appropriate wallet and/or did info so it can be cached for later use
 // if did is undefined just returns the first NFT wallet
-// if did is supplied find the first nft wallet that references the did
-//   and also find the coin assocaited with the did
+// if did is supplied, find the first nft wallet that references that did
+//   and also find the coin associated with the did
 export default async function getMintingWallet(wallet, fulllNode, did) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
@@ -54,7 +54,7 @@ export default async function getMintingWallet(wallet, fulllNode, did) {
             };
         }
     } catch (e) {
-        if (typeof e === 'string') {
+        if (_.isString(e)) {
             throw new Error(e);
         }
 

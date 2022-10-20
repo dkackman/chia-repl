@@ -13,7 +13,8 @@ export default class NftUploader {
         if (_.isNil(ipfsToken)) {
             throw Error('ipfsToken cannot be nil');
         }
-        if (typeof ipfsToken !== 'string') {
+
+        if (!_.isString(ipfsToken)) { // assumed to be a SecureString already
             this.ipfsToken = ipfsToken;
         } else {
             const _ipfsToken = new SecureString();
@@ -81,9 +82,11 @@ export default class NftUploader {
             throw Error('metadataContent cannot be nil');
         }
 
+        // metadata content can either be an object to serialize or an already serialized object
         if (!_.isString(metadataContent)) {
             metadataContent = JSON.stringify(metadataContent, null, 2);
         }
+
         const files = [];
 
         files.push(new File([dataFile.content], dataFile.name, { type: dataFile.type }));

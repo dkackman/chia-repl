@@ -12,10 +12,11 @@ export default class NftBulkMinter {
         this.wallet = wallet;
         this.fulllNode = fulllNode;
         this._walletId = walletId;
-        this.didCoin = didCoin; // needs to be non-null to mint with a did
+        this._didCoin = didCoin; // needs to be non-null to mint with a did
     }
 
     get walletId() { return this._walletId; }
+    get didCoin() { return this._didCoin; }
 
     async mint(bulkMintInfo) {
         if (_.isNil(bulkMintInfo)) {
