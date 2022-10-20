@@ -26,7 +26,7 @@
     "axios": "^0.27.2",
     "chalk": "^5.0.1",
     "chia-daemon": "^0.6.0",
-    "chia-nft-minter": "^0.6.0",
+    "chia-nft-minter": "^0.7.0",
     "chia-utils": "^1.0.10",
     "clvm": "^2.0.0",
     "clvm_tools": "^0.9.5",
