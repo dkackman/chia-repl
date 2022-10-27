@@ -32,8 +32,13 @@ export default class NftBulkMinter {
 
     async mintAndSubmit(bulkMintInfo) {
         const mint = await this.mint(bulkMintInfo);
-        return await this.fulllNode.push_tx({
+        const status = await this.fulllNode.push_tx({
             spend_bundle: mint.spend_bundle,
         });
+
+        return {
+            spend_bundle: mint.spend_bundle,
+            status: status.status,
+        };
     }
 }

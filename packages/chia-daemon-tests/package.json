@@ -29,8 +29,10 @@
     "jshint": "^2.13.5"
   },
   "dependencies": {
-    "chia-daemon": "file:../chia-daemon/package.json",
     "chai": "^4.3.6",
+    "chia-daemon": "file:../chia-daemon/package.json",
+    "chia-utils": "^1.0.10",
+    "lodash": "^4.17.21",
     "mocha": "^10.0.0"
   }
 }
