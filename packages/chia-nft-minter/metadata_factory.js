@@ -45,7 +45,7 @@ export default class MetadataFactory {
      * @param {boolean} sensitive_content - Flag for sensitive content
      * @returns NFT metadata obect
      */
-    createNftMetadata(name, collection, attributes = [], description = '', sensitive_content = false) {
+    createNftMetadata(name, collection, attributes = [], description = '', sensitive_content = false, series_number = 1, series_total = 1) {
         if (_.isNil(name)) {
             throw Error('name cannot be nil');
         }
@@ -70,7 +70,9 @@ export default class MetadataFactory {
             minting_tool: this.minting_tool,
             sensitive_content: sensitive_content,
             attributes: atttributeList,
-            collection: collection
+            collection: collection,
+            series_number: series_number,
+            series_total: series_total,
         };
     }
 
