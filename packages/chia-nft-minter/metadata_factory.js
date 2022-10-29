@@ -69,10 +69,10 @@ export default class MetadataFactory {
             description: description,
             minting_tool: this.minting_tool,
             sensitive_content: sensitive_content,
-            attributes: atttributeList,
-            collection: collection,
             series_number: series_number,
             series_total: series_total,
+            attributes: atttributeList,
+            collection: collection,
         };
     }
 
