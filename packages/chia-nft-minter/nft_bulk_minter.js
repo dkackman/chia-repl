@@ -41,4 +41,34 @@ export default class NftBulkMinter {
             status: status.status,
         };
     }
+
+    async waitForCoin(launcher, pauseSeconds = 10, timeoutSeconds = 300) {
+        let coinExists = false;
+        const timer = ms => new Promise(res => setTimeout(res, ms));
+        const start = Date.now();
+        const timeoutMilliseconds = timeoutSeconds * 1000;
+        const pauseMilliseconds = pauseSeconds * 1000;
+
+        while (!coinExists) {
+            await timer(pauseMilliseconds);
+
+            try {
+                const coin = await this.fulllNode.get_coin_record_by_name({ name: launcher });
+                coinExists = coin !== undefined;
+
+                const coinRecordResponse = await this.fullNode.get_coin_record_by_name({ name: launcher });
+                const confirmedBlockIndex = _.get(coinRecordResponse, 'coin_record.confirmed_block_index', undefined);
+                if (confirmedBlockIndex !== undefined) {
+                    return confirmedBlockIndex;
+                }
+            }
+            catch (e) {
+                // no coin yet - keep waiting
+            }
+
+            if (Date.now() - start > timeoutMilliseconds) {
+                throw new Error(`waitingfor coin ${launcher} timed out`);
+            }
+        }
+    }
 }
