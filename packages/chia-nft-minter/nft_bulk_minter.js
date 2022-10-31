@@ -1,16 +1,16 @@
 import _ from 'lodash';
 
 export default class NftBulkMinter {
-    constructor(wallet, fulllNode, walletId, didCoin) {
+    constructor(wallet, fullNode, walletId, didCoin) {
         if (_.isNil(wallet)) {
             throw Error('wallet cannot be nil');
         }
-        if (_.isNil(fulllNode)) {
-            throw Error('fulllNode cannot be nil');
+        if (_.isNil(fullNode)) {
+            throw Error('fullNode cannot be nil');
         }
 
         this.wallet = wallet;
-        this.fulllNode = fulllNode;
+        this.fullNode = fullNode;
         this._walletId = walletId;
         this._didCoin = didCoin; // needs to be non-null to mint with a did
     }
@@ -32,7 +32,7 @@ export default class NftBulkMinter {
 
     async mintAndSubmit(bulkMintInfo) {
         const mint = await this.mint(bulkMintInfo);
-        const status = await this.fulllNode.push_tx({
+        const status = await this.fullNode.push_tx({
             spend_bundle: mint.spend_bundle,
         });
 
@@ -43,31 +43,26 @@ export default class NftBulkMinter {
     }
 
     async waitForCoin(launcher, pauseSeconds = 10, timeoutSeconds = 300) {
-        let coinExists = false;
         const timer = ms => new Promise(res => setTimeout(res, ms));
         const start = Date.now();
         const timeoutMilliseconds = timeoutSeconds * 1000;
         const pauseMilliseconds = pauseSeconds * 1000;
 
+        let coinExists = false;
         while (!coinExists) {
             await timer(pauseMilliseconds);
 
             try {
-                const coin = await this.fulllNode.get_coin_record_by_name({ name: launcher });
-                coinExists = coin !== undefined;
-
                 const coinRecordResponse = await this.fullNode.get_coin_record_by_name({ name: launcher });
-                const confirmedBlockIndex = _.get(coinRecordResponse, 'coin_record.confirmed_block_index', undefined);
-                if (confirmedBlockIndex !== undefined) {
-                    return confirmedBlockIndex;
-                }
+                coinExists = coinRecordResponse !== undefined;
             }
             catch (e) {
                 // no coin yet - keep waiting
+                console.debug(`waiting for coin ${launcher}`);
             }
 
             if (Date.now() - start > timeoutMilliseconds) {
-                throw new Error(`waitingfor coin ${launcher} timed out`);
+                throw new Error(`waiting for coin ${launcher} timed out`);
             }
         }
     }
