@@ -14,7 +14,7 @@ npm install
 npm test
 ```
 
-## Documention
+## Documentation
 
 <https://dkackman.github.io/chia-daemon/>
 
@@ -24,7 +24,7 @@ Each service is a field on the `services` property of the `ChiaDaemon`.
 
 - Since all service calls go through the daemon there is no need for other endpoint configuration
 - All RPC calls are async
-- Since all rpc call are dyanmically invoked there is no need to update the library with new chia release.
+- Since all rpc call are dynamically invoked there is no need to update the library with new Chia releases.
 (i.e. if you invoke `daemon.wallet.foo()` it will call make an RPC to a function named `foo` at that endpoint and error if it doesn't exist there)
 
 ```javascript
@@ -46,7 +46,7 @@ Includes helper functions to get request payloads right:
 ### Get the OpenAPI responseBody Schema Descriptor
 
 ```javascript
-console.log(daemon.full_node.getPayloadDescriptor('open_connection'));
+console.log(daemon.services.full_node.getPayloadDescriptor('open_connection'));
 
 {
   type: 'object',
@@ -61,11 +61,13 @@ console.log(daemon.full_node.getPayloadDescriptor('open_connection'));
 ### Get a Payload Object Instance
 
 ```javascript
-const connection = daemon.full_node.makePayload('open_connection');
-console.log(payload);
+const connection = daemon.services.full_node.makePayload('open_connection');
+console.log(connection);
+
 { ip: '', port: 0 }
+
 connection.ip = 'chia.net';
 connection.port = 4444;
 
-await daemon.full_node.open_connection(connection);
+await daemon.services.full_node.open_connection(connection);
 ```
