@@ -17,7 +17,7 @@ export default async function getMintingWallet(wallet, fulllNode, did) {
         // get all the NFT wallets
         const response = await wallet.get_wallets({
             type: 10, // NFT
-            includ_data: true,
+            include_data: true,
         });
 
         if (!_.isNil(did)) {
