@@ -5,12 +5,12 @@ import _ from 'lodash';
 // if did is undefined just returns the first NFT wallet
 // if did is supplied, find the first nft wallet that references that did
 //   and also find the coin associated with the did (for bulk miniting)
-export default async function getMintingWallet(wallet, fulllNode, did) {
+export default async function getMintingWallet(wallet, fullNode, did) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
     }
-    if (_.isNil(fulllNode)) {
-        throw Error('fulllNode cannot be nil');
+    if (_.isNil(fullNode)) {
+        throw Error('fullNode cannot be nil');
     }
 
     try {
@@ -37,7 +37,7 @@ export default async function getMintingWallet(wallet, fulllNode, did) {
 
             // if we have an nft wallet that references the did
             // look up the coin associated with the did wallet
-            const did_coin = await getDidWalletCoin(wallet, fulllNode, did);
+            const did_coin = await getDidWalletCoin(wallet, fullNode, did);
 
             return {
                 wallet_id: response.wallets[0].id,
@@ -65,7 +65,7 @@ export default async function getMintingWallet(wallet, fulllNode, did) {
     throw new Error('No NFT wallets');
 }
 
-async function getDidWalletCoin(wallet, fulllNode, did) {
+async function getDidWalletCoin(wallet, fullNode, did) {
     // get all did wallets
     const response = await wallet.get_wallets({
         type: 8, // DISTRIBUTED_ID
@@ -74,12 +74,12 @@ async function getDidWalletCoin(wallet, fulllNode, did) {
     const didWallets = response.wallets.filter(wallet => wallet.name === `DID ${did}` || wallet.name === did);
 
     if (didWallets.length === 0) {
-        throw new Error(`no did walltet found for ${did}`);
+        throw new Error(`no did wallet found for ${did}`);
     }
 
     // get the did object associated with the wallet and lookup its coin record
     const didResponse = await wallet.did_get_did({ wallet_id: didWallets[0].id });
-    const getCoinRecordResponse = await fulllNode.get_coin_record_by_name({ name: didResponse.coin_id });
+    const getCoinRecordResponse = await fullNode.get_coin_record_by_name({ name: didResponse.coin_id });
 
     return getCoinRecordResponse.coin_record.coin;
 }
