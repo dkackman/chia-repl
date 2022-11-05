@@ -2,9 +2,9 @@ import _utils from 'chia-utils';
 import _ from 'lodash';
 
 // this looks up the appropriate wallet and/or did info so it can be cached for later use
-// if did is undefined just returns the first NFT wallet
-// if did is supplied, find the first nft wallet that references that did
-//   and also find the coin associated with the did (for bulk miniting)
+// - if did is undefined just returns the first NFT wallet
+// - if did is supplied, find the first nft wallet that references that did
+//   - and also find the coin associated with the did (for bulk miniting)
 export default async function getMintingWallet(wallet, fullNode, did) {
     if (_.isNil(wallet)) {
         throw Error('wallet cannot be nil');
@@ -15,10 +15,7 @@ export default async function getMintingWallet(wallet, fullNode, did) {
 
     try {
         // get all the NFT wallets
-        const response = await wallet.get_wallets({
-            type: 10, // NFT
-            include_data: true,
-        });
+        const response = await wallet.get_wallets({ type: 10 }); // NFT
 
         if (!_.isNil(did)) {
             // see if any match the did (should either be one or none)
@@ -67,12 +64,9 @@ export default async function getMintingWallet(wallet, fullNode, did) {
 
 async function getDidWalletCoin(wallet, fullNode, did) {
     // get all did wallets
-    const response = await wallet.get_wallets({
-        type: 8, // DISTRIBUTED_ID
-    });
+    const response = await wallet.get_wallets({ type: 8, }); // DISTRIBUTED_ID
     // matching on wallet name - perhaps needs to be more authoratative?
     const didWallets = response.wallets.filter(wallet => wallet.name === `DID ${did}` || wallet.name === did);
-
     if (didWallets.length === 0) {
         throw new Error(`no did wallet found for ${did}`);
     }

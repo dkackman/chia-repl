@@ -11,7 +11,6 @@ import ModuleManager from './moduleManager.js';
 import log from './logger.js';
 import { setVerbosity } from './logger.js';
 import axios from 'axios';
-import txt2nft from './txt2nft.js';
 
 /* jshint ignore:start */
 await clvm.initialize();
@@ -94,20 +93,6 @@ export default class ChiaRepl {
             const ipfsToken = this.repl.context.options.ipfsToken;
             if (ipfsToken !== undefined && ipfsToken.length > 0) {
                 this.repl.context.minter = new NftMinter(chiaDaemon.services.wallet, ipfsToken);
-                this.repl.context.txt2nft = async (prompt,
-                    wallet_id,
-                    target_address,
-                    nft_description,
-                    collection_name,
-                    collection_description) => await txt2nft(prompt,
-                        wallet_id,
-                        target_address,
-                        nft_description,
-                        collection_name,
-                        collection_description,
-                        this.repl.context.options.x_api_key,
-                        this.repl.context.metadataFactory,
-                        this.repl.context.minter);
             } else {
                 log(chalk.grey('No ipfs token is set. Set `ipfsToken` on the options object and reconnect to use NFT functions'), 'status');
             }
@@ -143,7 +128,6 @@ export default class ChiaRepl {
         // clear all these out so they aren't available in the repl when not connected
         this.repl.context.chiaDaemon = undefined;
         this.repl.context.minter = undefined;
-        this.repl.context.txt2nft = undefined;
         this.repl.context.chia = undefined;
     }
 

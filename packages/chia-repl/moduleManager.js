@@ -3,6 +3,7 @@ import { readdir } from 'fs/promises';
 import os from 'os';
 import log from './logger.js';
 import _ from 'lodash';
+import fs from 'fs';
 
 const homeDirectory = os.homedir();
 
@@ -31,6 +32,9 @@ export default class ModuleManager {
         if (this.scriptFolder === undefined) {
             return;
         }
+        if (!fs.existsSync(this.scriptFolder)) {
+            return;
+        }
         if (_.isNil(context)) {
             throw new Error('context cannot be nil');
         }
@@ -41,7 +45,7 @@ export default class ModuleManager {
             // make sure we don't overwrite anything
             if (context[moduleName] === undefined) {
                 try {
-                    // this requires that the following e true:
+                    // this requires that the following be true:
                     // - `dir` (ie the folder name) is used as the name of the module
                     // - in the dir we're looking at, there is a file with the same name and the mjs extension
                     // - the mjs module has all of its dependencies installed
