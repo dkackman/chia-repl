@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The full node uses port 8555 by default.
-  version: 1.6.0
+  version: 1.6.1
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -841,6 +841,8 @@ tags:
     description: The full node RPC API is exposed, by default, on port 8555. This port must not be exposed publicly for security concerns.
   - name: Mempool
     description: Get information about the mempool.
+  - name: Fees
+    description: Get information about fees.
 paths:
   /stop_node:
     post:
@@ -1772,6 +1774,72 @@ paths:
                     properties:
                       status:
                         type: string
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_fee_estimate:
+    post:
+      tags:
+        - Fees
+      description: Estimates the fee for a given spend_bundle.
+      summary: Estimates the fee for a given spend_bundle.
+      operationId: get_fee_estimate
+      requestBody:
+        required: true
+        description: The spend bundle
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spend_bundle:
+                  type: object
+                  properties: *ref_13
+                cost:
+                  type: integer
+                  format: uint64
+                target_times:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      estimates:
+                        type: array
+                        items:
+                          type: integer
+                      target_times:
+                        type: array
+                        items:
+                          type: integer
+                      current_fee_rate:
+                        type: integer
+                        format: uint64
+                      mempool_size:
+                        type: integer
+                        format: uint64
+                      mempool_max_size:
+                        type: integer
+                        format: uint64
+                      full_node_synced:
+                        type: boolean
+                      peak_height:
+                        type: integer
+                        format: uint64
+                      last_peak_timestamp:
+                        type: integer
+                        format: uint64
+                      node_time_utc:
+                        type: integer
+                        format: in32
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
