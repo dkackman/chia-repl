@@ -26,7 +26,7 @@ describe('chia-minter', () => {
             // this is specific to my test nodde
             expect(mintingWallet.wallet_id).to.equal(3);
         });
-        it('should find the nft wallet linked to a did _DEBUG_', async function () {
+        it('should find the nft wallet linked to a did', async function () {
             this.timeout(300 * 1000);
             const connection = {
                 host: 'chiapas',

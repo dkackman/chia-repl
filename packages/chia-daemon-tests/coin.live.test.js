@@ -45,7 +45,7 @@ describe('chia-daemon', () => {
                 expect(spentParentRecord.spent).to.equal(true);
             }
         });
-        it('should find a coins spent parent _DEBUG_', async function(){
+        it('should find a coins spent parent', async function(){
             this.timeout(300 * 1000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
             const connected = await chia.connect();

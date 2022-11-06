@@ -4,6 +4,7 @@ import { readFileSync } from 'fs';
 import createRpcProxy from './rpc_proxy.js';
 import { EventEmitter } from 'events';
 import untildify from './untildify.js';
+import _ from 'lodash';
 
 /** This can be found in the config but here for convenience. */
 export let localDaemonConnection = {
@@ -24,7 +25,7 @@ export default class ChiaDaemon extends EventEmitter {
      * Create a ChiaDaemon.
      * @param {Object} connection - Details of the connection.
      * @param {string} connection.host - The host name or IP address.
-     * @param {number} connection.port - The damon's listening port.
+     * @param {number} connection.port - The daemon's listening port.
      * @param {string} connection.key_path - File path to the certificate key file used to secure the connection.
      * @param {string} connection.cert_path - File path to the certificate crt file used to secure the connection.
      * @param {number} connection.timeout_seconds - Timeout, in seconds, for each call to the deamon.
@@ -121,7 +122,7 @@ export default class ChiaDaemon extends EventEmitter {
         });
 
         let error = false;
-        ws.on('error', (e) => {
+        ws.once('error', (e) => {
             error = true;
             this.emit('socket-error', e);
         });
@@ -169,39 +170,54 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error('Not connected');
         }
 
-        const outgoingMsg = formatMessage(destination, command, this._service_name, data);
+        let socketError;
+        const socketErrorHandler = (e) => {
+            socketError = e;
+            console.log('poop!!!');
+        };
+        this.ws.on('error', socketErrorHandler);
 
-        this.outgoing.set(outgoingMsg.request_id, outgoingMsg);
-        this.ws.send(JSON.stringify(outgoingMsg));
+        try {
+            const outgoingMsg = formatMessage(destination, command, this._service_name, data);
 
-        const timer = ms => new Promise(res => setTimeout(res, ms));
-        const start = Date.now();
-        const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
+            this.outgoing.set(outgoingMsg.request_id, outgoingMsg);
+            this.ws.send(JSON.stringify(outgoingMsg));
 
-        // wait here until an incoming response shows up
-        while (!this.incoming.has(outgoingMsg.request_id)) {
-            await timer(100);
-            const elapsed = Date.now() - start;
-            if (elapsed > timeoutMilliseconds) {
-                //clean up anything lingering for this message
-                if (this.outgoing.has(outgoingMsg.request_id)) {
-                    this.outgoing.delete(outgoingMsg.request_id);
+            const timer = ms => new Promise(res => setTimeout(res, ms));
+            const start = Date.now();
+            const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
+
+            // wait here until an incoming response shows up
+            while (!this.incoming.has(outgoingMsg.request_id)) {
+                if (!_.isNil(socketError)) {
+                    this.emit('socket-error', e);
+                    throw socketError;
                 }
-                if (this.incoming.has(outgoingMsg.request_id)) {
-                    this.incoming.delete(outgoingMsg.request_id);
+                await timer(100);
+                const elapsed = Date.now() - start;
+                if (elapsed > timeoutMilliseconds) {
+                    //clean up anything lingering for this message
+                    if (this.outgoing.has(outgoingMsg.request_id)) {
+                        this.outgoing.delete(outgoingMsg.request_id);
+                    }
+                    if (this.incoming.has(outgoingMsg.request_id)) {
+                        this.incoming.delete(outgoingMsg.request_id);
+                    }
+                    throw new Error('Timeout expired');
                 }
-                throw new Error('Timeout expired');
             }
-        }
 
-        const incomingMsg = this.incoming.get(outgoingMsg.request_id);
-        this.incoming.delete(outgoingMsg.request_id);
-        const incomingData = incomingMsg.data;
-        if (incomingData.success === false) {
-            throw new Error(incomingData.error);
-        }
+            const incomingMsg = this.incoming.get(outgoingMsg.request_id);
+            this.incoming.delete(outgoingMsg.request_id);
+            const incomingData = incomingMsg.data;
+            if (incomingData.success === false) {
+                throw new Error(incomingData.error);
+            }
 
-        return incomingData;
+            return incomingData;
+        } finally {
+            this.ws.removeEventListener('error', socketErrorHandler);
+        }
     }
 }
 
