@@ -17,7 +17,7 @@ export default class MessageQueue extends EventEmitter {
             end: count,
         };
         const getResponse = await this.wallet.get_notifications(payload);
-        return getResponse.notifications;
+        return getResponse.notifications ?? [];
     }
 
     async popMessages(count = 1) {
@@ -35,10 +35,10 @@ export default class MessageQueue extends EventEmitter {
         this.stop = true;
     }
 
-    async listen(pollSeconds = 10) {
+    async listen(messageCount = 1, pollSeconds = 10) {
         const timer = ms => new Promise(res => setTimeout(res, ms));
         while (this.stop !== true) {
-            const messages = await this.peekMessages(1);
+            const messages = await this.peekMessages(messageCount);
             messages.forEach(message => this.emit('message-received', message));
             await timer(pollSeconds * 1000);
         }
