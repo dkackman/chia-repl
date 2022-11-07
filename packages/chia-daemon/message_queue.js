@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import { EventEmitter } from 'events';
 
+/*
+    wraps the on chain notifications into a message queue
+*/
 export default class MessageQueue extends EventEmitter {
     constructor(wallet) {
         super();
@@ -53,21 +56,17 @@ export default class MessageQueue extends EventEmitter {
     }
 
     /*
-        polls the queue preidoically raising `message-received` event
-        for each message. Will continue to notify on messages until they are deleted
+        polls the queue periodically, raising `message-received` event
+        for each message. Will continue to notify on individual messages
+        until they are deleted
     */
     async listen(messageCount = 1, pollSeconds = 10) {
         this.stop = false;
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
         while (this.stop !== true) {
-            try {
-                const messages = await this.peekMessages(messageCount);
-                messages.forEach(message => this.emit('message-received', message));
-            } catch (e) {
-                console.log(e);
-                this.stop();
-            }
+            const messages = await this.peekMessages(messageCount);
+            messages.forEach(message => this.emit('message-received', message));
 
             await timer(pollSeconds * 1000);
         }
