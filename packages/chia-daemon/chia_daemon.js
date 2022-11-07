@@ -122,7 +122,7 @@ export default class ChiaDaemon extends EventEmitter {
         });
 
         let error = false;
-        ws.once('error', (e) => {
+        ws.on('error', (e) => {
             error = true;
             this.emit('socket-error', e);
         });
@@ -170,54 +170,39 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error('Not connected');
         }
 
-        let socketError;
-        const socketErrorHandler = (e) => {
-            socketError = e;
-            console.log('poop!!!');
-        };
-        this.ws.on('error', socketErrorHandler);
+        const outgoingMsg = formatMessage(destination, command, this._service_name, data);
 
-        try {
-            const outgoingMsg = formatMessage(destination, command, this._service_name, data);
+        this.outgoing.set(outgoingMsg.request_id, outgoingMsg);
+        this.ws.send(JSON.stringify(outgoingMsg));
 
-            this.outgoing.set(outgoingMsg.request_id, outgoingMsg);
-            this.ws.send(JSON.stringify(outgoingMsg));
+        const timer = ms => new Promise(res => setTimeout(res, ms));
+        const start = Date.now();
+        const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
 
-            const timer = ms => new Promise(res => setTimeout(res, ms));
-            const start = Date.now();
-            const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
-
-            // wait here until an incoming response shows up
-            while (!this.incoming.has(outgoingMsg.request_id)) {
-                if (!_.isNil(socketError)) {
-                    this.emit('socket-error', e);
-                    throw socketError;
+        // wait here until an incoming response shows up
+        while (!this.incoming.has(outgoingMsg.request_id)) {
+            await timer(100);
+            const elapsed = Date.now() - start;
+            if (elapsed > timeoutMilliseconds) {
+                //clean up anything lingering for this message
+                if (this.outgoing.has(outgoingMsg.request_id)) {
+                    this.outgoing.delete(outgoingMsg.request_id);
                 }
-                await timer(100);
-                const elapsed = Date.now() - start;
-                if (elapsed > timeoutMilliseconds) {
-                    //clean up anything lingering for this message
-                    if (this.outgoing.has(outgoingMsg.request_id)) {
-                        this.outgoing.delete(outgoingMsg.request_id);
-                    }
-                    if (this.incoming.has(outgoingMsg.request_id)) {
-                        this.incoming.delete(outgoingMsg.request_id);
-                    }
-                    throw new Error('Timeout expired');
+                if (this.incoming.has(outgoingMsg.request_id)) {
+                    this.incoming.delete(outgoingMsg.request_id);
                 }
+                throw new Error('Timeout expired');
             }
-
-            const incomingMsg = this.incoming.get(outgoingMsg.request_id);
-            this.incoming.delete(outgoingMsg.request_id);
-            const incomingData = incomingMsg.data;
-            if (incomingData.success === false) {
-                throw new Error(incomingData.error);
-            }
-
-            return incomingData;
-        } finally {
-            this.ws.removeEventListener('error', socketErrorHandler);
         }
+
+        const incomingMsg = this.incoming.get(outgoingMsg.request_id);
+        this.incoming.delete(outgoingMsg.request_id);
+        const incomingData = incomingMsg.data;
+        if (incomingData.success === false) {
+            throw new Error(incomingData.error);
+        }
+
+        return incomingData;
     }
 }
 

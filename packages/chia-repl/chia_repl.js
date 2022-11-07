@@ -1,4 +1,4 @@
-import { ChiaDaemon, localDaemonConnection } from 'chia-daemon';
+import { ChiaDaemon, localDaemonConnection, MessageQueue } from 'chia-daemon';
 import * as settings from './settings.js';
 import * as bls from '@rigidity/bls-signatures';
 import * as compiler from './compiler.js';
@@ -48,6 +48,7 @@ export default class ChiaRepl {
         this.repl.context.NftCollectionMinter = NftCollectionMinter;
         this.repl.context.getMintingWallet = getMintingWallet;
         this.repl.context.NftMinter = NftMinter;
+        this.repl.context.MessageQueue = MessageQueue;
 
         this.moduleManager = new ModuleManager(options.scriptFolder);
 

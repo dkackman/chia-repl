@@ -36,11 +36,13 @@ export default class MessageQueue extends EventEmitter {
         deletes all of the supplied messages
     */
     async deleteMessages(messages = []) {
-        if (_.isArray(messages)) {
+        if (!_.isArray(messages)) {
             throw new Error('messages must be an array');
         }
         const ids = _.map(messages, message => message.id);
-        await this.wallet.delete_notifications(ids);
+        if (!_.isEmpty(ids)) {
+            await this.wallet.delete_notifications({ ids: ids });
+        }
     }
 
     /*
@@ -59,8 +61,14 @@ export default class MessageQueue extends EventEmitter {
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
         while (this.stop !== true) {
-            const messages = await this.peekMessages(messageCount);
-            messages.forEach(message => this.emit('message-received', message));
+            try {
+                const messages = await this.peekMessages(messageCount);
+                messages.forEach(message => this.emit('message-received', message));
+            } catch (e) {
+                console.log(e);
+                this.stop();
+            }
+
             await timer(pollSeconds * 1000);
         }
     }
