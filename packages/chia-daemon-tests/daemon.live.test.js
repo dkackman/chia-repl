@@ -1,6 +1,5 @@
 import chai from 'chai';
 import { ChiaDaemon } from 'chia-daemon';
-
 const expect = chai.expect;
 
 const bad_connection = {
@@ -13,10 +12,10 @@ const bad_connection = {
 
 // some tests assume that a daemon is reachable with these details
 const valid_connection = {
-    host: 'former',
+    host: 'chiapas',
     port: 55400,
-    key_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.key',
-    cert_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.crt',
+    key_path: '~/.chia/mainnet - chiapas/config/ssl/daemon/private_daemon.key',
+    cert_path: '~/.chia/mainnet - chiapas/config/ssl/daemon/private_daemon.crt',
     timeout_seconds: 60,
 };
 
@@ -62,16 +61,22 @@ describe('chia-daemon', () => {
 
             chia.disconnect();
         });
-        it('should fail on socket error _DEBUG_', async function () {
+        it('should decode notification message _DEBUG_', async function () {
             this.timeout(valid_connection.timeout_seconds * 10000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
 
             const connected = await chia.connect();
             expect(connected).to.equal(true);
 
-            const items = await chia.services.full_node.get_all_mempool_items();
-            expect(items).to.not.equal(undefined);
-            expect(items).to.not.equal(null);
+            const notifications = await chia.services.wallet.get_notifications({ start: 0, end: 1 });
+            expect(notifications).to.not.equal(undefined);
+            expect(notifications.notifications).to.not.equal(undefined);
+            expect(notifications.notifications.length).to.equal(1);
+
+            const n = notifications.notifications[0];
+
+            const text = Buffer.from(n.message, "hex").toString("utf8");
+            expect(text).to.equal('hello');
 
             chia.disconnect();
         });

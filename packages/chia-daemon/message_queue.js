@@ -66,7 +66,10 @@ export default class MessageQueue extends EventEmitter {
         const timer = ms => new Promise(res => setTimeout(res, ms));
         while (this.stop !== true) {
             const messages = await this.peekMessages(messageCount);
-            messages.forEach(message => this.emit('message-received', message));
+            messages.forEach((message) => {
+                message.text = Buffer.from(message.message, "hex").toString("utf8");
+                this.emit('message-received', message);
+            });
 
             await timer(pollSeconds * 1000);
         }
