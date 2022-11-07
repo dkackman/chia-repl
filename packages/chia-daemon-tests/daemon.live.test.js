@@ -13,11 +13,11 @@ const bad_connection = {
 
 // some tests assume that a daemon is reachable with these details
 const valid_connection = {
-    host: '172.21.88.37',
+    host: 'former',
     port: 55400,
-    key_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.key',
-    cert_path: '~/.chia/mainnet - wsl/config/ssl/daemon/private_daemon.crt',
-    timeout_seconds: 10,
+    key_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.key',
+    cert_path: '~/.chia/mainnet - former/config/ssl/daemon/private_daemon.crt',
+    timeout_seconds: 60,
 };
 
 describe('chia-daemon', () => {
@@ -59,6 +59,19 @@ describe('chia-daemon', () => {
             const state = await chia.services.full_node.get_blockchain_state();
             expect(state).to.not.equal(undefined);
             expect(state).to.not.equal(null);
+
+            chia.disconnect();
+        });
+        it('should fail on socket error _DEBUG_', async function () {
+            this.timeout(valid_connection.timeout_seconds * 10000);
+            const chia = new ChiaDaemon(valid_connection, 'tests');
+
+            const connected = await chia.connect();
+            expect(connected).to.equal(true);
+
+            const items = await chia.services.full_node.get_all_mempool_items();
+            expect(items).to.not.equal(undefined);
+            expect(items).to.not.equal(null);
 
             chia.disconnect();
         });

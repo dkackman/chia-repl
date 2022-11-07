@@ -4,6 +4,7 @@ import { readFileSync } from 'fs';
 import createRpcProxy from './rpc_proxy.js';
 import { EventEmitter } from 'events';
 import untildify from './untildify.js';
+import _ from 'lodash';
 
 /** This can be found in the config but here for convenience. */
 export let localDaemonConnection = {
@@ -24,7 +25,7 @@ export default class ChiaDaemon extends EventEmitter {
      * Create a ChiaDaemon.
      * @param {Object} connection - Details of the connection.
      * @param {string} connection.host - The host name or IP address.
-     * @param {number} connection.port - The damon's listening port.
+     * @param {number} connection.port - The daemon's listening port.
      * @param {string} connection.key_path - File path to the certificate key file used to secure the connection.
      * @param {string} connection.cert_path - File path to the certificate crt file used to secure the connection.
      * @param {number} connection.timeout_seconds - Timeout, in seconds, for each call to the deamon.
