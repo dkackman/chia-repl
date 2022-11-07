@@ -15,7 +15,7 @@ export default class MessageQueue extends EventEmitter {
     }
 
     /*
-        Peeks the next count messages from the queue. does not remove them
+        Peeks at the next `count` messages on the queue. does not remove them
     */
     async peekMessages(count = 1) {
         const payload = {
@@ -56,9 +56,9 @@ export default class MessageQueue extends EventEmitter {
     }
 
     /*
-        polls the queue periodically, raising `message-received` event
+        polls the queue every `pollSeconds`, raising a `message-received` event
         for each message. Will continue to notify on individual messages
-        until they are deleted
+        until they are deleted, which should be done by the listener
     */
     async listen(messageCount = 1, pollSeconds = 10) {
         this.stop = false;

@@ -1,5 +1,7 @@
 import chai from 'chai';
 import { ChiaDaemon } from 'chia-daemon';
+import _utils from 'chia-utils';
+
 const expect = chai.expect;
 
 const bad_connection = {
@@ -78,6 +80,11 @@ describe('chia-daemon', () => {
             const text = Buffer.from(n.message, "hex").toString("utf8");
             expect(text).to.equal('hello');
 
+            const coinResponse = await chia.services.full_node.get_coin_record_by_name({ name: n.id });
+            const parentCoinRecord = await getFirstSpentParentRecord(chia.services.full_node, coinResponse.coin_record.coin);
+
+            const address = _utils.puzzle_hash_to_address(parentCoinRecord.coin.puzzle_hash, 'txch');
+
             chia.disconnect();
         });
     });
@@ -112,3 +119,14 @@ describe('chia-daemon', () => {
         });
     });
 });
+
+
+async function getFirstSpentParentRecord(full_node, coin) {
+    const getCoinRecordResponse = await full_node.get_coin_record_by_name({ name: coin.parent_coin_info });
+    const parentCoinRecord = getCoinRecordResponse.coin_record;
+    if (parentCoinRecord.spent === true) {
+        return parentCoinRecord;
+    }
+
+    return await getFirstSpentParentRecord(full_node, parentCoinRecord.coin);
+}
