@@ -1,0 +1,36 @@
+{
+  "name": "@dkackman/chia-bot",
+  "version": "0.0.1",
+  "description": "A bot to invoke custom triggers when from notifications.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkackman/chia-repl.git"
+  },
+  "keywords": [
+    "chia",
+    "nft",
+    "mint",
+    "crypto",
+    "cryptocurrency"
+  ],
+  "author": "dkackman@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dkackman/chia-repl/issues"
+  },
+  "homepage": "https://github.com/dkackman/chia-repl#readme",
+  "devDependencies": {
+    "eslint": "^8.21.0",
+    "jshint": "^2.13.5"
+  },
+  "dependencies": {
+    "chia-daemon": "^0.8.0",
+    "lodash": "^4.17.21",
+    "chia-utils": "^1.0.10"
+  },
+  "type": "module"
+}
