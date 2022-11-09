@@ -63,7 +63,7 @@ export default class MessageQueue extends EventEmitter {
         for each message. Will continue to notify on individual messages
         until they are deleted, which should be done by the listener
     */
-    async listen(messageCount = 1, pollSeconds = 10) {
+    async listen(messageCount = 1, pollSeconds = 60) {
         this.stop = false;
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
