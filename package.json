@@ -1,12 +1,7 @@
 {
     "name": "chia-repl-project",
     "workspaces": [
-        "packages/chia-repl",
-        "packages/chia-repl-tests",
-        "packages/chia-daemon",
-        "packages/chia-daemon-tests",
-        "packages/chia-nft-minter",
-        "packages/chia-nft-minter-tests"
+        "packages/*"
     ],
-    "version": "0.0.2"
+    "version": "0.0.3"
 }

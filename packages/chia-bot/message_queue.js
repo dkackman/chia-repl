@@ -1,17 +1,20 @@
 import _ from 'lodash';
 import { EventEmitter } from 'events';
+import _utils from 'chia-utils';
 
 /*
     wraps the on chain notifications into a message queue
 */
 export default class MessageQueue extends EventEmitter {
-    constructor(wallet) {
+    constructor(wallet, fullNode, networkPrefix = 'xch') {
         super();
         if (_.isNil(wallet)) {
             throw new Error('wallet must be provided');
         }
 
         this.wallet = wallet;
+        this.fullNode = fullNode;
+        this.networkPrefix = networkPrefix;
     }
 
     /*
@@ -66,12 +69,21 @@ export default class MessageQueue extends EventEmitter {
         const timer = ms => new Promise(res => setTimeout(res, ms));
         while (this.stop !== true) {
             const messages = await this.peekMessages(messageCount);
-            messages.forEach((message) => {
+            messages.forEach(async (message) => {
                 message.text = Buffer.from(message.message, "hex").toString("utf8");
+                message.senderAddress = await this.getSenderAddress(message.id);
+                message.receivedAt = new Date().toISOString();
                 this.emit('message-received', message);
             });
 
             await timer(pollSeconds * 1000);
         }
+    }
+
+    async getSenderAddress(messageId) {
+        const coinResponse = await this.fullNode.get_coin_record_by_name({ name: messageId });
+        const parentCoinId = coinResponse.coin_record.coin.parent_coin_info;
+        const parentCointResponse = await this.fullNode.get_coin_record_by_name({ name: parentCoinId });
+        return _utils.puzzle_hash_to_address(parentCointResponse.coin_record.coin.puzzle_hash, this.networkPrefix);
     }
 }
