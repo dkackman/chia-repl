@@ -1,3 +1,6 @@
+import _utils from 'chia-utils';
+
+
 export async function sendOfferTo(wallet,
         recipientAddress,
         offer,
@@ -5,10 +8,9 @@ export async function sendOfferTo(wallet,
         messageFee = 1) {
 
     const hex = Buffer.from(offer, "utf8").toString("hex");
-    const bytes = new Uint8Array(Buffer.from(offer, "utf8"));
     const message = {
-        target: recipientAddress,
-        message: bytes,
+        target: _utils.address_to_puzzle_hash(recipientAddress),
+        message: hex,
         amount: messageAmount,
         fee: messageFee,
     };
