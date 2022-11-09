@@ -1,7 +1,7 @@
 {
-  "name": "@dkackman/chia-bot",
-  "version": "0.0.1",
-  "description": "A bot to invoke custom triggers when from notifications.",
+  "name": "chia-bot",
+  "version": "0.0.2",
+  "description": "A bot to invoke triggers from notifications.",
   "main": "index.js",
   "scripts": {
     "start": "node ./index.js"

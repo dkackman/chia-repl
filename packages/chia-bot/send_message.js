@@ -4,7 +4,7 @@ export default async function sendMessageTo(wallet,
         recipientAddress,
         message,
         messageAmount = 1000,
-        messageFee = 1) {
+        messageFee = 0) {
 
     const payload = {
         target: _utils.address_to_puzzle_hash(recipientAddress),
