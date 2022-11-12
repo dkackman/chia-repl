@@ -1,4 +1,5 @@
-import { ChiaDaemon, localDaemonConnection, MessageQueue } from 'chia-daemon';
+import { ChiaDaemon, localDaemonConnection } from 'chia-daemon';
+import { MessageQueue } from 'chia-bot';
 import * as settings from './settings.js';
 import * as bls from '@rigidity/bls-signatures';
 import * as compiler from './compiler.js';
