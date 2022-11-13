@@ -43,7 +43,7 @@ export default class ChiaRepl {
         this.repl.context.contentHasher = new ContentHasher();
         this.repl.context.metadataFactory = new MetadataFactory('chia-repl');
 
-        // expose these types to thecontext so they can be used in the repl
+        // expose these types to the context so they can be used in the repl
         this.repl.context.NftMinter = NftMinter;
         this.repl.context.NftBulkMinter = NftBulkMinter;
         this.repl.context.NftCollectionMinter = NftCollectionMinter;
