@@ -180,7 +180,7 @@ export default class ChiaDaemon extends EventEmitter {
         const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
 
         // wait here until an incoming response shows up
-        while (!this.incoming.has(outgoingMsg.request_id)) {
+        while (this.ws !== undefined && !this.incoming.has(outgoingMsg.request_id)) {
             await timer(100);
             const elapsed = Date.now() - start;
             if (elapsed > timeoutMilliseconds) {
@@ -196,13 +196,17 @@ export default class ChiaDaemon extends EventEmitter {
         }
 
         const incomingMsg = this.incoming.get(outgoingMsg.request_id);
-        this.incoming.delete(outgoingMsg.request_id);
-        const incomingData = incomingMsg.data;
-        if (incomingData.success === false) {
-            throw new Error(incomingData.error);
+        if (!_.isNil(incomingMsg)) {
+            this.incoming.delete(outgoingMsg.request_id);
+            const incomingData = incomingMsg.data;
+            if (incomingData.success === false) {
+                throw new Error(incomingData.error);
+            }
+
+            return incomingData;
         }
 
-        return incomingData;
+        return undefined; // we can get here if we disconnect while waiting for a message still
     }
 }
 
