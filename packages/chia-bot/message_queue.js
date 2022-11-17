@@ -11,6 +11,9 @@ export default class MessageQueue extends EventEmitter {
         if (_.isNil(wallet)) {
             throw new Error('wallet must be provided');
         }
+        if (_.isNil(fullNode)) {
+            throw new Error('fullNode must be provided');
+        }
 
         this.wallet = wallet;
         this.fullNode = fullNode;
