@@ -26,7 +26,7 @@ async function getFirstSpentParentRecord(full_node, coin) {
 
 describe('chia-daemon', () => {
     describe('scratch', () => {
-        it('should find a coims spent parent', async function(){
+        it('should find a coins spent parent', async function(){
             this.timeout(300 * 1000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
             const connected = await chia.connect();

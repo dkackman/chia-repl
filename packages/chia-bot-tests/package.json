@@ -1,0 +1,33 @@
+{
+  "name": "chia-bot-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "eslint": "^8.21.0",
+    "jshint": "^2.13.5"
+  },
+  "dependencies": {
+    "chai": "^4.3.6",
+    "chia-bot": "file:../chia-bot/package.json",
+    "chia-daemon": "file:../chia-daemon/package.json",
+    "lodash": "^4.17.21",
+    "mocha": "^10.0.0"
+  },
+  "scripts": {
+    "test": "mocha *.ci.test.js --exit",
+    "test-live": "mocha *.live.test.js --exit",
+    "debug": "mocha *.test.* -g '_DEBUG_' --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkackman/chia-repl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dkackman/chia-repl/issues"
+  },
+  "homepage": "https://github.com/dkackman/chia-repl#readme",
+  "type": "module"
+}

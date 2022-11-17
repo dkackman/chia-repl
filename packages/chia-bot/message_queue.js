@@ -55,7 +55,8 @@ export default class MessageQueue extends EventEmitter {
         interupts any running listen loop
     */
     stop() {
-        this.stop = true;
+        console.log('stopping');
+        this._stop = true;
     }
 
     /*
@@ -64,26 +65,31 @@ export default class MessageQueue extends EventEmitter {
         until they are deleted, which should be done by the listener
     */
     async listen(messageCount = 1, pollSeconds = 60) {
-        this.stop = false;
+        this._stop = false;
 
         const timer = ms => new Promise(res => setTimeout(res, ms));
-        while (this.stop !== true) {
+        while (this._stop !== true) {
             const messages = await this.peekMessages(messageCount);
-            messages.forEach(async (message) => {
+            for await (const message of messages) {
+                const detail = await this.getNotificationDetail(message.id);
                 message.text = Buffer.from(message.message, "hex").toString("utf8");
-                message.senderAddress = await this.getSenderAddress(message.id);
-                message.receivedAt = new Date().toISOString();
+                message.senderAddress = detail.senderAddress;
+                message.timestamp = detail.timestamp;
+
                 this.emit('message-received', message);
-            });
+            };
 
             await timer(pollSeconds * 1000);
         }
     }
 
-    async getSenderAddress(messageId) {
+    async getNotificationDetail(messageId) {
         const coinResponse = await this.fullNode.get_coin_record_by_name({ name: messageId });
         const parentCoinId = coinResponse.coin_record.coin.parent_coin_info;
         const parentCointResponse = await this.fullNode.get_coin_record_by_name({ name: parentCoinId });
-        return _utils.puzzle_hash_to_address(parentCointResponse.coin_record.coin.puzzle_hash, this.networkPrefix);
+        return {
+            senderAddress: _utils.puzzle_hash_to_address(parentCointResponse.coin_record.coin.puzzle_hash, this.networkPrefix),
+            timestamp: new Date(parentCointResponse.coin_record.timestamp * 1000).toISOString(),
+        };
     }
 }
