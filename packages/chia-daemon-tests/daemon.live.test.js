@@ -50,7 +50,7 @@ describe('chia-daemon', () => {
         });
     });
     describe('invocation', () => {
-        it('should get all the way to the rpc endpoint', async function () {
+        it('should get all the way to the rpc endpoint _DEBUG_', async function () {
             this.timeout(valid_connection.timeout_seconds * 1000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
 
@@ -63,7 +63,7 @@ describe('chia-daemon', () => {
 
             chia.disconnect();
         });
-        it('should decode notification message _DEBUG_', async function () {
+        it('should decode notification message', async function () {
             this.timeout(valid_connection.timeout_seconds * 10000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
 

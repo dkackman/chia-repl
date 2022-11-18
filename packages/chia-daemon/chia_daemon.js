@@ -132,7 +132,7 @@ export default class ChiaDaemon extends EventEmitter {
         const start = Date.now();
 
         // wait here until connected goes to true, there is an error or we timeout
-        while (this.ws === undefined && !error) {
+        while (!this.connected && !error) {
             await timer(100);
             if (Date.now() - start > timeout_milliseconds) {
                 this.emit('socket-error', new Error('Connection timeout expired'));
@@ -180,7 +180,8 @@ export default class ChiaDaemon extends EventEmitter {
         const timeoutMilliseconds = this.connection.timeout_seconds * 1000;
 
         // wait here until an incoming response shows up
-        while (this.ws !== undefined && !this.incoming.has(outgoingMsg.request_id)) {
+        // and because we're waiting asynchornously we might become disconencted in the meantime
+        while (this.connected && !this.incoming.has(outgoingMsg.request_id)) {
             await timer(100);
             const elapsed = Date.now() - start;
             if (elapsed > timeoutMilliseconds) {

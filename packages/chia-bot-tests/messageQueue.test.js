@@ -15,18 +15,18 @@ const valid_connection = {
 
 describe('chia-bot', () => {
     describe('MessageQueue', () => {
-        it('should add sender and timestamp _DEBUG_', async function () {
+        it('should add sender and timestamp', async function () {
             this.timeout(300 * 100000);
             const chia = new ChiaDaemon(valid_connection, 'tests');
             const connected = await chia.connect();
             expect(connected).to.equal(true);
 
+            // this test will run until a message shows up or it times out
             const q = new MessageQueue(chia.services.wallet, chia.services.full_node, 'txch');
             const listener = (message) => {
                 expect(message.senderAddress).to.not.equal(undefined);
                 expect(message.timestamp).to.not.equal(undefined);
-                console.log(message.senderAddress);
-                console.log(message.timestamp);
+
                 q.stop();
             };
 
