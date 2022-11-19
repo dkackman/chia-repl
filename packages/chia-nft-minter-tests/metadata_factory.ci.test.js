@@ -24,6 +24,14 @@ describe('chia-minter', () => {
             expect(collectionMetaData.name).to.equal('_COLLECTION_NAME_');
             expect(uuidValidate(collectionMetaData.id)).to.equal(true);
         });
+        it('createCollectionMetadata should retain the id when supplied', () => {
+            const factory = new MetadataFactory();
+            const collectionMetaData = factory.createCollectionMetadata('_COLLECTION_NAME_', [], '_THE_ID_');
+            expect(collectionMetaData).to.not.equal(null);
+            expect(collectionMetaData).to.not.equal(undefined);
+            expect(collectionMetaData.name).to.equal('_COLLECTION_NAME_');
+            expect(collectionMetaData.id).to.equal('_THE_ID_');
+        });
         it('createNftMetadata should respect minting_tool value', () => {
             const factory = new MetadataFactory('_MINING_TOOL_');
             const collectionMetaData = factory.createCollectionMetadata('_COLLECTION_NAME_');

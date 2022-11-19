@@ -10,11 +10,12 @@ export default class MetadataFactory {
 
     /**
      *
-     * @param {string}  - The collection name
+     * @param {string} name - The collection name
+     * @param {string} id - optional collection id - will be set to a uuid if not passed
      * @param {[]} attributes - [[string, string]] or [{ type: 'string', value: 'string' }]
      * @returns Collection object
      */
-    createCollectionMetadata(name, attributes = []) {
+    createCollectionMetadata(name, attributes = [], id = uuidv4()) {
         if (_.isNil(name)) {
             throw Error('name cannot be nil');
         }
@@ -31,7 +32,7 @@ export default class MetadataFactory {
 
         return {
             name: name,
-            id: uuidv4(),
+            id: id,
             attributes: atttributeList
         };
     }

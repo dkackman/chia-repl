@@ -8,7 +8,7 @@ export default async function sendMessageTo(wallet,
 
     const payload = {
         target: _utils.address_to_puzzle_hash(recipientAddress),
-        message: Buffer.from(message, "utf8").toString("hex"),
+        message: Buffer.from(message, 'utf8').toString('hex'),
         amount: messageAmount,
         fee: messageFee,
     };
