@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The wallet uses port 9256 by default.
-  version: 1.6.1
+  version: 1.6.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -85,7 +85,7 @@ components:
                 description: Only present when success is false
     coin_records:
       description: OK
-      content: &ref_52
+      content: &ref_53
         application/json:
           schema:
             type: object
@@ -100,23 +100,31 @@ components:
                       properties: &ref_2
                         parent_coin_info:
                           type: string
+                          example: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
                         puzzle_hash:
                           type: string
+                          example: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
                         amount:
                           type: integer
+                          example: 1750000000000
                           format: uint64
                     confirmed_block_index:
                       type: integer
+                      example: 922637
                       format: uint32
                     spent_block_index:
                       type: integer
+                      example: 922641
                       format: uint32
                     spent:
                       type: boolean
+                      example: true
                     coinbase:
                       type: boolean
+                      example: false
                     timestamp:
                       type: integer
+                      example: 1632832094
                       format: uint64
             allOf:
               - type: object
@@ -152,31 +160,46 @@ components:
                     properties: &ref_13
                       confirmed_at_height:
                         type: integer
+                        example: 2863494
                         format: uint32
                       created_at_time:
                         type: integer
+                        example: 1669182237
                         format: uint64
                       to_puzzle_hash:
                         type: string
+                        example: '0xb6ed191a2f80194f49fe33e9b9254642ca942ee287faeca2a45f4b96a5c0875a'
                         format: hex
                       amount:
                         type: integer
+                        example: 100
                         format: uint64
                       fee_amount:
                         type: integer
+                        example: 0
                         format: uint64
                       confirmed:
                         type: boolean
+                        example: true
                       sent:
                         type: integer
+                        example: 10
                         format: uint32
                       spend_bundle:
                         type: object
                         properties: &ref_6
                           aggregated_signature:
                             type: string
+                            example: '0xa5e5ea1f5ae2335a72fe0a7ed7ca39e8f142e2e1f6e37a348482290e88eb9cea2d973acf6145e34d0afeee7ba22f99850641e21a549b2c092bb49aa393acd938825bccca9413c1a268ba44367bc8433cd0fc0eb82e87bebe23817aa695bdb566'
                           coin_spends:
                             type: array
+                            example:
+                              - coin:
+                                  amount: 1750000000000
+                                  parent_coin_info: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
+                                  puzzle_hash: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
+                                puzzle_reveal: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
+                                solution: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
                             items:
                               type: object
                               properties: &ref_17
@@ -185,23 +208,35 @@ components:
                                   properties: *ref_2
                                 puzzle_reveal:
                                   type: string
+                                  example: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
                                 solution:
                                   type: string
+                                  example: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
                       additions:
                         type: array
+                        example:
+                          - amount: 100
+                            parent_coin_info: '0xabbb6c6859db74e8e627f21263c078893383131bcf22faec68b2de914d03e59f'
+                            puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
                         items:
                           type: object
                           properties: *ref_2
                       removals:
                         type: array
+                        example:
+                          - amount: 100
+                            parent_coin_info: '0x9c0083d8da8733c899787e4dcf18a56bc944f49ed668808e20890f01cbc35f37'
+                            puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
                         items:
                           type: object
                           properties: *ref_2
                       wallet_id:
                         type: integer
+                        example: 2
                         format: uint32
                       sent_to:
                         type: array
+                        example: []
                         description: Represents the list of peers that we sent the transaction to, whether each one included it in the mempool, and what the error message (if any) was. List[Tuple[str, uint8, Optional[str]]]
                         items:
                           type: array
@@ -214,6 +249,7 @@ components:
                               - type: string
                       trade_id:
                         type: string
+                        example: null
                         format: hex
                       type:
                         type: integer
@@ -235,9 +271,11 @@ components:
                             * 5 OUTGOING_TRADE
                       name:
                         type: string
+                        example: '0x43f6811a4daf18622fc7f132f5166a1246056b4a983b7befccb7e4b2e2c57f3b'
                         format: hex
                       memos:
                         type: array
+                        example: {}
                         description: List[Tuple[bytes32, List[bytes]]]
                         items:
                           type: object
@@ -264,12 +302,15 @@ components:
       properties: &ref_8
         amount:
           type: integer
+          example: 250000000000
           format: uint64
         puzzle_hash:
           type: string
+          example: '0x8f3dff600992a0b77aefbe8eb81dd4f233b9126f3b67557594b5a927d6e6d588'
           format: hex
         memos:
           type: array
+          example: []
           items:
             type: string
     coin_announcement: &ref_25
@@ -289,7 +330,7 @@ components:
           format: hex
     coin_search_options:
       type: object
-      properties: &ref_51
+      properties: &ref_52
         start_height:
           type: integer
           format: uint32
@@ -377,10 +418,13 @@ components:
       properties: &ref_36
         asset_id:
           type: string
+          example: a628c1c2c6fcb74d53746157e438e108eab5c0bb3e5c80ff9b1910b3e4832913
         name:
           type: string
+          example: Spacebucks
         symbol:
           type: string
+          example: SBX
     coin: &ref_16
       type: object
       properties: *ref_2
@@ -392,55 +436,97 @@ components:
       properties: &ref_43
         farmed_amount:
           type: integer
+          example: 0
           format: uint64
         pool_reward_amount:
           type: integer
+          example: 0
           format: uint64
         farmer_reward_amount:
           type: integer
+          example: 0
           format: uint64
         fee_amount:
           type: integer
+          example: 0
           format: uint64
         last_height_farmed:
           type: integer
+          example: 0
           format: uint64
     lineage_proof:
       type: object
       properties: &ref_5
         parent_name:
           type: string
+          example: '0xc2347b264b412bde5893f4e1369adab3a6c61496845c10f8ec98bc35f9e1429f'
           format: bytes32
         inner_puzzle_hash:
           type: string
+          example: '0x60f66f9824d5f96d4025b70b4f7ac3def458cae742fbd2d70343eeeaa5a59c58'
           format: bytes32
         amount:
           type: integer
+          example: 1
           format: uint64
     mirror:
       type: object
       properties: &ref_31
         coin_id:
           type: string
+          example: b5756487c17fe3a2628e45a9d3d42e89231af718bb1735e6c8441e07ec005f9d
           format: bytes32
         launcher_id:
           type: string
+          example: 1a119374fc7d7055d3419fdcd7f93065f28a1e4acacdf9c73b933b27b685550f
           format: bytes32
         amount:
           type: integer
+          example: 1000
           format: uint64
         urls:
           type: array
+          example:
+            - http://www.example.com:8575
+            - http://www.example2.com:8575
           items:
             type: string
+            example: http://www.example.com:8575
             format: bytes32
         ours:
           type: boolean
+          example: true
     mnemonic:
       description: 24 words of entropy.
       type: array
-      items: &ref_50
+      example: &ref_50
+        - hint
+        - dice
+        - session
+        - fun
+        - budget
+        - strong
+        - album
+        - lava
+        - tackle
+        - sudden
+        - garage
+        - people
+        - bundle
+        - federal
+        - chest
+        - process
+        - vicious
+        - behave
+        - nephew
+        - zero
+        - vital
+        - ocean
+        - artist
+        - lawsuit
+      items: &ref_51
         type: string
+        example: hint
       minItems: 24
       maxItems: 24
     network_info:
@@ -452,72 +538,110 @@ components:
       properties: &ref_46
         network_name:
           type: string
+          example: mainnet
         network_prefix:
           type: string
+          example: xch
     nft_info:
       type: object
       description: NFT Info for displaying NFT on the UI
       properties: &ref_33
         launcher_id:
           type: string
+          example: '0x821fdd13fe209466f1c69d82eb951cf630d28e901c2e14285d8a574dbde034c4'
           format: hex
         nft_coin_id:
           type: string
+          example: '0x9bcf429079bd8e394658a3f0c43c6641c9f92d0dcc1770eeb6be6588a49fc925'
           format: hex
         owner_did:
           type: string
+          example: '0xd590645dc77e25f22ffe37846e73868a99179d33de11648efaa286bc341936ea'
         royalty_percentage:
           type: integer
+          example: 300
           format: uint16
+          description: Percentage of the transaction fee paid to the author, e.g. 1000 = 1%
         royalty_puzzle_hash:
           type: string
+          example: '0x0fe4e859760b755980c9a92c91459b75eb4f02135ace8d2731eca0e89ceef1fb'
           format: hex
         data_uris:
           type: array
+          example:
+            - https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg
           items:
             type: string
+            example: https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg
             format: uri
         data_hash:
           type: string
+          example: '0x14836b86a48e1b2b5e857213af97534704475b4c155d34b2cb83ed4b7cba2bb0'
           format: hex
         metadata_uris:
           type: array
+          example:
+            - https://metadata_example.com
+            - https://metadata_example2.com
           items:
             type: string
+            example: https://metadata_example.com
             format: uri
         metadata_hash:
           type: string
+          example: '0x868463c2ae6f8a9585156c9ad9f4b9b01eeacc56fec82aa629c97135ff21823e'
           format: hex
         license_uris:
           type: array
+          example:
+            - https://license_example.com
+            - https://license_example2.com
           items:
             type: string
+            example: https://license_example.com
             format: uri
         license_hash:
           type: string
+          example: '0x358d4eb4aedefbec22824036299eff24216d213a95c8f986f862f0a89a250a82'
           format: hex
-        series_total:
+        edition_total:
           type: integer
           format: uint64
-        series_number:
+        edition_number:
           type: integer
           format: uint64
         updater_puzhash:
           type: string
+          example: '0xfe8a4b4e27a2e29a4d3fc7ce9d527adbcaccbab6ada3903ccf3ba9a769d2d78b'
           format: hex
         chain_info:
           type: string
+          example: ((117 "https://images.pexels.com/photos/11053072/pexels-photo-11053072.jpeg") (104 . 0x14836b86a48e1b2b5e857213af97534704475b4c155d34b2cb83ed4b7cba2bb0) (28021 "https://metadata_example.com", "https://metadata_example2.com") (27765 "https://license_example.com", "https://license_example2.com") (29550 . 1) (29556 . 5) (28008 . 0x868463c2ae6f8a9585156c9ad9f4b9b01eeacc56fec82aa629c97135ff21823e) (27752 . 0x358d4eb4aedefbec22824036299eff24216d213a95c8f986f862f0a89a250a82))
         mint_height:
           type: integer
+          example: 1127304
           format: uint32
         supports_did:
           type: boolean
+          example: true
         pending_transaction:
           type: boolean
+          example: false
           default: false
         launcher_puzhash:
           type: string
+          example: '0xeff07522495060c066f66f32acc2a77e3a3e737aca8baea4d1a64ea4cdc13da9'
           format: hex
+        minter_did:
+          type: string
+          example: '0x963a2fbab5032f6996e56b5ef722badc1b10ed443bb72aaa2fc0ccf98f643f0e'
+          format: hex
+        off_chain_metadata:
+          type: string
+          description: Serialized off-chain metadata
+        p2_address:
+          type: string
+          description: The innermost puzzle hash of the NFT
     pool_state: &ref_23
       type: object
       description: '`PoolState` is a type that is serialized to the blockchain to track the state of the user''s pool singleton `target_puzzle_hash` is either the pool address, or the self-pooling address that pool rewards will be paid to. `target_puzzle_hash` is NOT the p2_singleton puzzle that block rewards are sent to. The `p2_singleton` address is the initial address, and the `target_puzzle_hash` is the final destination. `relative_lock_height` is zero when in SELF_POOLING state'
@@ -590,49 +714,63 @@ components:
       properties: &ref_49
         fingerprint:
           type: integer
+          example: 2473794447
           format: uint32
         sk:
           type: string
+          example: 0665913196501420c0fe2de6b5ce7b25f749d52dcbf997b069bb2ea8438c6c3c
           format: hex
         pk:
           type: string
+          example: b73cf2471b10a7ba839616aff0ab1cb319d9d3a77ee26ff88ec1c8e645468eb0b7653518b85e5dd0df7cf50d8612b978
           format: hex
         farmer_pk:
           type: string
+          example: 8c65856685323f149a651e6cbe068ece36f87a84efa16246b0eef65ac586a30fb678878bd4364d52c432fbb77838cbf6
           format: hex
         pool_pk:
           type: string
+          example: 845ff087376ffecf83950485d63ffed1cc73f36daf018deb4fbd2f05e7198b07521486274d82ecc4f5a2eaae63dfd0a7
           format: hex
         seed:
           type: string
+          example: arrest legend bounce attend rebel blade palace bean dry shell nice bubble coil cook token nerve visa december hero garment grid attend nerve certain
     singleton_record:
       type: object
       properties: &ref_29
         coin_id:
           type: string
+          example: '0x70e75ede3b9ba91ab4b91bc5efea8946fde60518becdce40e2cf6800ff173245'
           format: bytes32
         launcher_id:
           type: string
+          example: '0x4aecd65d5fd0dcac59ef41ad5a74134e38b3e8334aebb1356972b7e9c793a09e'
           format: bytes32
         root:
           type: string
+          example: '0x0000000000000000000000000000000000000000000000000000000000000000'
           format: bytes32
         inner_puzzle_hash:
           type: string
+          example: '0x607b04952b317c81eb21ba96ff5f62adb58621f89d5fe6240f6e83d4395998c5'
           format: bytes32
         confirmed:
           type: boolean
+          example: true
         confirmed_at_height:
           type: integer
+          example: 2872567
           format: uint32
         lineage_proof:
           type: object
           properties: *ref_5
         generation:
           type: integer
+          example: 1
           format: uint32
         timestamp:
           type: integer
+          example: 1669352585
           format: uint64
     spend_bundle: &ref_18
       type: object
@@ -658,27 +796,37 @@ components:
           format: uint32
         accepted_at_time:
           type: integer
+          example: null
           format: uint64
           nullable: true
         created_at_time:
           type: integer
+          example: 1669275137
           format: uint64
         is_my_offer:
           type: boolean
+          example: true
         sent:
           type: integer
+          example: 0
           format: uint32
         offer:
           type: string
         taken_offer:
           type: string
+          example: null
         coins_of_interest:
           type: array
+          example:
+            - amount: 999999
+              parent_coin_info: '0x60a8b06515aaefe74236eb234130d769a1b65c99706414901277926fe29c3360'
+              puzzle_hash: '0xad5de77c7da1316b9b72708d17dbb8937855d740ebaf85669b8bd925275e8d49'
           items:
             type: object
             properties: *ref_2
         trade_id:
           type: string
+          example: '0x84d14398c1a38f376953bf8fa76cbee0d3216b382266d38b5612f17e96bcd1de'
           format: hex
         status:
           type: integer
@@ -692,6 +840,7 @@ components:
           description: 'The status of a trade: * 0 PENDING_ACCEPT * 1 PENDING_CONFIRM * 2 PENDING_CANCEL * 3 CANCELLED * 4 CONFIRMED * 5 FAILED'
         sent_to:
           type: array
+          example: []
           description: Represents the list of peers that we sent the transaction to, whether each one included it in the mempool, and what the error message (if any) was. List[Tuple[str, uint8, Optional[str]]]
           items:
             type: array
@@ -755,24 +904,31 @@ components:
       properties: &ref_42
         confirmed_wallet_balance:
           type: integer
+          example: 999999799
           format: uint64
         unconfirmed_wallet_balance:
           type: integer
+          example: 999999799
           format: uint64
         spendable_balance:
           type: integer
+          example: 999999799
           format: uint64
         pending_change:
           type: integer
+          example: 0
           format: uint64
         max_send_amount:
           type: integer
+          example: 999999799
           format: uint64
         unspent_coin_count:
           type: integer
+          example: 1
           format: int32
         pending_coin_removal_count:
           type: integer
+          example: 0
           format: int32
         wallet_type:
           type: integer
@@ -807,12 +963,14 @@ components:
     wallet_info:
       type: object
       description: 'This object represents the wallet data as it is stored in DB. ID: Main wallet (Standard) is stored at index 1, every wallet created after done has auto incremented id. Name: can be a user provided or default generated name. (can be modified) Type: is specified during wallet creation and should never be changed. Data: this field is intended to be used for storing any wallet specific information required for it. (RL wallet stores origin_id, admin/user pubkey, rate limit, etc.) This data should be a json encoded string.'
-      properties: &ref_53
+      properties: &ref_54
         id:
           type: integer
+          example: 1
           format: uint32
         name:
           type: string
+          example: Chia Wallet
         type:
           type: integer
           format: uint8
@@ -832,6 +990,7 @@ components:
               * 10 NFT
         data:
           type: string
+          example: ''
           format: json
     wallet_type: &ref_27
       type: integer
@@ -1658,12 +1817,14 @@ paths:
                 allOf:
                   - type: object
                     properties:
-                      wallet_id:
-                        type: integer
-                        format: uint32
                       spend_bundle:
                         type: object
                         properties: *ref_6
+                      nft_id_list:
+                        type: array
+                        items:
+                          type: string
+                          format: hex
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -1752,6 +1913,9 @@ paths:
                       spend_bundle:
                         type: object
                         properties: *ref_6
+                      nft_id:
+                        type: string
+                        format: hex
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -2103,6 +2267,9 @@ paths:
                 latest:
                   type: boolean
                   default: true
+                ignore_size_limit:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: OK
@@ -2743,6 +2910,10 @@ paths:
                   type: integer
                   format: uint128
                   default: 0
+                max_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
                 solver:
                   type: object
                   additionalProperties:
@@ -3168,6 +3339,10 @@ paths:
                   type: integer
                   format: uint128
                   default: 0
+                max_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
                 solver:
                   type: object
                   additionalProperties:
@@ -3296,6 +3471,20 @@ paths:
                   type: integer
                   format: uint128
                   default: 0
+                max_coin_amount:
+                  type: integer
+                  format: uint128
+                  default: 0
+                exclude_coin_amounts:
+                  type: array
+                  items:
+                    type: integer
+                    format: uint64
+                exclude_coin_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: hex
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
@@ -3879,6 +4068,12 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                excluded_coin_amounts:
+                  type: array
+                  items:
+                    type: integer
+                    format: uint64
+                    default: 0
                 excluded_coins:
                   type: array
                   items:
@@ -4186,7 +4381,8 @@ paths:
               schema:
                 description: 24 words of entropy.
                 type: array
-                items: *ref_50
+                example: *ref_50
+                items: *ref_51
                 minItems: 24
                 maxItems: 24
   /add_key:
@@ -4204,7 +4400,8 @@ paths:
             schema:
               description: 24 words of entropy.
               type: array
-              items: *ref_50
+              example: *ref_50
+              items: *ref_51
               minItems: 24
               maxItems: 24
       responses:
@@ -4606,6 +4803,9 @@ paths:
                       signature:
                         type: string
                         format: hex
+                      latest_coin_id:
+                        type: string
+                        format: hex
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -4634,11 +4834,51 @@ paths:
                         type: string
                         format: hex
                 - type: object
-                  properties: *ref_51
+                  properties: *ref_52
       responses:
         '200':
           description: OK
-          content: *ref_52
+          content: *ref_53
+  /verify_signature:
+    post:
+      tags:
+        - Key Management
+      description: Given a public key, message and signature, verify if it is valid.
+      summary: Given a public key, message and signature, verify if it is valid.
+      operationId: verify_signature
+      requestBody:
+        required: true
+        description: The coin names.
+        content:
+          application/json:
+            schema:
+              required:
+                - pubkey
+                - message
+                - signature
+              properties:
+                pubkey:
+                  type: string
+                  format: hex
+                message:
+                  type: string
+                  format: hex
+                signature:
+                  type: string
+                  format: hex
+                address:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isValid:
+                    type: boolean
   /get_wallets:
     post:
       tags:
@@ -4691,7 +4931,7 @@ paths:
                         items:
                           type: object
                           description: 'This object represents the wallet data as it is stored in DB. ID: Main wallet (Standard) is stored at index 1, every wallet created after done has auto incremented id. Name: can be a user provided or default generated name. (can be modified) Type: is specified during wallet creation and should never be changed. Data: this field is intended to be used for storing any wallet specific information required for it. (RL wallet stores origin_id, admin/user pubkey, rate limit, etc.) This data should be a json encoded string.'
-                          properties: *ref_53
+                          properties: *ref_54
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -4957,6 +5197,206 @@ paths:
                         type: integer
                         format: uint32
                 allOf:
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_message_spend:
+    post:
+      tags:
+        - DID Wallet
+      description: Spends a DID message
+      summary: Spends a DID message.
+      operationId: did_message_spend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                coin_announcements:
+                  type: array
+                  items:
+                    type: string
+                    format: hex
+                puzzle_announcements:
+                  type: array
+                  items:
+                    type: string
+                    format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      spend_bundle:
+                        type: object
+                        properties: *ref_6
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_get_info:
+    post:
+      tags:
+        - DID Wallet
+      description: Retreives information about a DID
+      summary: Retreives information about a DID.
+      operationId: did_get_info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - coin_id
+              properties:
+                coin_id:
+                  type: string
+                  format: hex
+                latest:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      latest_coin:
+                        type: string
+                        format: hex
+                      p2_address:
+                        type: string
+                        format: hex
+                      public_key:
+                        type: string
+                        format: hex
+                      recovery_list_hash:
+                        type: string
+                        format: hex
+                      num_verification:
+                        type: integer
+                      metadata:
+                        type: object
+                        additionalProperties: true
+                      launcher_id:
+                        type: string
+                        format: hex
+                      full_puzzle:
+                        type: string
+                        format: hex
+                      hints:
+                        type: array
+                        items:
+                          type: string
+                          format: hex
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /did_find_lost_did:
+    post:
+      tags:
+        - DID Wallet
+      description: Recover a missing or unspendable DID wallet by a coin id of the DID
+      summary: Recover a missing or unspendable DID wallet by a coin id of the DID.
+      operationId: did_find_lost_did
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - coin_id
+              properties:
+                coin_id:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      latest_coin_id:
+                        type: string
+                        format: hex
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_set_bulk_nft_did:
+    post:
+      tags:
+        - NFT Wallet
+      description: Bulk set DID for NFTs across different wallets
+      summary: Bulk set DID for NFTs across different wallets.
+      operationId: nft_set_bulk_nft_did
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nft_coin_list
+              properties:
+                nft_coin_list:
+                  type: array
+                  maxItems: 25
+                  items:
+                    type: object
+                    required:
+                      - nft_coin_id
+                      - wallet_id
+                    properties:
+                      nft_coin_id:
+                        type: string
+                        format: hex
+                      wallet_id:
+                        type: integer
+                        format: int32
+                did_id:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: int32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_6
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0

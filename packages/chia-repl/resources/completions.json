@@ -225,6 +225,11 @@
   "chia.wallet.sign_message_by_address",
   "chia.wallet.sign_message_by_id",
   "chia.wallet.get_coin_records_by_names",
+  "chia.wallet.verify_signature",
   "chia.wallet.get_wallets",
-  "chia.wallet.create_new_wallet"
+  "chia.wallet.create_new_wallet",
+  "chia.wallet.did_message_spend",
+  "chia.wallet.did_get_info",
+  "chia.wallet.did_find_lost_did",
+  "chia.wallet.nft_set_bulk_nft_did"
 ]
