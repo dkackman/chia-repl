@@ -231,5 +231,7 @@
   "chia.wallet.did_message_spend",
   "chia.wallet.did_get_info",
   "chia.wallet.did_find_lost_did",
-  "chia.wallet.nft_set_bulk_nft_did"
+  "chia.wallet.nft_set_did_bulk",
+  "chia.wallet.nft_transfer_bulk",
+  "chia.wallet.get_timestamp_for_height"
 ]
