@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The wallet uses port 9256 by default.
-  version: 1.6.2
+  version: 1.7.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -3247,6 +3247,8 @@ paths:
                     properties:
                       valid:
                         type: boolean
+                      id:
+                        type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -3270,6 +3272,9 @@ paths:
                 offer:
                   type: string
                   format: hex
+                advanced:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: OK
@@ -3277,29 +3282,59 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - type: object
-                    properties:
-                      summary:
-                        type: object
+                  - oneOf:
+                      - type: object
                         properties:
+                          id:
+                            type: string
                           offered:
-                            type: object
-                            additionalProperties:
-                              type: integer
-                              format: uint64
-                          requested:
-                            type: object
-                            additionalProperties:
-                              type: integer
-                              format: uint64
-                          fees:
-                            type: integer
-                            format: uint64
-                          infos:
-                            type: object
-                            additionalProperties:
+                            type: array
+                            items:
                               type: object
-                              additionalProperties: true
+                              properties:
+                                launcher_id:
+                                  type: string
+                                  format: hex
+                                new_root:
+                                  type: string
+                                  format: hex
+                                dependencies:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      launcher_id:
+                                        type: string
+                                        format: hex
+                                      values_to_prove:
+                                        type: array
+                                        items:
+                                          type: string
+                                          format: hex
+                      - type: object
+                        properties:
+                          id:
+                            type: string
+                          summary:
+                            properties:
+                              offered:
+                                type: object
+                                additionalProperties:
+                                  type: integer
+                                  format: uint64
+                              requested:
+                                type: object
+                                additionalProperties:
+                                  type: integer
+                                  format: uint64
+                              fees:
+                                type: integer
+                                format: uint64
+                              infos:
+                                type: object
+                                additionalProperties:
+                                  type: object
+                                  additionalProperties: true
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -3453,6 +3488,11 @@ paths:
                 wallet_id:
                   type: integer
                   format: uint32
+                coins:
+                  type: array
+                  items:
+                    type: object
+                    properties: *ref_2
                 amount:
                   type: integer
                   format: uint64
@@ -3879,8 +3919,8 @@ paths:
     post:
       tags:
         - Wallet
-      summary: Sends an amount of mojo from then given wallet to the given address.
-      description: Sends an amount of mojo from then given wallet to the given address.
+      summary: Sends an amount of mojo from the given wallet to the given address.
+      description: Sends an amount of mojo from the given wallet to the given address.
       operationId: send_transaction
       requestBody:
         required: true
@@ -4641,6 +4681,9 @@ paths:
                             amount:
                               type: integer
                               format: uint64
+                            height:
+                              type: integer
+                              format: uint32
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -4761,6 +4804,9 @@ paths:
                       signature:
                         type: string
                         format: hex
+                      signing_mode:
+                        type: string
+                        default: BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_AUG:CHIP-0002_
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -4806,6 +4852,9 @@ paths:
                       latest_coin_id:
                         type: string
                         format: hex
+                      signing_mode:
+                        type: string
+                        default: BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_AUG:CHIP-0002_
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
@@ -4869,6 +4918,9 @@ paths:
                 address:
                   type: string
                   format: hex
+                signing_mode:
+                  type: string
+                  example: BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_AUG:CHIP-0002_
       responses:
         '200':
           description: OK
@@ -5344,13 +5396,13 @@ paths:
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
                     properties: *ref_1
-  /nft_set_bulk_nft_did:
+  /nft_set_did_bulk:
     post:
       tags:
         - NFT Wallet
       description: Bulk set DID for NFTs across different wallets
       summary: Bulk set DID for NFTs across different wallets.
-      operationId: nft_set_bulk_nft_did
+      operationId: nft_set_did_bulk
       requestBody:
         required: true
         content:
@@ -5394,9 +5446,107 @@ paths:
                       wallet_id:
                         type: integer
                         format: int32
+                      tx_num:
+                        type: integer
+                        format: int32
                       spend_bundle:
                         type: object
                         properties: *ref_6
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_transfer_bulk:
+    post:
+      tags:
+        - NFT Wallet
+      description: Bulk transfer NFTs to an address
+      summary: Bulk transfer NFTs to an address.
+      operationId: nft_transfer_bulk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nft_coin_list
+              properties:
+                nft_coin_list:
+                  type: array
+                  maxItems: 25
+                  items:
+                    type: object
+                    required:
+                      - nft_coin_id
+                      - wallet_id
+                    properties:
+                      nft_coin_id:
+                        type: string
+                        format: hex
+                      wallet_id:
+                        type: integer
+                        format: int32
+                target_address:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: int32
+                      tx_num:
+                        type: integer
+                        format: int32
+                      spend_bundle:
+                        type: object
+                        properties: *ref_6
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /get_timestamp_for_height:
+    post:
+      tags:
+        - Wallet Node
+      description: Retreive the timestamp for a given block height
+      summary: Retreive the timestamp for a given block height.
+      operationId: get_timestamp_for_height
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - height
+              properties:
+                height:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      timestamp:
+                        type: integer
+                        format: uint62
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
