@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The wallet uses port 9256 by default.
-  version: 1.7.0
+  version: 1.7.1
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -1808,6 +1808,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -1898,6 +1900,8 @@ paths:
                   type: integer
                   format: uint16
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -1993,6 +1997,8 @@ paths:
                   format: uint32
                 did_id:
                   type: string
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2170,6 +2176,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2270,6 +2278,8 @@ paths:
                 ignore_size_limit:
                   type: boolean
                   default: false
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2330,6 +2340,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2408,6 +2420,8 @@ paths:
                 with_recovery_info:
                   type: boolean
                   default: true
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2735,6 +2749,8 @@ paths:
                 num_verifications_required:
                   type: integer
                   format: uint64
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK response without return values
@@ -2833,6 +2849,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -2918,6 +2936,8 @@ paths:
                   type: object
                   additionalProperties:
                     type: object
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -3382,6 +3402,8 @@ paths:
                   type: object
                   additionalProperties:
                     type: object
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -3525,6 +3547,8 @@ paths:
                   items:
                     type: string
                     format: hex
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
@@ -3967,6 +3991,8 @@ paths:
                   items:
                     type: string
                     format: hex
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
@@ -4789,6 +4815,9 @@ paths:
                   format: hex
                 message:
                   type: string
+                is_hex:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: OK
@@ -4834,6 +4863,9 @@ paths:
                   format: hex
                 message:
                   type: string
+                is_hex:
+                  type: boolean
+                  default: false
       responses:
         '200':
           description: OK
@@ -5352,6 +5384,8 @@ paths:
                       full_puzzle:
                         type: string
                         format: hex
+                      solution:
+                        type: string
                       hints:
                         type: array
                         items:
@@ -5434,6 +5468,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -5494,6 +5530,8 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
+                reuse_puzhash:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -5547,6 +5585,94 @@ paths:
                       timestamp:
                         type: integer
                         format: uint62
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /set_wallet_resync_on_startup:
+    post:
+      tags:
+        - Wallet Node
+      description: Resync the current logged in wallet
+      summary: Resync the current logged in wallet. The transaction and offer records will be kept.
+      operationId: set_wallet_resync_on_startup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_28
+  /get_transaction_memo:
+    post:
+      tags:
+        - Wallet
+      description: Retreives the memo from a transaction
+      summary: Retreives the memo from a transaction.
+      operationId: get_transaction_memo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - transaction_id
+              properties:
+                transaction_id:
+                  type: string
+                  format: hex
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    additionalProperties:
+                      type: object
+                      additionalProperties:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_0
+                    properties: *ref_1
+  /nft_count_nfts:
+    post:
+      tags:
+        - NFT Wallet
+      description: Retreives the number of NFTs in a wallet
+      summary: Retreives the number of NFTs in a wallet.
+      operationId: nft_count_nfts
+      requestBody:
+        description: Request body with the Id of a wallet
+        required: true
+        content: *ref_34
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_id:
+                        type: integer
+                        format: int32
+                      count:
+                        type: integer
+                        format: int32
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_0
