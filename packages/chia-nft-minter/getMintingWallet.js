@@ -1,5 +1,5 @@
-import _utils from 'chia-utils';
-import _ from 'lodash';
+import _utils from "chia-utils";
+import _ from "lodash";
 
 // this looks up the appropriate wallet and/or did info so it can be cached for later use
 // - if did is undefined just returns the first NFT wallet
@@ -7,10 +7,10 @@ import _ from 'lodash';
 //   - and also find the coin associated with the did (for bulk miniting)
 export default async function getMintingWallet(wallet, fullNode, did) {
     if (_.isNil(wallet)) {
-        throw Error('wallet cannot be nil');
+        throw Error("wallet cannot be nil");
     }
     if (_.isNil(fullNode)) {
-        throw Error('fullNode cannot be nil');
+        throw Error("fullNode cannot be nil");
     }
 
     try {
@@ -20,10 +20,10 @@ export default async function getMintingWallet(wallet, fullNode, did) {
         if (!_.isNil(did)) {
             // see if any match the did (should either be one or none)
             const did_id = _utils.address_to_puzzle_hash(did);
-            const nftWalletsWithDid = response.wallets.filter(wallet => {
+            const nftWalletsWithDid = response.wallets.filter((wallet) => {
                 if (!_.isNil(wallet.data)) {
                     const data = JSON.parse(wallet.data);
-                    return _.get(data, 'did_id') === did_id;
+                    return _.get(data, "did_id") === did_id;
                 }
                 return false;
             });
@@ -34,7 +34,12 @@ export default async function getMintingWallet(wallet, fullNode, did) {
 
             // if we have an nft wallet that references the did
             // look up the coin associated with the did wallet
-            const did_coin = await getDidWalletCoin(wallet, fullNode, did);
+            const did_coin = await getDidWalletCoin(
+                wallet,
+                fullNode,
+                did,
+                did_id
+            );
 
             return {
                 wallet_id: response.wallets[0].id,
@@ -59,21 +64,45 @@ export default async function getMintingWallet(wallet, fullNode, did) {
     }
 
     // no nft wallets - eek
-    throw new Error('No NFT wallets');
+    throw new Error("No NFT wallets");
 }
 
-async function getDidWalletCoin(wallet, fullNode, did) {
+async function getDidWalletCoin(wallet, fullNode, did, did_id) {
     // get all did wallets
-    const response = await wallet.get_wallets({ type: 8, }); // DISTRIBUTED_ID
+    const response = await wallet.get_wallets({ type: 8 }); // DISTRIBUTED_ID
     // matching on wallet name - perhaps needs to be more authoratative?
-    const didWallets = response.wallets.filter(wallet => wallet.name === `DID ${did}` || wallet.name === did);
+    const didWallets = response.wallets.filter((wallet) => {
+        if (wallet.name === `DID ${did}` || wallet.name === did) {
+            // quick exit for default naming
+            return true;
+        }
+
+        if (_.isNil(wallet.data)) {
+            return false;
+        }
+
+        const data = JSON.parse(wallet.data);
+        if (_.isNil(data.parent_info)) {
+            return false;
+        }
+
+        const matchingItem = data.parent_info.find(
+            (item) => item[0] === did_id
+        );
+        return matchingItem !== undefined;
+    });
+
     if (didWallets.length === 0) {
         throw new Error(`no did wallet found for ${did}`);
     }
 
     // get the did object associated with the wallet and lookup its coin record
-    const didResponse = await wallet.did_get_did({ wallet_id: didWallets[0].id });
-    const getCoinRecordResponse = await fullNode.get_coin_record_by_name({ name: didResponse.coin_id });
+    const didResponse = await wallet.did_get_did({
+        wallet_id: didWallets[0].id,
+    });
+    const getCoinRecordResponse = await fullNode.get_coin_record_by_name({
+        name: didResponse.coin_id,
+    });
 
     return getCoinRecordResponse.coin_record.coin;
 }
