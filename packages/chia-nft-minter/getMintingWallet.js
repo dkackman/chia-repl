@@ -34,12 +34,7 @@ export default async function getMintingWallet(wallet, fullNode, did) {
 
             // if we have an nft wallet that references the did
             // look up the coin associated with the did wallet
-            const did_coin = await getDidWalletCoin(
-                wallet,
-                fullNode,
-                did,
-                did_id
-            );
+            const did_coin = await getDidWalletCoin(wallet, fullNode, did);
 
             return {
                 wallet_id: response.wallets[0].id,
@@ -67,42 +62,23 @@ export default async function getMintingWallet(wallet, fullNode, did) {
     throw new Error("No NFT wallets");
 }
 
-async function getDidWalletCoin(wallet, fullNode, did, did_id) {
-    // get all did wallets
+async function getDidWalletCoin(wallet, fullNode, did) {
+    // get all did wallets and find the one that matches the did
     const response = await wallet.get_wallets({ type: 8 }); // DISTRIBUTED_ID
-    // matching on wallet name - perhaps needs to be more authoratative?
-    const didWallets = response.wallets.filter((wallet) => {
-        if (wallet.name === `DID ${did}` || wallet.name === did) {
-            // quick exit for default naming
-            return true;
+    for await (const didWallet of response.wallets) {
+        const didResponse = await wallet.did_get_did({
+            wallet_id: didWallet.id,
+        });
+
+        if (didResponse.my_did === did) {
+            const getCoinRecordResponse =
+                await fullNode.get_coin_record_by_name({
+                    name: didResponse.coin_id,
+                });
+
+            return getCoinRecordResponse.coin_record.coin;
         }
-
-        if (_.isNil(wallet.data)) {
-            return false;
-        }
-
-        const data = JSON.parse(wallet.data);
-        if (_.isNil(data.parent_info)) {
-            return false;
-        }
-
-        const matchingItem = data.parent_info.find(
-            (item) => item[0] === did_id
-        );
-        return matchingItem !== undefined;
-    });
-
-    if (didWallets.length === 0) {
-        throw new Error(`no did wallet found for ${did}`);
     }
 
-    // get the did object associated with the wallet and lookup its coin record
-    const didResponse = await wallet.did_get_did({
-        wallet_id: didWallets[0].id,
-    });
-    const getCoinRecordResponse = await fullNode.get_coin_record_by_name({
-        name: didResponse.coin_id,
-    });
-
-    return getCoinRecordResponse.coin_record.coin;
+    throw new Error(`no did wallet found for ${did}`);
 }
