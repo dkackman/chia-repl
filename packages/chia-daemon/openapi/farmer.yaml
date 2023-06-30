@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The farmer uses port 8559 by default.
-  version: 1.7.1
+  version: 1.8.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -18,454 +18,14 @@ servers:
     description: Farmer RPC
 security:
   - bearerAuth: []
-components:
-  requestBodies:
-    empty:
-      description: Empty request body
-      required: true
-      content: &ref_13
-        application/json:
-          schema:
-            type: object
-  responses:
-    empty:
-      description: OK response without return values
-      content: &ref_14
-        application/json:
-          schema:
-            type: object
-            description: Success indicator and optional error message included in all responses
-            required: &ref_6
-              - success
-            properties: &ref_7
-              success:
-                type: boolean
-                description: Success/failure indicator
-              error:
-                type: string
-                description: Only present when success is false
-  schemas:
-    connection_info:
-      type: object
-      description: Chia's representation of a connection from node to node.
-      properties: &ref_15
-        bytes_read:
-          type: integer
-          format: uint32
-          nullable: true
-        bytes_written:
-          type: integer
-          format: uint32
-          nullable: true
-        creation_time:
-          type: number
-          format: double
-        last_message_time:
-          type: number
-          format: double
-        local_port:
-          type: integer
-          format: int32
-        node_id:
-          type: string
-        peak_hash:
-          type: string
-        peak_height:
-          type: integer
-          format: uint64
-          nullable: true
-        peak_weight:
-          type: integer
-          format: uint64
-          nullable: true
-        peer_host:
-          type: string
-        peer_port:
-          type: integer
-          format: int32
-        peer_server_port:
-          type: integer
-          format: int32
-        type:
-          type: integer
-          enum: &ref_9
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          description: |-
-            The type of node:
-              * 1 FULL_NODE
-              * 2 HARVESTER
-              * 3 FARMER
-              * 4 TIMELORD
-              * 5 INTRODUCER
-              * 6 WALLET
-    harvester_info:
-      type: object
-      properties: &ref_16
-        connection:
-          type: object
-          properties: &ref_0
-            host:
-              type: string
-            node_id:
-              type: string
-            port:
-              type: integer
-              format: int32
-        last_sync_time:
-          type: number
-          format: double
-        total_plot_size:
-          type: integer
-          format: int64
-        syncing:
-          type: object
-          properties:
-            initial:
-              type: boolean
-            plot_files_processed:
-              type: integer
-              format: uint32
-            plot_files_total:
-              type: integer
-              format: uint32
-        failed_to_open_filenames:
-          type: array
-          items:
-            type: string
-        no_key_filenames:
-          type: array
-          items:
-            type: string
-        plots:
-          type: array
-          items:
-            type: object
-            description: Info about a plot file
-            properties: &ref_1
-              file_size:
-                type: integer
-                format: uint64
-              filename:
-                type: string
-              plot_id:
-                type: string
-              plot_public_key:
-                type: string
-                nullable: true
-              pool_contract_puzzle_hash:
-                type: string
-              pool_public_key:
-                type: string
-                nullable: true
-              size:
-                type: integer
-                description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-                default: 32
-                enum: &ref_3
-                  - 25
-                  - 32
-                  - 33
-                  - 34
-                  - 35
-              time_modified:
-                type: number
-                format: double
-        duplicates:
-          type: array
-          items:
-            type: string
-    harvester_summary:
-      type: object
-      properties: &ref_17
-        connection:
-          type: object
-          properties: *ref_0
-        last_sync_time:
-          type: number
-          format: double
-        total_plot_size:
-          type: integer
-          format: int64
-        syncing:
-          type: object
-          properties:
-            initial:
-              type: boolean
-            plot_files_processed:
-              type: integer
-              format: uint32
-            plot_files_total:
-              type: integer
-              format: uint32
-        plots:
-          type: integer
-          format: int32
-        failed_to_open_filenames:
-          type: integer
-          format: int32
-        no_keys_filenames:
-          type: integer
-          format: int32
-        duplicates:
-          type: integer
-          format: int32
-    paginated_plot_request:
-      type: object
-      properties: &ref_19
-        node_id:
-          type: string
-          format: hex
-        page:
-          type: integer
-          format: int32
-        page_count:
-          type: integer
-          format: int32
-        total_count:
-          type: integer
-          format: int32
-        plots:
-          type: array
-          items:
-            type: object
-            description: Info about a plot file
-            properties: *ref_1
-    pool_state_info:
-      type: object
-      properties: &ref_21
-        authentication_token_timeout:
-          type: integer
-          format: uint8
-          nullable: true
-        current_difficulty:
-          type: integer
-          format: uint64
-          nullable: true
-        current_points:
-          type: integer
-          format: uint64
-        next_farmer_update:
-          type: number
-          format: double
-        next_pool_info_update:
-          type: number
-          format: double
-        p2_singleton_puzzle_hash:
-          type: string
-        points_acknowledged24h:
-          type: array
-          items:
-            type: object
-            properties: &ref_2
-              time_found:
-                type: number
-                format: double
-              difficulty:
-                type: integer
-                format: uint64
-        points_acknowledged_since_start:
-          type: integer
-          format: uint64
-        points_found24h:
-          type: array
-          items:
-            type: object
-            properties: *ref_2
-        points_found_since_start:
-          type: integer
-          format: uint64
-        pool_config:
-          type: object
-          description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
-          properties: &ref_11
-            launcher_id:
-              type: string
-            pool_url:
-              type: string
-              format: url
-            payout_instructions:
-              type: string
-            target_puzzle_hash:
-              type: string
-            p2_singleton_puzzle_hash:
-              type: string
-            owner_public_key:
-              type: string
-            authentication_public_key:
-              type: string
-        pool_errors24h:
-          type: array
-          items:
-            type: object
-            description: Response in error case for all endpoints of the pool protocol
-            properties: &ref_12
-              error_code:
-                type: integer
-                format: uint16
-              error_message:
-                type: string
-        plot_count:
-          type: integer
-          format: int32
-    plot_info_request_data:
-      type: object
-      properties: &ref_18
-        node_id:
-          type: string
-          format: hex
-        page:
-          type: integer
-          format: int32
-        page_size:
-          type: integer
-          format: int32
-        filter:
-          type: array
-          items:
-            type: object
-            properties: &ref_10
-              key:
-                type: string
-              value:
-                type: string
-        sort_key:
-          type: string
-          default: filename
-        reverse:
-          type: boolean
-    plot_path_request_data:
-      type: object
-      properties: &ref_20
-        node_id:
-          type: string
-          format: hex
-        page:
-          type: integer
-          format: int32
-        page_size:
-          type: integer
-          format: int32
-        filter:
-          type: array
-          items:
-            type: string
-        reverse:
-          type: boolean
-    proof_of_space:
-      type: object
-      properties: &ref_5
-        challenge:
-          type: string
-          example: '0xad43c12b5c5a480ee93992697bd8c9153d536007b0ffac024341cd8ca853a9e3'
-        public_pool_key:
-          type: string
-        pool_contract_puzzle_hash:
-          type: string
-          example: '0x71afdce401a0f2a6f03de6287902eacfa38502d6667b04da36e32c3930171ce4'
-        plot_public_key:
-          type: string
-          example: '0x8b5f3cd22bf5073e12f285d2a0e9bbfb485fea8f3ede2f5573e44168fadbb91b71cef1dffc03758a5241c47b105df81a'
-        size:
-          type: integer
-          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-          default: 32
-          enum: *ref_3
-        proof:
-          type: string
-          example: '0xa84606d3dba86cbc1c2f56d05175bbbcb970629380bec5c49ad46f0c5f067e4ba74101ac24f0e09fb73ce0ebc9249436c528b5fab689d94c4213072e2acfc1c3a6f17763b16304234002ce471da4ce7e888e2f5abadf4d7f48cd157294ce03cb28df0f45597ca5460cd66c772c7650f2d170d08a5898fe65623b33aac864f44d2a39bcf074e62866edccf9b424f9a8ca56c9a98e87d48fb02b933af951284d610ff1eb71e730a05c2f6c7be86fd4df7efb26e8fb2e573981d8ad866adc02a82ffb0d7ff106c9c78f9cea08f4a2de9db2607266edf6e807924edf9af0f36b8938d97865072126011b67646b4d0e206b706d3a3e67e8862cb0502520f1ad1b4341'
-    farmer_signage_point:
-      type: object
-      description: The farmer api's defintion of a signage point. Not the same as signage_point.
-      properties: &ref_4
-        challenge_chain_sp:
-          type: string
-        challenge_hash:
-          type: string
-        difficulty:
-          type: integer
-          format: uint64
-        reward_chain_sp:
-          type: string
-        signage_point_index:
-          type: integer
-          format: uint8
-        sub_slot_iters:
-          type: integer
-          format: uint64
-    signage_point_bundle:
-      type: object
-      properties: &ref_22
-        signage_point:
-          type: object
-          description: The farmer api's defintion of a signage point. Not the same as signage_point.
-          properties: *ref_4
-        proofs:
-          type: array
-          items:
-            oneOf:
-              - type: string
-              - type: object
-                properties: *ref_5
-            minItems: 2
-            maxItems: 2
-    apiResponse: &ref_8
-      type: object
-      description: Success indicator and optional error message included in all responses
-      required: *ref_6
-      properties: *ref_7
-    apiResponse_apiResponse: *ref_8
-    node_type:
-      type: integer
-      enum: *ref_9
-      description: |-
-        The type of node:
-          * 1 FULL_NODE
-          * 2 HARVESTER
-          * 3 FARMER
-          * 4 TIMELORD
-          * 5 INTRODUCER
-          * 6 WALLET
-    harvester_connection:
-      type: object
-      properties: *ref_0
-    k_size:
-      type: integer
-      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-      default: 32
-      enum: *ref_3
-    plot_info:
-      type: object
-      description: Info about a plot file
-      properties: *ref_1
-    filter_item:
-      type: object
-      properties: *ref_10
-    pool_point:
-      type: object
-      properties: *ref_2
-    pool_wallet_config:
-      type: object
-      description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
-      properties: *ref_11
-    error_response:
-      type: object
-      description: Response in error case for all endpoints of the pool protocol
-      properties: *ref_12
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: mutual
-      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Farmer
     description: The farmer RPC API is exposed, by default, on port 8559 and contains methods for managing the farmer.
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
 paths:
   /stop_node:
     post:
@@ -477,11 +37,27 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: &ref_1
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: &ref_0
+            application/json:
+              schema:
+                type: object
+                description: Success indicator and optional error message included in all responses
+                required: &ref_2
+                  - success
+                properties: &ref_3
+                  success:
+                    type: boolean
+                    description: Success/failure indicator
+                  error:
+                    type: string
+                    description: Only present when success is false
   /open_connection:
     post:
       tags:
@@ -508,7 +84,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /close_connection:
     post:
       tags:
@@ -531,7 +107,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /get_connections:
     post:
       tags:
@@ -542,7 +118,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -557,11 +133,65 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: *ref_15
+                          properties: &ref_11
+                            bytes_read:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            bytes_written:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            creation_time:
+                              type: number
+                              format: double
+                            last_message_time:
+                              type: number
+                              format: double
+                            local_port:
+                              type: integer
+                              format: int32
+                            node_id:
+                              type: string
+                            peak_hash:
+                              type: string
+                            peak_height:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peak_weight:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peer_host:
+                              type: string
+                            peer_port:
+                              type: integer
+                              format: int32
+                            peer_server_port:
+                              type: integer
+                              format: int32
+                            type:
+                              type: integer
+                              enum: &ref_18
+                                - 1
+                                - 2
+                                - 3
+                                - 4
+                                - 5
+                                - 6
+                              description: |-
+                                The type of node:
+                                  * 1 FULL_NODE
+                                  * 2 HARVESTER
+                                  * 3 FARMER
+                                  * 4 TIMELORD
+                                  * 5 INTRODUCER
+                                  * 6 WALLET
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /healthz:
     post:
       tags:
@@ -572,7 +202,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -581,8 +211,8 @@ paths:
               schema:
                 type: object
                 description: Success indicator and optional error message included in all responses
-                required: *ref_6
-                properties: *ref_7
+                required: *ref_2
+                properties: *ref_3
   /get_routes:
     post:
       tags:
@@ -593,7 +223,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -609,8 +239,8 @@ paths:
                           type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /set_reward_targets:
     post:
       tags:
@@ -633,7 +263,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /get_reward_targets:
     post:
       tags:
@@ -679,8 +309,8 @@ paths:
                         type: boolean
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvesters:
     post:
       tags:
@@ -691,7 +321,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -705,11 +335,84 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_16
+                          properties: &ref_12
+                            connection:
+                              type: object
+                              properties: &ref_4
+                                host:
+                                  type: string
+                                node_id:
+                                  type: string
+                                port:
+                                  type: integer
+                                  format: int32
+                            last_sync_time:
+                              type: number
+                              format: double
+                            total_plot_size:
+                              type: integer
+                              format: int64
+                            syncing:
+                              type: object
+                              properties:
+                                initial:
+                                  type: boolean
+                                plot_files_processed:
+                                  type: integer
+                                  format: uint32
+                                plot_files_total:
+                                  type: integer
+                                  format: uint32
+                            failed_to_open_filenames:
+                              type: array
+                              items:
+                                type: string
+                            no_key_filenames:
+                              type: array
+                              items:
+                                type: string
+                            plots:
+                              type: array
+                              items:
+                                type: object
+                                description: Info about a plot file
+                                properties: &ref_5
+                                  file_size:
+                                    type: integer
+                                    format: uint64
+                                  filename:
+                                    type: string
+                                  plot_id:
+                                    type: string
+                                  plot_public_key:
+                                    type: string
+                                    nullable: true
+                                  pool_contract_puzzle_hash:
+                                    type: string
+                                  pool_public_key:
+                                    type: string
+                                    nullable: true
+                                  size:
+                                    type: integer
+                                    description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                                    default: 32
+                                    enum: &ref_9
+                                      - 25
+                                      - 32
+                                      - 33
+                                      - 34
+                                      - 35
+                                  time_modified:
+                                    type: number
+                                    format: double
+                            duplicates:
+                              type: array
+                              items:
+                                type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvesters_summary:
     post:
       tags:
@@ -720,7 +423,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -734,11 +437,43 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_17
+                          properties: &ref_13
+                            connection:
+                              type: object
+                              properties: *ref_4
+                            last_sync_time:
+                              type: number
+                              format: double
+                            total_plot_size:
+                              type: integer
+                              format: int64
+                            syncing:
+                              type: object
+                              properties:
+                                initial:
+                                  type: boolean
+                                plot_files_processed:
+                                  type: integer
+                                  format: uint32
+                                plot_files_total:
+                                  type: integer
+                                  format: uint32
+                            plots:
+                              type: integer
+                              format: int32
+                            failed_to_open_filenames:
+                              type: integer
+                              format: int32
+                            no_keys_filenames:
+                              type: integer
+                              format: int32
+                            duplicates:
+                              type: integer
+                              format: int32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvester_plots_valid:
     post:
       tags:
@@ -753,7 +488,30 @@ paths:
           application/json:
             schema:
               type: object
-              properties: *ref_18
+              properties: &ref_15
+                node_id:
+                  type: string
+                  format: hex
+                page:
+                  type: integer
+                  format: int32
+                page_size:
+                  type: integer
+                  format: int32
+                filter:
+                  type: array
+                  items:
+                    type: object
+                    properties: &ref_19
+                      key:
+                        type: string
+                      value:
+                        type: string
+                sort_key:
+                  type: string
+                  default: filename
+                reverse:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -762,11 +520,29 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_19
+                    properties: &ref_6
+                      node_id:
+                        type: string
+                        format: hex
+                      page:
+                        type: integer
+                        format: int32
+                      page_count:
+                        type: integer
+                        format: int32
+                      total_count:
+                        type: integer
+                        format: int32
+                      plots:
+                        type: array
+                        items:
+                          type: object
+                          description: Info about a plot file
+                          properties: *ref_5
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvester_plots_invalid:
     post:
       tags:
@@ -781,7 +557,22 @@ paths:
           application/json:
             schema:
               type: object
-              properties: *ref_20
+              properties: &ref_7
+                node_id:
+                  type: string
+                  format: hex
+                page:
+                  type: integer
+                  format: int32
+                page_size:
+                  type: integer
+                  format: int32
+                filter:
+                  type: array
+                  items:
+                    type: string
+                reverse:
+                  type: boolean
       responses:
         '200':
           description: OK
@@ -790,11 +581,11 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_19
+                    properties: *ref_6
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvester_plots_keys_missing:
     post:
       tags:
@@ -809,7 +600,7 @@ paths:
           application/json:
             schema:
               type: object
-              properties: *ref_20
+              properties: *ref_7
       responses:
         '200':
           description: OK
@@ -818,17 +609,17 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_19
+                    properties: *ref_6
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_harvester_plots_duplicates:
     post:
       tags:
         - Farmer
       summary: Get a paginated list of duplicate plots.
-      description: Get a paginated list of dupliacte plots.
+      description: Get a paginated list of duplicate plots.
       operationId: get_harvester_plots_duplicates
       requestBody:
         description: Search filter parameters
@@ -837,7 +628,7 @@ paths:
           application/json:
             schema:
               type: object
-              properties: *ref_20
+              properties: *ref_7
       responses:
         '200':
           description: OK
@@ -846,11 +637,11 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_19
+                    properties: *ref_6
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_pool_login_link:
     post:
       tags:
@@ -884,8 +675,8 @@ paths:
                         format: url
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_pool_state:
     post:
       tags:
@@ -896,7 +687,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -908,11 +699,85 @@ paths:
                     properties:
                       pool_state:
                         type: object
-                        properties: *ref_21
+                        properties: &ref_14
+                          authentication_token_timeout:
+                            type: integer
+                            format: uint8
+                            nullable: true
+                          current_difficulty:
+                            type: integer
+                            format: uint64
+                            nullable: true
+                          current_points:
+                            type: integer
+                            format: uint64
+                          next_farmer_update:
+                            type: number
+                            format: double
+                          next_pool_info_update:
+                            type: number
+                            format: double
+                          p2_singleton_puzzle_hash:
+                            type: string
+                          points_acknowledged24h:
+                            type: array
+                            items:
+                              type: object
+                              properties: &ref_8
+                                time_found:
+                                  type: number
+                                  format: double
+                                difficulty:
+                                  type: integer
+                                  format: uint64
+                          points_acknowledged_since_start:
+                            type: integer
+                            format: uint64
+                          points_found24h:
+                            type: array
+                            items:
+                              type: object
+                              properties: *ref_8
+                          points_found_since_start:
+                            type: integer
+                            format: uint64
+                          pool_config:
+                            type: object
+                            description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
+                            properties: &ref_20
+                              launcher_id:
+                                type: string
+                              pool_url:
+                                type: string
+                                format: url
+                              payout_instructions:
+                                type: string
+                              target_puzzle_hash:
+                                type: string
+                              p2_singleton_puzzle_hash:
+                                type: string
+                              owner_public_key:
+                                type: string
+                              authentication_public_key:
+                                type: string
+                          pool_errors24h:
+                            type: array
+                            items:
+                              type: object
+                              description: Response in error case for all endpoints of the pool protocol
+                              properties: &ref_21
+                                error_code:
+                                  type: integer
+                                  format: uint16
+                                error_message:
+                                  type: string
+                          plot_count:
+                            type: integer
+                            format: int32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /set_payout_instructions:
     post:
       tags:
@@ -938,7 +803,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /get_signage_point:
     post:
       tags:
@@ -966,11 +831,58 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_22
+                    properties: &ref_10
+                      signage_point:
+                        type: object
+                        description: The farmer api's defintion of a signage point. Not the same as signage_point.
+                        properties: &ref_17
+                          challenge_chain_sp:
+                            type: string
+                          challenge_hash:
+                            type: string
+                          difficulty:
+                            type: integer
+                            format: uint64
+                          reward_chain_sp:
+                            type: string
+                          signage_point_index:
+                            type: integer
+                            format: uint8
+                          sub_slot_iters:
+                            type: integer
+                            format: uint64
+                      proofs:
+                        type: array
+                        items:
+                          oneOf:
+                            - type: string
+                            - type: object
+                              properties: &ref_16
+                                challenge:
+                                  type: string
+                                  example: '0xad43c12b5c5a480ee93992697bd8c9153d536007b0ffac024341cd8ca853a9e3'
+                                public_pool_key:
+                                  type: string
+                                pool_contract_puzzle_hash:
+                                  type: string
+                                  example: '0x71afdce401a0f2a6f03de6287902eacfa38502d6667b04da36e32c3930171ce4'
+                                plot_public_key:
+                                  type: string
+                                  example: '0x8b5f3cd22bf5073e12f285d2a0e9bbfb485fea8f3ede2f5573e44168fadbb91b71cef1dffc03758a5241c47b105df81a'
+                                size:
+                                  type: integer
+                                  description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                                  default: 32
+                                  enum: *ref_9
+                                proof:
+                                  type: string
+                                  example: '0xa84606d3dba86cbc1c2f56d05175bbbcb970629380bec5c49ad46f0c5f067e4ba74101ac24f0e09fb73ce0ebc9249436c528b5fab689d94c4213072e2acfc1c3a6f17763b16304234002ce471da4ce7e888e2f5abadf4d7f48cd157294ce03cb28df0f45597ca5460cd66c772c7650f2d170d08a5898fe65623b33aac864f44d2a39bcf074e62866edccf9b424f9a8ca56c9a98e87d48fb02b933af951284d610ff1eb71e730a05c2f6c7be86fd4df7efb26e8fb2e573981d8ad866adc02a82ffb0d7ff106c9c78f9cea08f4a2de9db2607266edf6e807924edf9af0f36b8938d97865072126011b67646b4d0e206b706d3a3e67e8862cb0502520f1ad1b4341'
+                          minItems: 2
+                          maxItems: 2
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_2
+                    properties: *ref_3
   /get_signage_points:
     post:
       tags:
@@ -981,7 +893,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -995,11 +907,98 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_22
+                          properties: *ref_10
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_6
-                    properties: *ref_7
-externalDocs:
-  description: Find out more about chia
-  url: https://chia.net
+                    required: *ref_2
+                    properties: *ref_3
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: *ref_1
+  responses:
+    empty:
+      description: OK response without return values
+      content: *ref_0
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: *ref_11
+    harvester_info:
+      type: object
+      properties: *ref_12
+    harvester_summary:
+      type: object
+      properties: *ref_13
+    paginated_plot_request:
+      type: object
+      properties: *ref_6
+    pool_state_info:
+      type: object
+      properties: *ref_14
+    plot_info_request_data:
+      type: object
+      properties: *ref_15
+    plot_path_request_data:
+      type: object
+      properties: *ref_7
+    proof_of_space:
+      type: object
+      properties: *ref_16
+    farmer_signage_point:
+      type: object
+      description: The farmer api's defintion of a signage point. Not the same as signage_point.
+      properties: *ref_17
+    signage_point_bundle:
+      type: object
+      properties: *ref_10
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_2
+      properties: *ref_3
+    node_type:
+      type: integer
+      enum: *ref_18
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+    harvester_connection:
+      type: object
+      properties: *ref_4
+    k_size:
+      type: integer
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: *ref_9
+    plot_info:
+      type: object
+      description: Info about a plot file
+      properties: *ref_5
+    filter_item:
+      type: object
+      properties: *ref_19
+    pool_point:
+      type: object
+      properties: *ref_8
+    pool_wallet_config:
+      type: object
+      description: This is what goes into the user's config file, to communicate between the wallet and the farmer processes.
+      properties: *ref_20
+    error_response:
+      type: object
+      description: Response in error case for all endpoints of the pool protocol
+      properties: *ref_21
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'

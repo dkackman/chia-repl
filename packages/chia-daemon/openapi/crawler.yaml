@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The crawler uses port 8561 by default.
-  version: 1.7.1
+  version: 1.8.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -18,118 +18,14 @@ servers:
     description: Crawler RPC
 security:
   - bearerAuth: []
-components:
-  responses:
-    empty:
-      description: OK response without return values
-      content: &ref_5
-        application/json:
-          schema:
-            type: object
-            description: Success indicator and optional error message included in all responses
-            required: &ref_0
-              - success
-            properties: &ref_1
-              success:
-                type: boolean
-                description: Success/failure indicator
-              error:
-                type: string
-                description: Only present when success is false
-  requestBodies:
-    empty:
-      description: Empty request body
-      required: true
-      content: &ref_4
-        application/json:
-          schema:
-            type: object
-  schemas:
-    connection_info:
-      type: object
-      description: Chia's representation of a connection from node to node.
-      properties: &ref_6
-        bytes_read:
-          type: integer
-          format: uint32
-          nullable: true
-        bytes_written:
-          type: integer
-          format: uint32
-          nullable: true
-        creation_time:
-          type: number
-          format: double
-        last_message_time:
-          type: number
-          format: double
-        local_port:
-          type: integer
-          format: int32
-        node_id:
-          type: string
-        peak_hash:
-          type: string
-        peak_height:
-          type: integer
-          format: uint64
-          nullable: true
-        peak_weight:
-          type: integer
-          format: uint64
-          nullable: true
-        peer_host:
-          type: string
-        peer_port:
-          type: integer
-          format: int32
-        peer_server_port:
-          type: integer
-          format: int32
-        type:
-          type: integer
-          enum: &ref_3
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          description: |-
-            The type of node:
-              * 1 FULL_NODE
-              * 2 HARVESTER
-              * 3 FARMER
-              * 4 TIMELORD
-              * 5 INTRODUCER
-              * 6 WALLET
-    apiResponse: &ref_2
-      type: object
-      description: Success indicator and optional error message included in all responses
-      required: *ref_0
-      properties: *ref_1
-    apiResponse_apiResponse: *ref_2
-    node_type:
-      type: integer
-      enum: *ref_3
-      description: |-
-        The type of node:
-          * 1 FULL_NODE
-          * 2 HARVESTER
-          * 3 FARMER
-          * 4 TIMELORD
-          * 5 INTRODUCER
-          * 6 WALLET
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: mutual
-      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Crawler
     description: The crawler RPC API is exposed, by default, on port 8561 and contains peer metrics.
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
 paths:
   /stop_node:
     post:
@@ -141,11 +37,27 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_4
+        content: &ref_1
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: OK response without return values
-          content: *ref_5
+          content: &ref_0
+            application/json:
+              schema:
+                type: object
+                description: Success indicator and optional error message included in all responses
+                required: &ref_2
+                  - success
+                properties: &ref_3
+                  success:
+                    type: boolean
+                    description: Success/failure indicator
+                  error:
+                    type: string
+                    description: Only present when success is false
   /open_connection:
     post:
       tags:
@@ -172,7 +84,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_5
+          content: *ref_0
   /close_connection:
     post:
       tags:
@@ -195,7 +107,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_5
+          content: *ref_0
   /get_connections:
     post:
       tags:
@@ -206,7 +118,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_4
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -221,11 +133,65 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: *ref_6
+                          properties: &ref_4
+                            bytes_read:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            bytes_written:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            creation_time:
+                              type: number
+                              format: double
+                            last_message_time:
+                              type: number
+                              format: double
+                            local_port:
+                              type: integer
+                              format: int32
+                            node_id:
+                              type: string
+                            peak_hash:
+                              type: string
+                            peak_height:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peak_weight:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peer_host:
+                              type: string
+                            peer_port:
+                              type: integer
+                              format: int32
+                            peer_server_port:
+                              type: integer
+                              format: int32
+                            type:
+                              type: integer
+                              enum: &ref_5
+                                - 1
+                                - 2
+                                - 3
+                                - 4
+                                - 5
+                                - 6
+                              description: |-
+                                The type of node:
+                                  * 1 FULL_NODE
+                                  * 2 HARVESTER
+                                  * 3 FARMER
+                                  * 4 TIMELORD
+                                  * 5 INTRODUCER
+                                  * 6 WALLET
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_0
-                    properties: *ref_1
+                    required: *ref_2
+                    properties: *ref_3
   /healthz:
     post:
       tags:
@@ -236,7 +202,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_4
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -245,8 +211,8 @@ paths:
               schema:
                 type: object
                 description: Success indicator and optional error message included in all responses
-                required: *ref_0
-                properties: *ref_1
+                required: *ref_2
+                properties: *ref_3
   /get_routes:
     post:
       tags:
@@ -257,7 +223,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_4
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -273,8 +239,8 @@ paths:
                           type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_0
-                    properties: *ref_1
+                    required: *ref_2
+                    properties: *ref_3
   /get_peer_counts:
     post:
       tags:
@@ -285,7 +251,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_4
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -312,8 +278,8 @@ paths:
                               type: integer
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_0
-                    properties: *ref_1
+                    required: *ref_2
+                    properties: *ref_3
   /get_ips_after_timestamp:
     post:
       tags:
@@ -332,7 +298,7 @@ paths:
                 - after
               properties:
                 after:
-                  description: The unix timestamp to seach for peer connections after
+                  description: The unix timestamp to search for peer connections after
                   type: integer
                   format: timestamp
                 offset:
@@ -361,8 +327,41 @@ paths:
                         type: integer
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_0
-                    properties: *ref_1
-externalDocs:
-  description: Find out more about chia
-  url: https://chia.net
+                    required: *ref_2
+                    properties: *ref_3
+components:
+  responses:
+    empty:
+      description: OK response without return values
+      content: *ref_0
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: *ref_1
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: *ref_4
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_2
+      properties: *ref_3
+    node_type:
+      type: integer
+      enum: *ref_5
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'

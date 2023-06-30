@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The harvester uses port 8560 by default.
-  version: 1.7.1
+  version: 1.8.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -18,156 +18,14 @@ servers:
     description: Harvester RPC
 security:
   - bearerAuth: []
-components:
-  requestBodies:
-    empty:
-      description: Empty request body
-      required: true
-      content: &ref_6
-        application/json:
-          schema:
-            type: object
-  responses:
-    empty:
-      description: OK response without return values
-      content: &ref_7
-        application/json:
-          schema:
-            type: object
-            description: Success indicator and optional error message included in all responses
-            required: &ref_1
-              - success
-            properties: &ref_2
-              success:
-                type: boolean
-                description: Success/failure indicator
-              error:
-                type: string
-                description: Only present when success is false
-  schemas:
-    connection_info:
-      type: object
-      description: Chia's representation of a connection from node to node.
-      properties: &ref_8
-        bytes_read:
-          type: integer
-          format: uint32
-          nullable: true
-        bytes_written:
-          type: integer
-          format: uint32
-          nullable: true
-        creation_time:
-          type: number
-          format: double
-        last_message_time:
-          type: number
-          format: double
-        local_port:
-          type: integer
-          format: int32
-        node_id:
-          type: string
-        peak_hash:
-          type: string
-        peak_height:
-          type: integer
-          format: uint64
-          nullable: true
-        peak_weight:
-          type: integer
-          format: uint64
-          nullable: true
-        peer_host:
-          type: string
-        peer_port:
-          type: integer
-          format: int32
-        peer_server_port:
-          type: integer
-          format: int32
-        type:
-          type: integer
-          enum: &ref_4
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          description: |-
-            The type of node:
-              * 1 FULL_NODE
-              * 2 HARVESTER
-              * 3 FARMER
-              * 4 TIMELORD
-              * 5 INTRODUCER
-              * 6 WALLET
-    k_size: &ref_5
-      type: integer
-      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-      default: 32
-      enum: &ref_0
-        - 25
-        - 32
-        - 33
-        - 34
-        - 35
-    plot_info:
-      type: object
-      description: Info about a plot file
-      properties: &ref_9
-        file_size:
-          type: integer
-          format: uint64
-        filename:
-          type: string
-        plot_id:
-          type: string
-        plot_public_key:
-          type: string
-          nullable: true
-        pool_contract_puzzle_hash:
-          type: string
-        pool_public_key:
-          type: string
-          nullable: true
-        size:
-          type: integer
-          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-          default: 32
-          enum: *ref_0
-        time_modified:
-          type: number
-          format: double
-    apiResponse: &ref_3
-      type: object
-      description: Success indicator and optional error message included in all responses
-      required: *ref_1
-      properties: *ref_2
-    apiResponse_apiResponse: *ref_3
-    node_type:
-      type: integer
-      enum: *ref_4
-      description: |-
-        The type of node:
-          * 1 FULL_NODE
-          * 2 HARVESTER
-          * 3 FARMER
-          * 4 TIMELORD
-          * 5 INTRODUCER
-          * 6 WALLET
-    k_size_k_size: *ref_5
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: mutual
-      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
   - name: Harvester
     description: The harvester RPC API is exposed, by default, on port 8560 and contains methods for managing plot files and directories.
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
 paths:
   /stop_node:
     post:
@@ -179,11 +37,27 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: &ref_1
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: &ref_0
+            application/json:
+              schema:
+                type: object
+                description: Success indicator and optional error message included in all responses
+                required: &ref_2
+                  - success
+                properties: &ref_3
+                  success:
+                    type: boolean
+                    description: Success/failure indicator
+                  error:
+                    type: string
+                    description: Only present when success is false
   /open_connection:
     post:
       tags:
@@ -210,7 +84,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: *ref_0
   /close_connection:
     post:
       tags:
@@ -233,7 +107,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: *ref_0
   /get_connections:
     post:
       tags:
@@ -244,7 +118,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -259,11 +133,65 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: *ref_8
+                          properties: &ref_4
+                            bytes_read:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            bytes_written:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            creation_time:
+                              type: number
+                              format: double
+                            last_message_time:
+                              type: number
+                              format: double
+                            local_port:
+                              type: integer
+                              format: int32
+                            node_id:
+                              type: string
+                            peak_hash:
+                              type: string
+                            peak_height:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peak_weight:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peer_host:
+                              type: string
+                            peer_port:
+                              type: integer
+                              format: int32
+                            peer_server_port:
+                              type: integer
+                              format: int32
+                            type:
+                              type: integer
+                              enum: &ref_7
+                                - 1
+                                - 2
+                                - 3
+                                - 4
+                                - 5
+                                - 6
+                              description: |-
+                                The type of node:
+                                  * 1 FULL_NODE
+                                  * 2 HARVESTER
+                                  * 3 FARMER
+                                  * 4 TIMELORD
+                                  * 5 INTRODUCER
+                                  * 6 WALLET
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_1
-                    properties: *ref_2
+                    required: *ref_2
+                    properties: *ref_3
   /healthz:
     post:
       tags:
@@ -274,7 +202,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -283,8 +211,8 @@ paths:
               schema:
                 type: object
                 description: Success indicator and optional error message included in all responses
-                required: *ref_1
-                properties: *ref_2
+                required: *ref_2
+                properties: *ref_3
   /get_routes:
     post:
       tags:
@@ -295,7 +223,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -311,8 +239,8 @@ paths:
                           type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_1
-                    properties: *ref_2
+                    required: *ref_2
+                    properties: *ref_3
   /add_plot_directory:
     post:
       tags:
@@ -335,13 +263,13 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: *ref_0
   /remove_plot_directory:
     post:
       tags:
         - Harvester
-      summary: Removes a plot directory from the harveser configuration.
-      description: Removes a plot directory from the harveser configuration.
+      summary: Removes a plot directory from the harvester configuration.
+      description: Removes a plot directory from the harvester configuration.
       operationId: remove_plot_directory
       requestBody:
         description: The directory name to remove
@@ -358,7 +286,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: *ref_0
   /get_plot_directories:
     post:
       tags:
@@ -369,7 +297,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -385,8 +313,8 @@ paths:
                           type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_1
-                    properties: *ref_2
+                    required: *ref_2
+                    properties: *ref_3
   /refresh_plots:
     post:
       tags:
@@ -397,11 +325,11 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
+          content: *ref_0
   /get_plots:
     post:
       tags:
@@ -412,7 +340,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_6
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -435,11 +363,39 @@ paths:
                         items:
                           type: object
                           description: Info about a plot file
-                          properties: *ref_9
+                          properties: &ref_6
+                            file_size:
+                              type: integer
+                              format: uint64
+                            filename:
+                              type: string
+                            plot_id:
+                              type: string
+                            plot_public_key:
+                              type: string
+                              nullable: true
+                            pool_contract_puzzle_hash:
+                              type: string
+                            pool_public_key:
+                              type: string
+                              nullable: true
+                            size:
+                              type: integer
+                              description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                              default: 32
+                              enum: &ref_5
+                                - 25
+                                - 32
+                                - 33
+                                - 34
+                                - 35
+                            time_modified:
+                              type: number
+                              format: double
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_1
-                    properties: *ref_2
+                    required: *ref_2
+                    properties: *ref_3
   /delete_plot:
     post:
       tags:
@@ -464,7 +420,49 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_7
-externalDocs:
-  description: Find out more about chia
-  url: https://chia.net
+          content: *ref_0
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: *ref_1
+  responses:
+    empty:
+      description: OK response without return values
+      content: *ref_0
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: *ref_4
+    k_size:
+      type: integer
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: *ref_5
+    plot_info:
+      type: object
+      description: Info about a plot file
+      properties: *ref_6
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_2
+      properties: *ref_3
+    node_type:
+      type: integer
+      enum: *ref_7
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'

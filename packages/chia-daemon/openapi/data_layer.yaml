@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The data layer uses port 8561 by default.
-  version: 1.7.1
+  version: 1.8.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -18,441 +18,6 @@ servers:
     description: Data layer RPC
 security:
   - bearerAuth: []
-components:
-  requestBodies:
-    empty:
-      description: Empty request body
-      required: true
-      content: &ref_13
-        application/json:
-          schema:
-            type: object
-  responses:
-    empty:
-      description: OK response without return values
-      content: &ref_14
-        application/json:
-          schema:
-            type: object
-            description: Success indicator and optional error message included in all responses
-            required: &ref_3
-              - success
-            properties: &ref_4
-              success:
-                type: boolean
-                description: Success/failure indicator
-              error:
-                type: string
-                description: Only present when success is false
-  schemas:
-    connection_info:
-      type: object
-      description: Chia's representation of a connection from node to node.
-      properties: &ref_15
-        bytes_read:
-          type: integer
-          format: uint32
-          nullable: true
-        bytes_written:
-          type: integer
-          format: uint32
-          nullable: true
-        creation_time:
-          type: number
-          format: double
-        last_message_time:
-          type: number
-          format: double
-        local_port:
-          type: integer
-          format: int32
-        node_id:
-          type: string
-        peak_hash:
-          type: string
-        peak_height:
-          type: integer
-          format: uint64
-          nullable: true
-        peak_weight:
-          type: integer
-          format: uint64
-          nullable: true
-        peer_host:
-          type: string
-        peer_port:
-          type: integer
-          format: int32
-        peer_server_port:
-          type: integer
-          format: int32
-        type:
-          type: integer
-          enum: &ref_6
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          description: |-
-            The type of node:
-              * 1 FULL_NODE
-              * 2 HARVESTER
-              * 3 FARMER
-              * 4 TIMELORD
-              * 5 INTRODUCER
-              * 6 WALLET
-    internal_node:
-      type: object
-      properties: &ref_18
-        hash:
-          type: string
-          format: bytes32
-        left_hash:
-          type: string
-          format: bytes32
-        right_hash:
-          type: string
-          format: bytes32
-        pair:
-          type: array
-          items:
-            type: object
-            minLength: 2
-            maxLength: 2
-        atom:
-          type: string
-    mirror:
-      type: object
-      properties: &ref_19
-        coin_id:
-          type: string
-          example: b5756487c17fe3a2628e45a9d3d42e89231af718bb1735e6c8441e07ec005f9d
-          format: bytes32
-        launcher_id:
-          type: string
-          example: 1a119374fc7d7055d3419fdcd7f93065f28a1e4acacdf9c73b933b27b685550f
-          format: bytes32
-        amount:
-          type: integer
-          example: 1000
-          format: uint64
-        urls:
-          type: array
-          example:
-            - http://www.example.com:8575
-            - http://www.example2.com:8575
-          items:
-            type: string
-            example: http://www.example.com:8575
-            format: bytes32
-        ours:
-          type: boolean
-          example: true
-    offer:
-      type: object
-      properties: &ref_20
-        trade_id:
-          type: string
-          format: bytes32
-        offer:
-          type: string
-        maker:
-          type: object
-          properties: &ref_12
-            store_id:
-              type: string
-              example: 14d1c3042ef38d76796146e6248e02b73db7a0eeefb740fa2e8439dad15bca27
-              format: bytes32
-            proofs:
-              type: array
-              example:
-                - key: '9999'
-                  layers:
-                    - combined_hash: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
-                      other_hash: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
-                      other_hash_side: left
-                    - combined_hash: 568ca0020114772138db61001c63ac8574a7c8c76c051dd2d3e28964496aa88c
-                      other_hash: 919735911d7f9ca0de316878ddb92e7772c9f39bf9d37e9d84ccab39f5d49a11
-                      other_hash_side: left
-                  node_hash: b87c24e0521f559236a2e06d6e1bb196c138c1c9bfcadad3b25708e7eab97ca7
-                  value: abc123
-              items:
-                type: object
-                properties: &ref_11
-                  key:
-                    type: string
-                    example: '9999'
-                    format: bytes32
-                  value:
-                    type: string
-                    example: abc123
-                    format: bytes32
-                  node_hash:
-                    type: string
-                    example: b87c24e0521f559236a2e06d6e1bb196c138c1c9bfcadad3b25708e7eab97ca7
-                    format: bytes32
-                  layers:
-                    type: array
-                    example:
-                      - combined_hash: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
-                        other_hash: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
-                        other_hash_side: left
-                      - combined_hash: 568ca0020114772138db61001c63ac8574a7c8c76c051dd2d3e28964496aa88c
-                        other_hash: 919735911d7f9ca0de316878ddb92e7772c9f39bf9d37e9d84ccab39f5d49a11
-                        other_hash_side: left
-                    items:
-                      type: object
-                      properties: &ref_10
-                        other_hash_side:
-                          type: string
-                          example: left
-                          format: bytes32
-                        other_hash:
-                          type: string
-                          example: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
-                          format: bytes32
-                        combined_hash:
-                          type: string
-                          example: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
-                          format: bytes32
-                          items:
-                            type: object
-                            properties: &ref_0
-                              key:
-                                type: string
-                                format: bytes32
-                              value:
-                                type: string
-                                format: bytes32
-        taker:
-          type: object
-          properties: &ref_1
-            store_id:
-              type: string
-              example: 14d1c3042ef38d76796146e6248e02b73db7a0eeefb740fa2e8439dad15bca27
-              format: bytes32
-            inclusions:
-              type: array
-              example:
-                - key: '9999'
-                  value: abc123
-              items:
-                type: object
-                properties: *ref_0
-    offer_store:
-      type: object
-      properties: *ref_1
-    terminal_node:
-      type: object
-      properties: &ref_17
-        hash:
-          type: string
-          format: bytes32
-        key:
-          type: string
-          format: bytes32
-        value:
-          type: string
-          format: bytes32
-    transaction_record:
-      type: object
-      description: Used for storing transaction data and status in wallets.
-      properties: &ref_16
-        confirmed_at_height:
-          type: integer
-          example: 2863494
-          format: uint32
-        created_at_time:
-          type: integer
-          example: 1669182237
-          format: uint64
-        to_puzzle_hash:
-          type: string
-          example: '0xb6ed191a2f80194f49fe33e9b9254642ca942ee287faeca2a45f4b96a5c0875a'
-          format: hex
-        amount:
-          type: integer
-          example: 100
-          format: uint64
-        fee_amount:
-          type: integer
-          example: 0
-          format: uint64
-        confirmed:
-          type: boolean
-          example: true
-        sent:
-          type: integer
-          example: 10
-          format: uint32
-        spend_bundle:
-          type: object
-          properties: &ref_8
-            aggregated_signature:
-              type: string
-              example: '0xa5e5ea1f5ae2335a72fe0a7ed7ca39e8f142e2e1f6e37a348482290e88eb9cea2d973acf6145e34d0afeee7ba22f99850641e21a549b2c092bb49aa393acd938825bccca9413c1a268ba44367bc8433cd0fc0eb82e87bebe23817aa695bdb566'
-            coin_spends:
-              type: array
-              example:
-                - coin:
-                    amount: 1750000000000
-                    parent_coin_info: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
-                    puzzle_hash: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
-                  puzzle_reveal: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
-                  solution: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
-              items:
-                type: object
-                properties: &ref_7
-                  coin:
-                    type: object
-                    properties: &ref_2
-                      parent_coin_info:
-                        type: string
-                        example: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
-                      puzzle_hash:
-                        type: string
-                        example: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
-                      amount:
-                        type: integer
-                        example: 1750000000000
-                        format: uint64
-                  puzzle_reveal:
-                    type: string
-                    example: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
-                  solution:
-                    type: string
-                    example: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
-        additions:
-          type: array
-          example:
-            - amount: 100
-              parent_coin_info: '0xabbb6c6859db74e8e627f21263c078893383131bcf22faec68b2de914d03e59f'
-              puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
-          items:
-            type: object
-            properties: *ref_2
-        removals:
-          type: array
-          example:
-            - amount: 100
-              parent_coin_info: '0x9c0083d8da8733c899787e4dcf18a56bc944f49ed668808e20890f01cbc35f37'
-              puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
-          items:
-            type: object
-            properties: *ref_2
-        wallet_id:
-          type: integer
-          example: 2
-          format: uint32
-        sent_to:
-          type: array
-          example: []
-          description: Represents the list of peers that we sent the transaction to, whether each one included it in the mempool, and what the error message (if any) was. List[Tuple[str, uint8, Optional[str]]]
-          items:
-            type: array
-            items:
-              type: object
-              anyOf:
-                - type: string
-                - type: integer
-                  format: uint8
-                - type: string
-        trade_id:
-          type: string
-          example: null
-          format: hex
-        type:
-          type: integer
-          format: uint8
-          enum: &ref_9
-            - 0
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-          description: |-
-            The type of transaction:
-              * 0 INCOMING_TX
-              * 1 OUTGOING_TX
-              * 2 COINBASE_REWARD
-              * 3 FEE_REWARD
-              * 4 INCOMING_TRADE
-              * 5 OUTGOING_TRADE
-        name:
-          type: string
-          example: '0x43f6811a4daf18622fc7f132f5166a1246056b4a983b7befccb7e4b2e2c57f3b'
-          format: hex
-        memos:
-          type: array
-          example: {}
-          description: List[Tuple[bytes32, List[bytes]]]
-          items:
-            type: object
-            anyOf:
-              - type: string
-                format: hex
-              - type: array
-                items:
-                  type: string
-                  format: hex
-    apiResponse: &ref_5
-      type: object
-      description: Success indicator and optional error message included in all responses
-      required: *ref_3
-      properties: *ref_4
-    apiResponse_apiResponse: *ref_5
-    node_type:
-      type: integer
-      enum: *ref_6
-      description: |-
-        The type of node:
-          * 1 FULL_NODE
-          * 2 HARVESTER
-          * 3 FARMER
-          * 4 TIMELORD
-          * 5 INTRODUCER
-          * 6 WALLET
-    coin:
-      type: object
-      properties: *ref_2
-    coin_spend:
-      type: object
-      properties: *ref_7
-    spend_bundle:
-      type: object
-      properties: *ref_8
-    transaction_type:
-      type: integer
-      format: uint8
-      enum: *ref_9
-      description: |-
-        The type of transaction:
-          * 0 INCOMING_TX
-          * 1 OUTGOING_TX
-          * 2 COINBASE_REWARD
-          * 3 FEE_REWARD
-          * 4 INCOMING_TRADE
-          * 5 OUTGOING_TRADE
-    key_value:
-      type: object
-      properties: *ref_0
-    layer:
-      type: object
-      properties: *ref_10
-    proof:
-      type: object
-      properties: *ref_11
-    store_proofs:
-      type: object
-      properties: *ref_12
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: mutual
-      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Shared
     description: Methods shared by all services.
@@ -464,6 +29,9 @@ tags:
     description: Methods related to singleton subscriptions.
   - name: Offers
     description: Methods related to offers.
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
 paths:
   /stop_node:
     post:
@@ -475,11 +43,27 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: &ref_1
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: &ref_0
+            application/json:
+              schema:
+                type: object
+                description: Success indicator and optional error message included in all responses
+                required: &ref_2
+                  - success
+                properties: &ref_3
+                  success:
+                    type: boolean
+                    description: Success/failure indicator
+                  error:
+                    type: string
+                    description: Only present when success is false
   /open_connection:
     post:
       tags:
@@ -506,7 +90,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /close_connection:
     post:
       tags:
@@ -529,7 +113,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /get_connections:
     post:
       tags:
@@ -540,7 +124,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -555,11 +139,65 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: *ref_15
+                          properties: &ref_8
+                            bytes_read:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            bytes_written:
+                              type: integer
+                              format: uint32
+                              nullable: true
+                            creation_time:
+                              type: number
+                              format: double
+                            last_message_time:
+                              type: number
+                              format: double
+                            local_port:
+                              type: integer
+                              format: int32
+                            node_id:
+                              type: string
+                            peak_hash:
+                              type: string
+                            peak_height:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peak_weight:
+                              type: integer
+                              format: uint64
+                              nullable: true
+                            peer_host:
+                              type: string
+                            peer_port:
+                              type: integer
+                              format: int32
+                            peer_server_port:
+                              type: integer
+                              format: int32
+                            type:
+                              type: integer
+                              enum: &ref_14
+                                - 1
+                                - 2
+                                - 3
+                                - 4
+                                - 5
+                                - 6
+                              description: |-
+                                The type of node:
+                                  * 1 FULL_NODE
+                                  * 2 HARVESTER
+                                  * 3 FARMER
+                                  * 4 TIMELORD
+                                  * 5 INTRODUCER
+                                  * 6 WALLET
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /healthz:
     post:
       tags:
@@ -570,7 +208,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -579,8 +217,8 @@ paths:
               schema:
                 type: object
                 description: Success indicator and optional error message included in all responses
-                required: *ref_3
-                properties: *ref_4
+                required: *ref_2
+                properties: *ref_3
   /get_routes:
     post:
       tags:
@@ -591,7 +229,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -607,8 +245,8 @@ paths:
                           type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /create_data_store:
     post:
       tags:
@@ -641,14 +279,152 @@ paths:
                         items:
                           type: object
                           description: Used for storing transaction data and status in wallets.
-                          properties: *ref_16
+                          properties: &ref_13
+                            confirmed_at_height:
+                              type: integer
+                              example: 2863494
+                              format: uint32
+                            created_at_time:
+                              type: integer
+                              example: 1669182237
+                              format: uint64
+                            to_puzzle_hash:
+                              type: string
+                              example: '0xb6ed191a2f80194f49fe33e9b9254642ca942ee287faeca2a45f4b96a5c0875a'
+                              format: hex
+                            amount:
+                              type: integer
+                              example: 100
+                              format: uint64
+                            fee_amount:
+                              type: integer
+                              example: 0
+                              format: uint64
+                            confirmed:
+                              type: boolean
+                              example: true
+                            sent:
+                              type: integer
+                              example: 10
+                              format: uint32
+                            spend_bundle:
+                              type: object
+                              properties: &ref_16
+                                aggregated_signature:
+                                  type: string
+                                  example: '0xa5e5ea1f5ae2335a72fe0a7ed7ca39e8f142e2e1f6e37a348482290e88eb9cea2d973acf6145e34d0afeee7ba22f99850641e21a549b2c092bb49aa393acd938825bccca9413c1a268ba44367bc8433cd0fc0eb82e87bebe23817aa695bdb566'
+                                coin_spends:
+                                  type: array
+                                  example:
+                                    - coin:
+                                        amount: 1750000000000
+                                        parent_coin_info: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
+                                        puzzle_hash: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
+                                      puzzle_reveal: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
+                                      solution: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
+                                  items:
+                                    type: object
+                                    properties: &ref_15
+                                      coin:
+                                        type: object
+                                        properties: &ref_4
+                                          parent_coin_info:
+                                            type: string
+                                            example: '0xccd5bb71183532bff220ba46c268991a00000000000000000000000000004082'
+                                          puzzle_hash:
+                                            type: string
+                                            example: '0x94c6db00186900418ef7c1f05e127ee1a647cbe6e514ec3bc57acb7bbe6dfb10'
+                                          amount:
+                                            type: integer
+                                            example: 1750000000000
+                                            format: uint64
+                                      puzzle_reveal:
+                                        type: string
+                                        example: '0xff02ffff01ff02ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff05ffff1dff0bffff1effff0bff0bffff02ff06ffff04ff02ffff04ff17ff8080808080808080ffff01ff02ff17ff2f80ffff01ff088080ff0180ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff17ff80808080ff80808080ffff02ff17ff2f808080ff0180ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0aec9c2e5984fe928406abca942d55ec6b56340af8315bfefa55889dbaade669b9fd3f330af2af44c2a0626d383e64757ff018080'
+                                      solution:
+                                        type: string
+                                        example: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
+                            additions:
+                              type: array
+                              example:
+                                - amount: 100
+                                  parent_coin_info: '0xabbb6c6859db74e8e627f21263c078893383131bcf22faec68b2de914d03e59f'
+                                  puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
+                              items:
+                                type: object
+                                properties: *ref_4
+                            removals:
+                              type: array
+                              example:
+                                - amount: 100
+                                  parent_coin_info: '0x9c0083d8da8733c899787e4dcf18a56bc944f49ed668808e20890f01cbc35f37'
+                                  puzzle_hash: '0xb4a41bbce457745b006181ab99e34a0cbd8c83c196bc74fc98eb3aec882ed784'
+                              items:
+                                type: object
+                                properties: *ref_4
+                            wallet_id:
+                              type: integer
+                              example: 2
+                              format: uint32
+                            sent_to:
+                              type: array
+                              example: []
+                              description: Represents the list of peers that we sent the transaction to, whether each one included it in the mempool, and what the error message (if any) was. List[Tuple[str, uint8, Optional[str]]]
+                              items:
+                                type: array
+                                items:
+                                  type: object
+                                  anyOf:
+                                    - type: string
+                                    - type: integer
+                                      format: uint8
+                                    - type: string
+                            trade_id:
+                              type: string
+                              example: null
+                              format: hex
+                            type:
+                              type: integer
+                              format: uint8
+                              enum: &ref_17
+                                - 0
+                                - 1
+                                - 2
+                                - 3
+                                - 4
+                                - 5
+                              description: |-
+                                The type of transaction:
+                                  * 0 INCOMING_TX
+                                  * 1 OUTGOING_TX
+                                  * 2 COINBASE_REWARD
+                                  * 3 FEE_REWARD
+                                  * 4 INCOMING_TRADE
+                                  * 5 OUTGOING_TRADE
+                            name:
+                              type: string
+                              example: '0x43f6811a4daf18622fc7f132f5166a1246056b4a983b7befccb7e4b2e2c57f3b'
+                              format: hex
+                            memos:
+                              type: array
+                              example: {}
+                              description: List[Tuple[bytes32, List[bytes]]]
+                              items:
+                                type: object
+                                anyOf:
+                                  - type: string
+                                    format: hex
+                                  - type: array
+                                    items:
+                                      type: string
+                                      format: hex
                       id:
                         type: string
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_owned_stores:
     post:
       tags:
@@ -659,7 +435,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -676,8 +452,8 @@ paths:
                           format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /batch_update:
     post:
       tags:
@@ -720,8 +496,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_value:
     post:
       tags:
@@ -762,8 +538,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_keys:
     post:
       tags:
@@ -803,8 +579,8 @@ paths:
                           format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_keys_values:
     post:
       tags:
@@ -841,11 +617,20 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_17
+                          properties: &ref_12
+                            hash:
+                              type: string
+                              format: bytes32
+                            key:
+                              type: string
+                              format: bytes32
+                            value:
+                              type: string
+                              format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_ancestors:
     post:
       tags:
@@ -878,15 +663,32 @@ paths:
                 allOf:
                   - type: object
                     properties:
-                      anscestors:
+                      ancestors:
                         type: array
                         items:
                           type: object
-                          properties: *ref_18
+                          properties: &ref_9
+                            hash:
+                              type: string
+                              format: bytes32
+                            left_hash:
+                              type: string
+                              format: bytes32
+                            right_hash:
+                              type: string
+                              format: bytes32
+                            pair:
+                              type: array
+                              items:
+                                type: object
+                                minLength: 2
+                                maxLength: 2
+                            atom:
+                              type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_sync_status:
     post:
       tags:
@@ -932,8 +734,8 @@ paths:
                             format: int32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_root:
     post:
       tags:
@@ -972,8 +774,8 @@ paths:
                         format: uint64
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_local_root:
     post:
       tags:
@@ -1007,8 +809,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_roots:
     post:
       tags:
@@ -1057,8 +859,8 @@ paths:
                               format: uint64
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /delete_key:
     post:
       tags:
@@ -1100,8 +902,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /insert:
     post:
       tags:
@@ -1144,8 +946,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /subscribe:
     post:
       tags:
@@ -1173,7 +975,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /unsubscribe:
     post:
       tags:
@@ -1196,7 +998,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /add_mirror:
     post:
       tags:
@@ -1233,7 +1035,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /delete_mirror:
     post:
       tags:
@@ -1260,7 +1062,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /get_mirrors:
     post:
       tags:
@@ -1293,11 +1095,35 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_19
+                          properties: &ref_10
+                            coin_id:
+                              type: string
+                              example: b5756487c17fe3a2628e45a9d3d42e89231af718bb1735e6c8441e07ec005f9d
+                              format: bytes32
+                            launcher_id:
+                              type: string
+                              example: 1a119374fc7d7055d3419fdcd7f93065f28a1e4acacdf9c73b933b27b685550f
+                              format: bytes32
+                            amount:
+                              type: integer
+                              example: 1000
+                              format: uint64
+                            urls:
+                              type: array
+                              example:
+                                - http://www.example.com:8575
+                                - http://www.example2.com:8575
+                              items:
+                                type: string
+                                example: http://www.example.com:8575
+                                format: bytes32
+                            ours:
+                              type: boolean
+                              example: true
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /remove_subscriptions:
     post:
       tags:
@@ -1325,7 +1151,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /subscriptions:
     post:
       tags:
@@ -1336,7 +1162,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_13
+        content: *ref_1
       responses:
         '200':
           description: OK
@@ -1353,8 +1179,8 @@ paths:
                           format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_kv_diff:
     post:
       tags:
@@ -1406,8 +1232,8 @@ paths:
                               format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /get_root_history:
     post:
       tags:
@@ -1451,8 +1277,8 @@ paths:
                               format: uint64
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /add_missing_files:
     post:
       tags:
@@ -1482,7 +1308,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
+          content: *ref_0
   /make_offer:
     post:
       tags:
@@ -1504,12 +1330,30 @@ paths:
                   type: array
                   items:
                     type: object
-                    properties: *ref_1
+                    properties: &ref_5
+                      store_id:
+                        type: string
+                        example: 14d1c3042ef38d76796146e6248e02b73db7a0eeefb740fa2e8439dad15bca27
+                        format: bytes32
+                      inclusions:
+                        type: array
+                        example:
+                          - key: '9999'
+                            value: abc123
+                        items:
+                          type: object
+                          properties: &ref_6
+                            key:
+                              type: string
+                              format: bytes32
+                            value:
+                              type: string
+                              format: bytes32
                 taker:
                   type: array
                   items:
                     type: object
-                    properties: *ref_1
+                    properties: *ref_5
                 fee:
                   type: integer
                   format: uint64
@@ -1525,11 +1369,81 @@ paths:
                     properties:
                       offer:
                         type: object
-                        properties: *ref_20
+                        properties: &ref_7
+                          trade_id:
+                            type: string
+                            format: bytes32
+                          offer:
+                            type: string
+                          maker:
+                            type: object
+                            properties: &ref_20
+                              store_id:
+                                type: string
+                                example: 14d1c3042ef38d76796146e6248e02b73db7a0eeefb740fa2e8439dad15bca27
+                                format: bytes32
+                              proofs:
+                                type: array
+                                example:
+                                  - key: '9999'
+                                    layers:
+                                      - combined_hash: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
+                                        other_hash: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
+                                        other_hash_side: left
+                                      - combined_hash: 568ca0020114772138db61001c63ac8574a7c8c76c051dd2d3e28964496aa88c
+                                        other_hash: 919735911d7f9ca0de316878ddb92e7772c9f39bf9d37e9d84ccab39f5d49a11
+                                        other_hash_side: left
+                                    node_hash: b87c24e0521f559236a2e06d6e1bb196c138c1c9bfcadad3b25708e7eab97ca7
+                                    value: abc123
+                                items:
+                                  type: object
+                                  properties: &ref_19
+                                    key:
+                                      type: string
+                                      example: '9999'
+                                      format: bytes32
+                                    value:
+                                      type: string
+                                      example: abc123
+                                      format: bytes32
+                                    node_hash:
+                                      type: string
+                                      example: b87c24e0521f559236a2e06d6e1bb196c138c1c9bfcadad3b25708e7eab97ca7
+                                      format: bytes32
+                                    layers:
+                                      type: array
+                                      example:
+                                        - combined_hash: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
+                                          other_hash: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
+                                          other_hash_side: left
+                                        - combined_hash: 568ca0020114772138db61001c63ac8574a7c8c76c051dd2d3e28964496aa88c
+                                          other_hash: 919735911d7f9ca0de316878ddb92e7772c9f39bf9d37e9d84ccab39f5d49a11
+                                          other_hash_side: left
+                                      items:
+                                        type: object
+                                        properties: &ref_18
+                                          other_hash_side:
+                                            type: string
+                                            example: left
+                                            format: bytes32
+                                          other_hash:
+                                            type: string
+                                            example: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
+                                            format: bytes32
+                                          combined_hash:
+                                            type: string
+                                            example: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
+                                            format: bytes32
+                                            items:
+                                              type: object
+                                              properties: *ref_6
+                          taker:
+                            type: object
+                            properties: *ref_5
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /take_offer:
     post:
       tags:
@@ -1548,7 +1462,7 @@ paths:
               properties:
                 offer:
                   type: object
-                  properties: *ref_20
+                  properties: *ref_7
                 fee:
                   type: integer
                   format: uint64
@@ -1567,8 +1481,8 @@ paths:
                         format: bytes32
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /verify_offer:
     post:
       tags:
@@ -1587,7 +1501,7 @@ paths:
               properties:
                 offer:
                   type: object
-                  properties: *ref_20
+                  properties: *ref_7
                 fee:
                   type: integer
                   format: uint64
@@ -1608,8 +1522,8 @@ paths:
                         format: uint64
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_3
-                    properties: *ref_4
+                    required: *ref_2
+                    properties: *ref_3
   /cancel_offer:
     post:
       tags:
@@ -1642,7 +1556,130 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_14
-externalDocs:
-  description: Find out more about chia
-  url: https://chia.net
+          content: *ref_0
+  /check_plugins:
+    post:
+      tags:
+        - Subscriptions
+      summary: Checks the status of plugins.
+      description: Checks the status of plugins.
+      operationId: check_plugins
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties: &ref_11
+                      plugin_status:
+                        type: object
+                        properties:
+                          uploaders:
+                            type: object
+                            additionalProperties:
+                              type: string
+                          downloaders:
+                            type: object
+                            additionalProperties:
+                              type: string
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_2
+                    properties: *ref_3
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: *ref_1
+  responses:
+    empty:
+      description: OK response without return values
+      content: *ref_0
+  schemas:
+    connection_info:
+      type: object
+      description: Chia's representation of a connection from node to node.
+      properties: *ref_8
+    internal_node:
+      type: object
+      properties: *ref_9
+    mirror:
+      type: object
+      properties: *ref_10
+    offer:
+      type: object
+      properties: *ref_7
+    offer_store:
+      type: object
+      properties: *ref_5
+    plugin_status:
+      type: object
+      properties: *ref_11
+    terminal_node:
+      type: object
+      properties: *ref_12
+    transaction_record:
+      type: object
+      description: Used for storing transaction data and status in wallets.
+      properties: *ref_13
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_2
+      properties: *ref_3
+    node_type:
+      type: integer
+      enum: *ref_14
+      description: |-
+        The type of node:
+          * 1 FULL_NODE
+          * 2 HARVESTER
+          * 3 FARMER
+          * 4 TIMELORD
+          * 5 INTRODUCER
+          * 6 WALLET
+    coin:
+      type: object
+      properties: *ref_4
+    coin_spend:
+      type: object
+      properties: *ref_15
+    spend_bundle:
+      type: object
+      properties: *ref_16
+    transaction_type:
+      type: integer
+      format: uint8
+      enum: *ref_17
+      description: |-
+        The type of transaction:
+          * 0 INCOMING_TX
+          * 1 OUTGOING_TX
+          * 2 COINBASE_REWARD
+          * 3 FEE_REWARD
+          * 4 INCOMING_TRADE
+          * 5 OUTGOING_TRADE
+    key_value:
+      type: object
+      properties: *ref_6
+    layer:
+      type: object
+      properties: *ref_18
+    proof:
+      type: object
+      properties: *ref_19
+    store_proofs:
+      type: object
+      properties: *ref_20
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'

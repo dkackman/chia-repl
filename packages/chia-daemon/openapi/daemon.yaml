@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The daemon uses port 55400 by default.
-  version: 1.7.1
+  version: 1.8.2
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -18,252 +18,16 @@ servers:
     description: Daemon Websocket RPC
 security:
   - bearerAuth: []
-components:
-  requestBodies:
-    empty:
-      description: Empty request body
-      required: true
-      content: &ref_7
-        application/json:
-          schema:
-            type: object
-    service:
-      description: Request body with the name of a service
-      required: true
-      content: &ref_4
-        application/json:
-          schema:
-            type: object
-            required:
-              - service
-            properties:
-              service:
-                type: string
-  responses:
-    empty:
-      description: OK response without return values
-      content: &ref_6
-        application/json:
-          schema:
-            type: object
-            description: Success indicator and optional error message included in all responses
-            required: &ref_1
-              - success
-            properties: &ref_2
-              success:
-                type: boolean
-                description: Success/failure indicator
-              error:
-                type: string
-                description: Only present when success is false
-  schemas:
-    k_size: &ref_3
-      type: integer
-      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-      default: 32
-      enum: &ref_0
-        - 25
-        - 32
-        - 33
-        - 34
-        - 35
-    plotter_config:
-      type: object
-      properties: &ref_9
-        delay:
-          type: integer
-          format: int32
-          description: The number of seconds to delay before beginning the plotting.
-        parallel:
-          type: boolean
-          default: false
-        'n':
-          type: integer
-          format: int32
-          default: 1
-          description: The number of plots that will be made, in sequence.
-        k:
-          type: integer
-          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-          default: 32
-          enum: *ref_0
-        queue:
-          type: string
-          default: default
-        t:
-          type: string
-          description: |
-            Define the temporary directory for plot creation. This is where Plotting  Phase 1 (Forward Propagation) and Phase 2 (Backpropagation) both occur.  The -t dir requires the largest working space: normally about 2.5 times the size of the final plot.
-        t2:
-          type: string
-          description: Define a secondary temporary directory for plot creation. This is where Plotting Phase 3 (Compression) and Phase 4 (Checkpoints) occur.
-        d:
-          type: string
-          description: Define the final location for plot(s). Of course, -d should have enough free space as the final size of the plot. This directory is automatically added to your ~/.chia/VERSION/config/config.yaml file.
-        b:
-          type: integer
-          format: int32
-          default: 4608
-          description: Define memory/RAM usage. Default is 4608 (4.6 GiB). More RAM will marginally increase speed of plot creation. Please bear in mind that this is what is allocated to the plotting algorithm alone. Code, container, libraries etc. will require additional RAM from your system.
-        u:
-          type: integer
-          format: int32
-          default: 128
-          description: More buckets require less RAM but more random seeks to disk. With spinning disks you want less buckets and with NVMe more buckets. There is no significant benefit from using smaller buckets - just use 128
-        a:
-          type: integer
-          format: uint32
-          nullable: true
-          description: This is the key Fingerprint used to select both the Farmer and Pool Public Keys to use. Utilize this when you want to select one key out of several in your keychain.
-        c:
-          type: string
-          description: The pool contract address.
-        p:
-          type: string
-          description: This is your "Pool Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access.
-        f:
-          type: string
-          description: This is your "Farmer Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access
-        memo:
-          type: string
-        e:
-          type: boolean
-          default: false
-          description: Setting to true will disable the bitfield plotting algorithm, and revert back to the older b17 plotting style. After 1.0.4 it's better to use bitfield for most cases
-        r:
-          type: integer
-          format: int32
-          default: 2
-          description: The number of threads to devote to each plot.
-        x:
-          type: boolean
-          default: false
-          description: Skips adding [final dir] to harvester for farming.
-        overrideK:
-          type: boolean
-          default: false
-          nullable: true
-          description: Only needed when k is set to 25
-        w:
-          type: boolean
-          default: false
-          nullable: true
-          description: BladeBit Only - warm start
-        m:
-          type: boolean
-          default: false
-          nullable: true
-          description: BladeBit Only - disable NUMA
-        K:
-          type: boolean
-          default: false
-          nullable: true
-          description: MadMax Only - note upper case - Thread multiplier for phase 2
-        G:
-          type: boolean
-          default: false
-          nullable: true
-          description: MadMax Only - note upper case - Alternate tmpdir/tmp2dir
-    plotter_info:
-      type: object
-      properties: &ref_8
-        can_install:
-          type: boolean
-        display_name:
-          type: string
-        installed:
-          type: boolean
-        version:
-          type: string
-          format: nullable
-    queued_plot_info:
-      type: object
-      description: An entry in the plot queue.
-      properties: &ref_5
-        delay:
-          type: integer
-          format: int32
-        deleted:
-          type: boolean
-        error:
-          type: string
-        id:
-          type: string
-        log:
-          type: string
-        log_new:
-          type: string
-        parallel:
-          type: boolean
-        queue:
-          type: string
-        size:
-          type: integer
-          description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
-          default: 32
-          enum: *ref_0
-        state:
-          type: string
-    apiResponse:
-      type: object
-      description: Success indicator and optional error message included in all responses
-      required: *ref_1
-      properties: *ref_2
-    error_details:
-      type: object
-      description: Extended error information
-      properties: &ref_11
-        error_details:
-          type: object
-          properties:
-            message:
-              type: string
-    keyring_status:
-      type: object
-      properties: &ref_10
-        is_keyring_locked:
-          type: boolean
-        passphrase_support_enabled:
-          type: boolean
-        can_save_passphrase:
-          type: boolean
-        user_passphrase_is_set:
-          type: boolean
-        needs_migration:
-          type: boolean
-        can_remove_legacy_keys:
-          type: boolean
-        can_set_passphrase_hint:
-          type: boolean
-        passphrase_hint:
-          type: string
-        passphrase_requirements:
-          type: object
-          properties:
-            is_optional:
-              type: boolean
-            min_length:
-              type: integer
-    private_key:
-      type: object
-      properties: &ref_12
-        pk:
-          type: string
-        entropy:
-          type: string
-    k_size_k_size: *ref_3
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: mutual
-      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
 tags:
   - name: Daemon
     description: The daemon interface is exposed on port 55400 by default and uses WebSockets only. It can be used to interact with other service endpoints.
   - name: Key Ring
     description: Methods for managing keys and the keyring.
   - name: Plotter
-    description: Methods for creating plos and managing plotters.
+    description: Methods for creating plots and managing plotters.
+externalDocs:
+  description: Find out more about chia
+  url: https://chia.net
 paths:
   /register_service:
     post:
@@ -275,7 +39,15 @@ paths:
       requestBody:
         description: Request body with the name of a service
         required: true
-        content: *ref_4
+        content: &ref_0
+          application/json:
+            schema:
+              type: object
+              required:
+                - service
+              properties:
+                service:
+                  type: string
       responses:
         '200':
           description: OK
@@ -291,11 +63,47 @@ paths:
                         items:
                           type: object
                           description: An entry in the plot queue.
-                          properties: *ref_5
+                          properties: &ref_10
+                            delay:
+                              type: integer
+                              format: int32
+                            deleted:
+                              type: boolean
+                            error:
+                              type: string
+                            id:
+                              type: string
+                            log:
+                              type: string
+                            log_new:
+                              type: string
+                            parallel:
+                              type: boolean
+                            queue:
+                              type: string
+                            size:
+                              type: integer
+                              description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                              default: 32
+                              enum: &ref_5
+                                - 25
+                                - 32
+                                - 33
+                                - 34
+                                - 35
+                            state:
+                              type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
-                    required: *ref_1
-                    properties: *ref_2
+                    required: &ref_1
+                      - success
+                    properties: &ref_2
+                      success:
+                        type: boolean
+                        description: Success/failure indicator
+                      error:
+                        type: string
+                        description: Only present when success is false
   /start_service:
     post:
       tags:
@@ -306,11 +114,17 @@ paths:
       requestBody:
         description: Request body with the name of a service
         required: true
-        content: *ref_4
+        content: *ref_0
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: &ref_3
+            application/json:
+              schema:
+                type: object
+                description: Success indicator and optional error message included in all responses
+                required: *ref_1
+                properties: *ref_2
   /stop_service:
     post:
       tags:
@@ -321,11 +135,11 @@ paths:
       requestBody:
         description: Request body with the name of a service
         required: true
-        content: *ref_4
+        content: *ref_0
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /ping:
     post:
       tags:
@@ -336,11 +150,14 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: &ref_4
+          application/json:
+            schema:
+              type: object
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /exit:
     post:
       tags:
@@ -351,11 +168,11 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /is_running:
     post:
       tags:
@@ -366,7 +183,7 @@ paths:
       requestBody:
         description: Request body with the name of a service
         required: true
-        content: *ref_4
+        content: *ref_0
       responses:
         '200':
           description: OK
@@ -392,7 +209,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -412,13 +229,13 @@ paths:
     post:
       tags:
         - Daemon
-      summary: Indicator if the genesis block is intialized.
-      description: Indicator if the genesis block is intialized.
+      summary: Indicator if the genesis block is initialized.
+      description: Indicator if the genesis block is initialized.
       operationId: get_status
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -444,7 +261,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -458,7 +275,16 @@ paths:
                         type: object
                         additionalProperties:
                           type: object
-                          properties: *ref_8
+                          properties: &ref_9
+                            can_install:
+                              type: boolean
+                            display_name:
+                              type: string
+                            installed:
+                              type: boolean
+                            version:
+                              type: string
+                              format: nullable
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -477,7 +303,101 @@ paths:
           application/json:
             schema:
               type: object
-              properties: *ref_9
+              properties: &ref_8
+                delay:
+                  type: integer
+                  format: int32
+                  description: The number of seconds to delay before beginning the plotting.
+                parallel:
+                  type: boolean
+                  default: false
+                'n':
+                  type: integer
+                  format: int32
+                  default: 1
+                  description: The number of plots that will be made, in sequence.
+                k:
+                  type: integer
+                  description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+                  default: 32
+                  enum: *ref_5
+                queue:
+                  type: string
+                  default: default
+                t:
+                  type: string
+                  description: |
+                    Define the temporary directory for plot creation. This is where Plotting  Phase 1 (Forward Propagation) and Phase 2 (Backpropagation) both occur.  The -t dir requires the largest working space: normally about 2.5 times the size of the final plot.
+                t2:
+                  type: string
+                  description: Define a secondary temporary directory for plot creation. This is where Plotting Phase 3 (Compression) and Phase 4 (Checkpoints) occur.
+                d:
+                  type: string
+                  description: Define the final location for plot(s). Of course, -d should have enough free space as the final size of the plot. This directory is automatically added to your ~/.chia/VERSION/config/config.yaml file.
+                b:
+                  type: integer
+                  format: int32
+                  default: 4608
+                  description: Define memory/RAM usage. Default is 4608 (4.6 GiB). More RAM will marginally increase speed of plot creation. Please bear in mind that this is what is allocated to the plotting algorithm alone. Code, container, libraries etc. will require additional RAM from your system.
+                u:
+                  type: integer
+                  format: int32
+                  default: 128
+                  description: More buckets require less RAM but more random seeks to disk. With spinning disks you want less buckets and with NVMe more buckets. There is no significant benefit from using smaller buckets - just use 128
+                a:
+                  type: integer
+                  format: uint32
+                  nullable: true
+                  description: This is the key Fingerprint used to select both the Farmer and Pool Public Keys to use. Utilize this when you want to select one key out of several in your keychain.
+                c:
+                  type: string
+                  description: The pool contract address.
+                p:
+                  type: string
+                  description: This is your "Pool Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access.
+                f:
+                  type: string
+                  description: This is your "Farmer Public Key". Utilise this when you want to create plots on other machines for which you do not want to give full chia account access
+                memo:
+                  type: string
+                e:
+                  type: boolean
+                  default: false
+                  description: Setting to true will disable the bitfield plotting algorithm, and revert back to the older b17 plotting style. After 1.0.4 it's better to use bitfield for most cases
+                r:
+                  type: integer
+                  format: int32
+                  default: 2
+                  description: The number of threads to devote to each plot.
+                x:
+                  type: boolean
+                  default: false
+                  description: Skips adding [final dir] to harvester for farming.
+                overrideK:
+                  type: boolean
+                  default: false
+                  nullable: true
+                  description: Only needed when k is set to 25
+                w:
+                  type: boolean
+                  default: false
+                  nullable: true
+                  description: BladeBit Only - warm start
+                m:
+                  type: boolean
+                  default: false
+                  nullable: true
+                  description: BladeBit Only - disable NUMA
+                K:
+                  type: boolean
+                  default: false
+                  nullable: true
+                  description: MadMax Only - note upper case - Thread multiplier for phase 2
+                G:
+                  type: boolean
+                  default: false
+                  nullable: true
+                  description: MadMax Only - note upper case - Alternate tmpdir/tmp2dir
       responses:
         '200':
           description: OK
@@ -517,7 +437,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /is_keyring_locked:
     post:
       tags:
@@ -528,7 +448,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -554,7 +474,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -563,7 +483,30 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_10
+                    properties: &ref_11
+                      is_keyring_locked:
+                        type: boolean
+                      passphrase_support_enabled:
+                        type: boolean
+                      can_save_passphrase:
+                        type: boolean
+                      user_passphrase_is_set:
+                        type: boolean
+                      needs_migration:
+                        type: boolean
+                      can_remove_legacy_keys:
+                        type: boolean
+                      can_set_passphrase_hint:
+                        type: boolean
+                      passphrase_hint:
+                        type: string
+                      passphrase_requirements:
+                        type: object
+                        properties:
+                          is_optional:
+                            type: boolean
+                          min_length:
+                            type: integer
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -588,7 +531,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /validate_keyring_passphrase:
     post:
       tags:
@@ -609,7 +552,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /migrate_keyring:
     post:
       tags:
@@ -641,7 +584,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /set_keyring_passphrase:
     post:
       tags:
@@ -671,7 +614,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /remove_keyring_passphrase:
     post:
       tags:
@@ -694,7 +637,7 @@ paths:
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /add_private_key:
     post:
       tags:
@@ -730,7 +673,12 @@ paths:
                     properties: *ref_2
                   - type: object
                     description: Extended error information
-                    properties: *ref_11
+                    properties: &ref_6
+                      error_details:
+                        type: object
+                        properties:
+                          message:
+                            type: string
   /check_keys:
     post:
       tags:
@@ -763,7 +711,7 @@ paths:
                     properties: *ref_2
                   - type: object
                     description: Extended error information
-                    properties: *ref_11
+                    properties: *ref_6
   /delete_all_keys:
     post:
       tags:
@@ -774,11 +722,11 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK response without return values
-          content: *ref_6
+          content: *ref_3
   /delete_key_by_fingerprint:
     post:
       tags:
@@ -812,7 +760,7 @@ paths:
                     properties: *ref_2
                   - type: object
                     description: Extended error information
-                    properties: *ref_11
+                    properties: *ref_6
   /get_all_private_keys:
     post:
       tags:
@@ -823,7 +771,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -837,7 +785,11 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_12
+                          properties: &ref_7
+                            pk:
+                              type: string
+                            entropy:
+                              type: string
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -852,7 +804,7 @@ paths:
       requestBody:
         description: Empty request body
         required: true
-        content: *ref_7
+        content: *ref_4
       responses:
         '200':
           description: OK
@@ -862,7 +814,7 @@ paths:
                 type: object
                 allOf:
                   - type: object
-                    properties: *ref_12
+                    properties: *ref_7
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -896,11 +848,58 @@ paths:
                 type: object
                 allOf:
                   - type: object
-                    properties: *ref_12
+                    properties: *ref_7
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
-externalDocs:
-  description: Find out more about chia
-  url: https://chia.net
+components:
+  requestBodies:
+    empty:
+      description: Empty request body
+      required: true
+      content: *ref_4
+    service:
+      description: Request body with the name of a service
+      required: true
+      content: *ref_0
+  responses:
+    empty:
+      description: OK response without return values
+      content: *ref_3
+  schemas:
+    k_size:
+      type: integer
+      description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
+      default: 32
+      enum: *ref_5
+    plotter_config:
+      type: object
+      properties: *ref_8
+    plotter_info:
+      type: object
+      properties: *ref_9
+    queued_plot_info:
+      type: object
+      description: An entry in the plot queue.
+      properties: *ref_10
+    apiResponse:
+      type: object
+      description: Success indicator and optional error message included in all responses
+      required: *ref_1
+      properties: *ref_2
+    error_details:
+      type: object
+      description: Extended error information
+      properties: *ref_6
+    keyring_status:
+      type: object
+      properties: *ref_11
+    private_key:
+      type: object
+      properties: *ref_7
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: mutual
+      description: '-> Chia uses [mutualTLS bearerAuth](https://github.com/dkackman/chia-api/wiki/Mutual-TLS) where client and server share TLS keys.'
