@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The wallet uses port 9256 by default.
-  version: 1.8.2
+  version: 2.0.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -128,7 +128,7 @@ paths:
                                       solution: '0xff80ffff01ffff33ffa03fa549a708302b401c45cf387f8f03b4f76b7c9eabf567bea974f61dedf721e0ff840098968080ffff33ffa055b9fe4c9ce0cef8ad574bf5a9158dc0db7848b96be1a98ab2806d8f0a376a08ff860197738845808080ff8080'
                                   items:
                                     type: object
-                                    properties: &ref_54
+                                    properties: &ref_50
                                       coin:
                                         type: object
                                         properties: &ref_0
@@ -190,7 +190,7 @@ paths:
                             type:
                               type: integer
                               format: uint8
-                              enum: &ref_50
+                              enum: &ref_46
                                 - 0
                                 - 1
                                 - 2
@@ -418,8 +418,8 @@ paths:
     post:
       tags:
         - Data Layer Wallet
-      summary: Stop the node.
-      description: Stop the node.
+      summary: Update a data layer root.
+      description: Update a data layer root.
       operationId: dl_update_root
       requestBody:
         required: true
@@ -462,8 +462,8 @@ paths:
     post:
       tags:
         - Data Layer Wallet
-      summary: Stop the node.
-      description: Stop the node.
+      summary: Update multiple singletons with new merkle roots.
+      description: Update multiple singletons with new merkle roots.
       operationId: dl_update_multiple
       requestBody:
         required: true
@@ -620,7 +620,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: &ref_45
+                          properties: &ref_41
                             coin_id:
                               type: string
                               example: b5756487c17fe3a2628e45a9d3d42e89231af718bb1735e6c8441e07ec005f9d
@@ -641,7 +641,6 @@ paths:
                               items:
                                 type: string
                                 example: http://www.example.com:8575
-                                format: bytes32
                             ours:
                               type: boolean
                               example: true
@@ -833,7 +832,7 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: &ref_40
+                          properties: &ref_38
                             bytes_read:
                               type: integer
                               format: uint32
@@ -873,13 +872,14 @@ paths:
                               format: int32
                             type:
                               type: integer
-                              enum: &ref_55
+                              enum: &ref_51
                                 - 1
                                 - 2
                                 - 3
                                 - 4
                                 - 5
                                 - 6
+                                - 7
                               description: |-
                                 The type of node:
                                   * 1 FULL_NODE
@@ -888,6 +888,7 @@ paths:
                                   * 4 TIMELORD
                                   * 5 INTRODUCER
                                   * 6 WALLET
+                                  * 7 DATA_LAYER
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -1022,12 +1023,12 @@ paths:
                 mint_total:
                   description: The total number of NFTs being minted
                   type: integer
-                xch_coin_list:
+                xch_coins:
                   description: For use with bulk minting to provide the coin used for funding the minting spend. This coin can be one that will be created in the future
                   type: array
                   items:
-                    type: string
-                    format: hex
+                    type: object
+                    properties: *ref_0
                 xch_change_target:
                   description: For use with bulk minting, so we can specify the puzzle hash that the change from the funding transaction goes to.
                   type: string
@@ -1038,9 +1039,9 @@ paths:
                 new_p2_puzhash:
                   type: string
                   format: hex
-                did_coin_dict:
+                did_coin:
                   type: object
-                  additionalProperties: true
+                  properties: *ref_0
                 did_lineage_parent_hex:
                   type: string
                   format: hex
@@ -1330,12 +1331,21 @@ paths:
               type: object
               required:
                 - wallet_id
+                - did_id
+                - nft_coin_id
               properties:
                 wallet_id:
                   type: integer
                   format: uint32
                 did_id:
                   type: string
+                nft_coin_id:
+                  type: string
+                  format: hex
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
                 reuse_puzhash:
                   type: boolean
       responses:
@@ -1564,16 +1574,23 @@ paths:
                   items:
                     type: object
                     properties:
+                      asset:
+                        type: string
+                        format: hex
                       royalty_address:
                         type: string
                         format: hex
                       royalty_percentage:
                         type: integer
+                        format: uint16
                 fungible_assets:
                   type: array
                   items:
                     type: object
                     properties:
+                      asset:
+                        type: string
+                        format: hex
                       amount:
                         type: integer
                         format: uint64
@@ -1584,19 +1601,21 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - type: array
-                    items:
-                      type: object
-                      properties:
-                        asset:
-                          type: string
-                          format: hex
-                        address:
-                          type: string
-                          format: hex
-                        wallet_id:
-                          type: integer
-                          format: uint64
+                  - type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          asset:
+                            type: string
+                            format: hex
+                          address:
+                            type: string
+                            format: hex
+                          amount:
+                            type: integer
+                            format: uint64
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -2274,11 +2293,11 @@ paths:
                   default: 0
                 min_coin_amount:
                   type: integer
-                  format: uint128
+                  format: uint64
                   default: 0
                 max_coin_amount:
                   type: integer
-                  format: uint128
+                  format: uint64
                   default: 0
                 solver:
                   type: object
@@ -2338,7 +2357,7 @@ paths:
                             format: hex
                           status:
                             type: integer
-                            enum: &ref_56
+                            enum: &ref_52
                               - 0
                               - 1
                               - 2
@@ -2419,7 +2438,7 @@ paths:
                         items:
                           type: object
                           description: Information about a CAT
-                          properties: &ref_43
+                          properties: &ref_39
                             asset_id:
                               type: string
                               example: a628c1c2c6fcb74d53746157e438e108eab5c0bb3e5c80ff9b1910b3e4832913
@@ -2535,7 +2554,7 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
-                exclude_coin_amounts:
+                excluded_coin_amounts:
                   type: array
                   items:
                     type: integer
@@ -2719,59 +2738,30 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - oneOf:
-                      - type: object
+                  - type: object
+                    properties:
+                      id:
+                        type: string
+                      summary:
                         properties:
-                          id:
-                            type: string
                           offered:
-                            type: array
-                            items:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                              format: uint64
+                          requested:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                              format: uint64
+                          fees:
+                            type: integer
+                            format: uint64
+                          infos:
+                            type: object
+                            additionalProperties:
                               type: object
-                              properties:
-                                launcher_id:
-                                  type: string
-                                  format: hex
-                                new_root:
-                                  type: string
-                                  format: hex
-                                dependencies:
-                                  type: array
-                                  items:
-                                    type: object
-                                    properties:
-                                      launcher_id:
-                                        type: string
-                                        format: hex
-                                      values_to_prove:
-                                        type: array
-                                        items:
-                                          type: string
-                                          format: hex
-                      - type: object
-                        properties:
-                          id:
-                            type: string
-                          summary:
-                            properties:
-                              offered:
-                                type: object
-                                additionalProperties:
-                                  type: integer
-                                  format: uint64
-                              requested:
-                                type: object
-                                additionalProperties:
-                                  type: integer
-                                  format: uint64
-                              fees:
-                                type: integer
-                                format: uint64
-                              infos:
-                                type: object
-                                additionalProperties:
-                                  type: object
-                                  additionalProperties: true
+                              additionalProperties: true
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -2954,12 +2944,12 @@ paths:
                   type: integer
                   format: uint128
                   default: 0
-                exclude_coin_amounts:
+                excluded_coin_amounts:
                   type: array
                   items:
                     type: integer
                     format: uint64
-                exclude_coin_ids:
+                excluded_coin_ids:
                   type: array
                   items:
                     type: string
@@ -3078,7 +3068,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: &ref_49
+                          properties: &ref_45
                             asset_id:
                               type: string
                             name:
@@ -3245,7 +3235,7 @@ paths:
                                     `3 FARMING_TO_POOL`: The singleton exists, and it is assigned to a pool.
                                     `CLAIMING_SELF_POOLED_REWARDS`: We have submitted a transaction to sweep our
                                         self-pooled funds."
-                                enum: &ref_57
+                                enum: &ref_53
                                   - 1
                                   - 2
                                   - 3
@@ -3397,97 +3387,91 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - type: object
-                  required: &ref_15
-                    - additions
-                  properties: &ref_16
-                    additions:
-                      type: array
-                      items:
-                        type: object
-                        required: &ref_33
-                          - amount
-                          - puzzle_hash
-                        properties: &ref_34
-                          amount:
-                            type: integer
-                            example: 250000000000
-                            format: uint64
-                          puzzle_hash:
-                            type: string
-                            example: '0x8f3dff600992a0b77aefbe8eb81dd4f233b9126f3b67557594b5a927d6e6d588'
-                            format: hex
-                          memos:
-                            type: array
-                            example: []
-                            items:
-                              type: string
-                    fee:
-                      type: integer
-                      format: uint64
-                      default: 0
-                    coins:
-                      type: array
-                      items:
-                        type: object
-                        properties: *ref_0
-                    coin_announcements:
-                      type: array
-                      items:
-                        type: object
-                        required: &ref_35
-                          - coin_id
-                          - message
-                        properties: &ref_36
-                          coin_id:
-                            type: string
-                            format: hex
-                          message:
-                            type: string
-                            format: hex
-                          morph_bytes:
-                            type: string
-                            format: hex
-                    puzzle_announcements:
-                      type: array
-                      items:
-                        type: object
-                        required: &ref_41
-                          - coin_id
-                          - message
-                        properties: &ref_42
-                          puzzle_hash:
-                            type: string
-                            format: hex
-                          message:
-                            type: string
-                            format: hex
-                          morph_bytes:
-                            type: string
-                            format: hex
-                - type: object
-                  properties:
-                    wallet_id:
-                      type: integer
-                    min_coin_amount:
-                      type: integer
-                      format: uint64
-                      default: 0
-                    max_coin_amount:
-                      type: integer
-                      format: uint64
-                      default: 0
-                    excluded_coins:
-                      type: array
-                      items:
-                        type: object
-                        properties: *ref_0
-                    excluded_coin_amounts:
-                      type: array
-                      items:
+              type: object
+              required:
+                - additions
+              properties:
+                wallet_id:
+                  type: integer
+                additions:
+                  type: array
+                  items:
+                    type: object
+                    required: &ref_15
+                      - amount
+                      - puzzle_hash
+                    properties: &ref_16
+                      amount:
                         type: integer
+                        example: 250000000000
                         format: uint64
+                      puzzle_hash:
+                        type: string
+                        example: '0x8f3dff600992a0b77aefbe8eb81dd4f233b9126f3b67557594b5a927d6e6d588'
+                        format: hex
+                      memos:
+                        type: array
+                        example: []
+                        items:
+                          type: string
+                coins:
+                  type: array
+                  items:
+                    type: object
+                    properties: *ref_0
+                coin_announcements:
+                  type: array
+                  items:
+                    type: object
+                    required: &ref_17
+                      - coin_id
+                      - message
+                    properties: &ref_18
+                      coin_id:
+                        type: string
+                        format: hex
+                      message:
+                        type: string
+                        format: hex
+                      morph_bytes:
+                        type: string
+                        format: hex
+                puzzle_announcements:
+                  type: array
+                  items:
+                    type: object
+                    properties: &ref_19
+                      puzzle_hash:
+                        type: string
+                        format: hex
+                      message:
+                        type: string
+                        format: hex
+                      morph_bytes:
+                        type: string
+                        format: hex
+                min_coin_amount:
+                  type: integer
+                  format: uint64
+                  default: 0
+                max_coin_amount:
+                  type: integer
+                  format: uint64
+                  default: 0
+                excluded_coins:
+                  type: array
+                  items:
+                    type: object
+                    properties: *ref_0
+                excluded_coin_amounts:
+                  type: array
+                  items:
+                    type: integer
+                    format: uint64
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
       responses:
         '200':
           description: OK
@@ -3497,6 +3481,12 @@ paths:
                 allOf:
                   - type: object
                     properties:
+                      signed_txs:
+                        type: array
+                        items:
+                          type: object
+                          description: Used for storing transaction data and status in wallets.
+                          properties: *ref_5
                       signed_tx:
                         type: object
                         description: Used for storing transaction data and status in wallets.
@@ -3547,12 +3537,12 @@ paths:
                   type: integer
                   format: uint64
                   default: 0
-                exclude_coin_amounts:
+                excluded_coin_amounts:
                   type: array
                   items:
                     type: integer
                     format: uint64
-                exclude_coin_ids:
+                excluded_coin_ids:
                   type: array
                   items:
                     type: string
@@ -3575,17 +3565,39 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - type: object
-                  required:
-                    - wallet_id
-                  properties:
-                    wallet_id:
-                      type: integer
-                      format: uint32
-                - type: object
-                  required: *ref_15
-                  properties: *ref_16
+              type: object
+              required:
+                - wallet_id
+              properties:
+                wallet_id:
+                  type: integer
+                  format: uint32
+                additions:
+                  type: array
+                  items:
+                    type: object
+                    required: *ref_15
+                    properties: *ref_16
+                fee:
+                  type: integer
+                  format: uint64
+                  default: 0
+                coins:
+                  type: array
+                  items:
+                    type: object
+                    properties: *ref_0
+                coin_announcements:
+                  type: array
+                  items:
+                    type: object
+                    required: *ref_17
+                    properties: *ref_18
+                puzzle_announcements:
+                  type: array
+                  items:
+                    type: object
+                    properties: *ref_19
       responses:
         '200':
           description: OK response with a transaction record and a transaction id.
@@ -3614,7 +3626,7 @@ paths:
                     properties:
                       wallet_balance:
                         type: object
-                        properties: &ref_17
+                        properties: &ref_20
                           confirmed_wallet_balance:
                             type: integer
                             example: 999999799
@@ -3646,7 +3658,7 @@ paths:
                           wallet_type:
                             type: integer
                             format: uint8
-                            enum: &ref_24
+                            enum: &ref_27
                               - 0
                               - 2
                               - 3
@@ -3684,7 +3696,7 @@ paths:
                           fingerprint:
                             type: integer
                             example: 128964
-                            format: int32
+                            format: uint32
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -3723,7 +3735,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_17
+                          properties: *ref_20
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -3747,7 +3759,7 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: &ref_44
+                    properties: &ref_40
                       farmed_amount:
                         type: integer
                         example: 0
@@ -3765,6 +3777,14 @@ paths:
                         example: 0
                         format: uint64
                       last_height_farmed:
+                        type: integer
+                        example: 0
+                        format: uint32
+                      blocks_won:
+                        type: integer
+                        example: 0
+                        format: uint32
+                      last_time_farmed:
                         type: integer
                         example: 0
                         format: uint64
@@ -3797,7 +3817,7 @@ paths:
       requestBody:
         description: Request body with the Id of a transaction.
         required: true
-        content: &ref_30
+        content: &ref_32
           application/json:
             schema:
               type: object
@@ -3867,7 +3887,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: &ref_18
+                          properties: &ref_21
                             coin:
                               type: object
                               properties: *ref_0
@@ -3893,7 +3913,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_18
+                          properties: *ref_21
                       unconfirmed_additions:
                         type: array
                         items:
@@ -3922,6 +3942,9 @@ paths:
                 wallet_id:
                   type: integer
                   format: uint32
+                to_address:
+                  type: string
+                  format: hex
                 start:
                   type: integer
                   format: uint32
@@ -3936,7 +3959,7 @@ paths:
                   type: boolean
                 type_filter:
                   type: object
-                  properties: &ref_19
+                  properties: &ref_22
                     values:
                       type: array
                       items:
@@ -3945,7 +3968,7 @@ paths:
                     mode:
                       type: integer
                       format: uint8
-                      enum: &ref_25
+                      enum: &ref_28
                         - 1
                         - 2
                       description: |-
@@ -3995,7 +4018,7 @@ paths:
                   format: uint32
                 type_filter:
                   type: object
-                  properties: *ref_19
+                  properties: *ref_22
       responses:
         '200':
           description: OK
@@ -4074,10 +4097,10 @@ paths:
                 allOf:
                   - type: object
                     description: Basic information about the current network.
-                    required: &ref_46
+                    required: &ref_42
                       - network_name
                       - network_prefix
-                    properties: &ref_47
+                    properties: &ref_43
                       network_name:
                         type: string
                         example: mainnet
@@ -4098,7 +4121,7 @@ paths:
       requestBody:
         description: Request body with a wallet fingerprint.
         required: true
-        content: &ref_21
+        content: &ref_24
           application/json:
             schema:
               type: object
@@ -4111,7 +4134,7 @@ paths:
       responses:
         '200':
           description: OK
-          content: &ref_20
+          content: &ref_23
             application/json:
               schema:
                 allOf:
@@ -4138,7 +4161,7 @@ paths:
       responses:
         '200':
           description: OK
-          content: *ref_20
+          content: *ref_23
   /get_public_keys:
     post:
       tags:
@@ -4183,7 +4206,7 @@ paths:
       requestBody:
         description: Request body with a wallet fingerprint.
         required: true
-        content: *ref_21
+        content: *ref_24
       responses:
         '200':
           description: OK
@@ -4196,7 +4219,7 @@ paths:
                     properties:
                       private_key:
                         type: object
-                        properties: &ref_48
+                        properties: &ref_44
                           fingerprint:
                             type: integer
                             example: 2473794447
@@ -4253,7 +4276,7 @@ paths:
               schema:
                 description: 24 words of entropy.
                 type: array
-                example: &ref_22
+                example: &ref_25
                   - hint
                   - dice
                   - session
@@ -4278,7 +4301,7 @@ paths:
                   - ocean
                   - artist
                   - lawsuit
-                items: &ref_23
+                items: &ref_26
                   type: string
                   example: hint
                 minItems: 24
@@ -4298,8 +4321,8 @@ paths:
             schema:
               description: 24 words of entropy.
               type: array
-              example: *ref_22
-              items: *ref_23
+              example: *ref_25
+              items: *ref_26
               minItems: 24
               maxItems: 24
       responses:
@@ -4332,7 +4355,7 @@ paths:
       requestBody:
         description: Request body with a wallet fingerprint.
         required: true
-        content: *ref_21
+        content: *ref_24
       responses:
         '200':
           description: OK response without return values
@@ -4347,7 +4370,7 @@ paths:
       requestBody:
         description: Request body with a wallet fingerprint.
         required: true
-        content: *ref_21
+        content: *ref_24
       responses:
         '200':
           description: OK
@@ -4747,7 +4770,7 @@ paths:
                         type: string
                         format: hex
                 - type: object
-                  properties: &ref_38
+                  properties: &ref_36
                     start_height:
                       type: integer
                       format: uint32
@@ -4759,7 +4782,7 @@ paths:
       responses:
         '200':
           description: OK
-          content: &ref_31
+          content: &ref_33
             application/json:
               schema:
                 type: object
@@ -4768,7 +4791,7 @@ paths:
                     type: array
                     items:
                       type: object
-                      properties: *ref_18
+                      properties: *ref_21
                 allOf:
                   - type: object
                     description: Success indicator and optional error message included in all responses
@@ -4802,7 +4825,7 @@ paths:
                 wallet_type:
                   type: integer
                   format: uint8
-                  enum: *ref_24
+                  enum: *ref_27
                   description: |-
                     The type of wallet:
                       * 0 STANDARD_WALLET
@@ -4821,7 +4844,7 @@ paths:
                 coin_type:
                   type: integer
                   format: uint8
-                  enum: &ref_39
+                  enum: &ref_37
                     - 0
                     - 1
                   description: |-
@@ -4830,7 +4853,7 @@ paths:
                       * 1 CLAWBACK
                 coin_id_filter:
                   type: object
-                  properties: &ref_26
+                  properties: &ref_29
                     values:
                       type: array
                       items:
@@ -4839,20 +4862,20 @@ paths:
                     mode:
                       type: integer
                       format: uint8
-                      enum: *ref_25
+                      enum: *ref_28
                       description: |-
                         The type of filter:
                           * 1 include
                           * 2 exclude
                 puzzle_hash_filter:
                   type: object
-                  properties: *ref_26
+                  properties: *ref_29
                 parent_coin_id_filter:
                   type: object
-                  properties: *ref_26
+                  properties: *ref_29
                 amount_filter:
                   type: object
-                  properties: &ref_32
+                  properties: &ref_34
                     values:
                       type: array
                       items:
@@ -4861,14 +4884,14 @@ paths:
                     mode:
                       type: integer
                       format: uint8
-                      enum: *ref_25
+                      enum: *ref_28
                       description: |-
                         The type of filter:
                           * 1 include
                           * 2 exclude
                 amount_range:
                   type: object
-                  properties: &ref_51
+                  properties: &ref_47
                     start:
                       type: integer
                       format: uint64
@@ -4878,7 +4901,7 @@ paths:
                       format: uint64
                 confirmed_range:
                   type: object
-                  properties: &ref_27
+                  properties: &ref_30
                     start:
                       type: integer
                       format: uint32
@@ -4888,15 +4911,15 @@ paths:
                       format: uint32
                 spent_range:
                   type: object
-                  properties: *ref_27
+                  properties: *ref_30
                 order:
                   type: integer
                   format: uint8
-                  enum: &ref_37
+                  enum: &ref_35
                     - 1
                     - 2
                   description: |-
-                    The type of wallet:
+                    The sort by item:
                       * 1 confirmed_height
                       * 2 spent_height
                 reverse:
@@ -4919,7 +4942,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: *ref_18
+                          properties: *ref_21
                       total_count:
                         type: integer
                         format: uint32
@@ -4988,7 +5011,7 @@ paths:
                 type:
                   type: integer
                   format: uint8
-                  enum: *ref_24
+                  enum: *ref_27
                   description: |-
                     The type of wallet:
                       * 0 STANDARD_WALLET
@@ -5018,13 +5041,13 @@ paths:
                     properties:
                       fingerprint:
                         type: integer
-                        format: int32
+                        format: uint32
                       wallets:
                         type: array
                         items:
                           type: object
                           description: 'This object represents the wallet data as it is stored in DB. ID: Main wallet (Standard) is stored at index 1, every wallet created after done has auto incremented id. Name: can be a user provided or default generated name. (can be modified) Type: is specified during wallet creation and should never be changed. Data: this field is intended to be used for storing any wallet specific information required for it. (RL wallet stores origin_id, admin/user pubkey, rate limit, etc.) This data should be a json encoded string.'
-                          properties: &ref_53
+                          properties: &ref_49
                             id:
                               type: integer
                               example: 1
@@ -5035,7 +5058,7 @@ paths:
                             type:
                               type: integer
                               format: uint8
-                              enum: *ref_24
+                              enum: *ref_27
                               description: |-
                                 The type of wallet:
                                   * 0 STANDARD_WALLET
@@ -5188,7 +5211,7 @@ paths:
                       type:
                         type: integer
                         format: uint8
-                        enum: *ref_24
+                        enum: *ref_27
                         description: |-
                           The type of wallet:
                             * 0 STANDARD_WALLET
@@ -5216,7 +5239,7 @@ paths:
                       type:
                         type: integer
                         format: uint8
-                        enum: *ref_24
+                        enum: *ref_27
                         description: |-
                           The type of wallet:
                             * 0 STANDARD_WALLET
@@ -5244,7 +5267,7 @@ paths:
                       type:
                         type: integer
                         format: uint8
-                        enum: *ref_24
+                        enum: *ref_27
                         description: |-
                           The type of wallet:
                             * 0 STANDARD_WALLET
@@ -5308,7 +5331,7 @@ paths:
                       type:
                         type: integer
                         format: uint8
-                        enum: *ref_24
+                        enum: *ref_27
                         description: |-
                           The type of wallet:
                             * 0 STANDARD_WALLET
@@ -5740,7 +5763,7 @@ paths:
           application/json:
             schema:
               type: object
-              properties: &ref_28
+              properties:
                 enabled:
                   type: boolean
                   default: false
@@ -5764,7 +5787,22 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_28
+                    properties:
+                      enabled:
+                        type: boolean
+                        default: false
+                      tx_fee:
+                        type: integer
+                        format: uint64
+                        default: 0
+                      min_amount:
+                        type: integer
+                        format: uint64
+                        default: 0
+                      batch_size:
+                        type: integer
+                        format: uint16
+                        default: 50
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -5788,7 +5826,22 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: *ref_28
+                    properties:
+                      enabled:
+                        type: boolean
+                        default: false
+                      tx_fee:
+                        type: integer
+                        format: uint64
+                        default: 0
+                      min_amount:
+                        type: integer
+                        format: uint64
+                        default: 0
+                      batch_size:
+                        type: integer
+                        format: uint16
+                        default: 50
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -5877,11 +5930,11 @@ paths:
                     properties:
                       vc_record:
                         type: object
-                        properties: &ref_29
+                        properties: &ref_31
                           vc:
                             description: This class serves as the main driver for the entire VC puzzle stack. Given the information below, it can sync and spend VerifiedCredentials in any specified manner. Trying to sync from a spend that this class did not create will likely result in an error.
                             type: object
-                            properties: &ref_59
+                            properties: &ref_55
                               coin:
                                 type: object
                                 properties: *ref_0
@@ -5891,7 +5944,7 @@ paths:
                               eml_lineage_proof:
                                 description: The covenant layer for exigent metadata layers requires to be passed the previous parent's metadata too
                                 type: object
-                                properties: &ref_58
+                                properties: &ref_54
                                   parent_name:
                                     type: string
                                     example: '0xc2347b264b412bde5893f4e1369adab3a6c61496845c10f8ec98bc35f9e1429f'
@@ -5923,6 +5976,9 @@ paths:
                           confirmed_at_height:
                             type: integer
                             format: uint32
+                          coin_id:
+                            type: string
+                            format: hex
                       transactions:
                         type: array
                         items:
@@ -5963,7 +6019,7 @@ paths:
                     properties:
                       vc_record:
                         type: object
-                        properties: *ref_29
+                        properties: *ref_31
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
@@ -6000,14 +6056,8 @@ paths:
                       vc_records:
                         type: array
                         items:
-                          allOf:
-                            - type: object
-                              properties:
-                                coin_id:
-                                  type: string
-                                  format: hex
-                            - type: object
-                              properties: *ref_29
+                          type: object
+                          properties: *ref_31
                       proofs:
                         type: object
                         additionalProperties:
@@ -6035,6 +6085,9 @@ paths:
                 vc_id:
                   type: string
                   format: bytes32
+                new_puzhash:
+                  type: string
+                  format: bytes32
                 new_proof_hash:
                   type: string
                   format: bytes32
@@ -6046,7 +6099,6 @@ paths:
                   format: uint64
                 reuse_puzhash:
                   type: boolean
-                  default: false
       responses:
         '200':
           description: OK
@@ -6084,7 +6136,7 @@ paths:
               properties:
                 proofs:
                   type: object
-                  properties: &ref_52
+                  properties: &ref_48
                     key_value_pairs:
                       type: object
                       additionalProperties:
@@ -6160,7 +6212,6 @@ paths:
                   default: 0
                 reuse_puzhash:
                   type: boolean
-                  default: false
       responses:
         '200':
           description: OK
@@ -6189,7 +6240,7 @@ components:
     fingerprint:
       description: Request body with a wallet fingerprint.
       required: true
-      content: *ref_21
+      content: *ref_24
     wallet_id:
       description: Request body with the Id of a wallet
       required: true
@@ -6197,50 +6248,47 @@ components:
     transaction_id:
       description: Request body with the Id of a transaction.
       required: true
-      content: *ref_30
+      content: *ref_32
   responses:
     empty:
       description: OK response without return values
       content: *ref_3
     coin_records:
       description: OK
-      content: *ref_31
+      content: *ref_33
     fingerprint_response:
       description: OK
-      content: *ref_20
+      content: *ref_23
     transaction_record_response:
       description: OK response with a transaction record and a transaction id.
       content: *ref_14
   schemas:
     amount_filter:
       type: object
-      properties: *ref_32
+      properties: *ref_34
     amount_with_puzzlehash:
       type: object
-      required: *ref_33
-      properties: *ref_34
-    auto_claim_settings:
-      type: object
-      properties: *ref_28
+      required: *ref_15
+      properties: *ref_16
     coin_announcement:
       type: object
-      required: *ref_35
-      properties: *ref_36
+      required: *ref_17
+      properties: *ref_18
     coin_record_order:
       type: integer
       format: uint8
-      enum: *ref_37
+      enum: *ref_35
       description: |-
-        The type of wallet:
+        The sort by item:
           * 1 confirmed_height
           * 2 spent_height
     coin_search_options:
       type: object
-      properties: *ref_38
+      properties: *ref_36
     coin_type:
       type: integer
       format: uint8
-      enum: *ref_39
+      enum: *ref_37
       description: |-
         The type of coin:
           * 0 NORMAL
@@ -6248,45 +6296,44 @@ components:
     connection_info:
       type: object
       description: Chia's representation of a connection from node to node.
-      properties: *ref_40
+      properties: *ref_38
     puzzle_announcement:
       type: object
-      required: *ref_41
-      properties: *ref_42
+      properties: *ref_19
     cat_info:
       type: object
       description: Information about a CAT
-      properties: *ref_43
+      properties: *ref_39
     coin:
       type: object
       properties: *ref_0
     coin_record:
       type: object
-      properties: *ref_18
+      properties: *ref_21
     farmer_rewards:
       type: object
-      properties: *ref_44
+      properties: *ref_40
     hash_filter:
       type: object
-      properties: *ref_26
+      properties: *ref_29
     lineage_proof:
       type: object
       properties: *ref_4
     mirror:
       type: object
-      properties: *ref_45
+      properties: *ref_41
     mnemonic:
       description: 24 words of entropy.
       type: array
-      example: *ref_22
-      items: *ref_23
+      example: *ref_25
+      items: *ref_26
       minItems: 24
       maxItems: 24
     network_info:
       type: object
       description: Basic information about the current network.
-      required: *ref_46
-      properties: *ref_47
+      required: *ref_42
+      properties: *ref_43
     nft_info:
       type: object
       description: NFT Info for displaying NFT on the UI
@@ -6301,7 +6348,7 @@ components:
       properties: *ref_13
     private_key:
       type: object
-      properties: *ref_48
+      properties: *ref_44
     singleton_record:
       type: object
       properties: *ref_6
@@ -6310,15 +6357,11 @@ components:
       properties: *ref_8
     token:
       type: object
-      properties: *ref_49
+      properties: *ref_45
     trade_record:
       type: object
       description: Used for storing transaction data and status in wallets.
       properties: *ref_11
-    transaction_input:
-      type: object
-      required: *ref_15
-      properties: *ref_16
     transaction_record:
       type: object
       description: Used for storing transaction data and status in wallets.
@@ -6326,7 +6369,7 @@ components:
     transaction_type:
       type: integer
       format: uint8
-      enum: *ref_50
+      enum: *ref_46
       description: |-
         The type of transaction:
           * 0 INCOMING_TX
@@ -6337,30 +6380,30 @@ components:
           * 5 OUTGOING_TRADE
     transaction_type_filter:
       type: object
-      properties: *ref_19
+      properties: *ref_22
     uint32_range:
       type: object
-      properties: *ref_27
+      properties: *ref_30
     uint64_range:
       type: object
-      properties: *ref_51
+      properties: *ref_47
     vc_proofs:
       type: object
-      properties: *ref_52
+      properties: *ref_48
     vc_record:
       type: object
-      properties: *ref_29
+      properties: *ref_31
     wallet_balance:
       type: object
-      properties: *ref_17
+      properties: *ref_20
     wallet_info:
       type: object
       description: 'This object represents the wallet data as it is stored in DB. ID: Main wallet (Standard) is stored at index 1, every wallet created after done has auto incremented id. Name: can be a user provided or default generated name. (can be modified) Type: is specified during wallet creation and should never be changed. Data: this field is intended to be used for storing any wallet specific information required for it. (RL wallet stores origin_id, admin/user pubkey, rate limit, etc.) This data should be a json encoded string.'
-      properties: *ref_53
+      properties: *ref_49
     wallet_type:
       type: integer
       format: uint8
-      enum: *ref_24
+      enum: *ref_27
       description: |-
         The type of wallet:
           * 0 STANDARD_WALLET
@@ -6383,10 +6426,10 @@ components:
       properties: *ref_2
     coin_spend:
       type: object
-      properties: *ref_54
+      properties: *ref_50
     node_type:
       type: integer
-      enum: *ref_55
+      enum: *ref_51
       description: |-
         The type of node:
           * 1 FULL_NODE
@@ -6395,9 +6438,10 @@ components:
           * 4 TIMELORD
           * 5 INTRODUCER
           * 6 WALLET
+          * 7 DATA_LAYER
     trade_status:
       type: integer
-      enum: *ref_56
+      enum: *ref_52
       description: 'The status of a trade: * 0 PENDING_ACCEPT * 1 PENDING_CONFIRM * 2 PENDING_CANCEL * 3 CANCELLED * 4 CONFIRMED * 5 FAILED'
     pool_singleton_state:
       type: integer
@@ -6411,11 +6455,11 @@ components:
           `3 FARMING_TO_POOL`: The singleton exists, and it is assigned to a pool.
           `CLAIMING_SELF_POOLED_REWARDS`: We have submitted a transaction to sweep our
               self-pooled funds."
-      enum: *ref_57
+      enum: *ref_53
     filter_mode:
       type: integer
       format: uint8
-      enum: *ref_25
+      enum: *ref_28
       description: |-
         The type of filter:
           * 1 include
@@ -6423,11 +6467,11 @@ components:
     vc_lineage_proof:
       description: The covenant layer for exigent metadata layers requires to be passed the previous parent's metadata too
       type: object
-      properties: *ref_58
+      properties: *ref_54
     verified_credential:
       description: This class serves as the main driver for the entire VC puzzle stack. Given the information below, it can sync and spend VerifiedCredentials in any specified manner. Trying to sync from a spend that this class did not create will likely result in an error.
       type: object
-      properties: *ref_59
+      properties: *ref_55
   securitySchemes:
     bearerAuth:
       type: http

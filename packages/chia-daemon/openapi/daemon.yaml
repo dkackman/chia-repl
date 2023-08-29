@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The daemon uses port 55400 by default.
-  version: 1.8.2
+  version: 2.0.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -63,7 +63,7 @@ paths:
                         items:
                           type: object
                           description: An entry in the plot queue.
-                          properties: &ref_10
+                          properties: &ref_11
                             delay:
                               type: integer
                               format: int32
@@ -275,7 +275,7 @@ paths:
                         type: object
                         additionalProperties:
                           type: object
-                          properties: &ref_9
+                          properties: &ref_10
                             can_install:
                               type: boolean
                             display_name:
@@ -303,7 +303,7 @@ paths:
           application/json:
             schema:
               type: object
-              properties: &ref_8
+              properties: &ref_9
                 delay:
                   type: integer
                   format: int32
@@ -483,7 +483,7 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: &ref_11
+                    properties: &ref_12
                       is_keyring_locked:
                         type: boolean
                       passphrase_support_enabled:
@@ -549,38 +549,6 @@ paths:
               properties:
                 key:
                   type: string
-      responses:
-        '200':
-          description: OK response without return values
-          content: *ref_3
-  /migrate_keyring:
-    post:
-      tags:
-        - Key Ring
-      summary: Migrate from key phrase to key ring.
-      description: Migrate from key phrase to key ring.
-      operationId: migrate_keyring
-      requestBody:
-        description: The migration options
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - passphrase
-                - passphrase_hint
-              properties:
-                passphrase:
-                  type: string
-                passphrase_hint:
-                  type: string
-                save_passphrase:
-                  type: boolean
-                  default: false
-                cleanup_legacy_keyring:
-                  type: boolean
-                  default: false
       responses:
         '200':
           description: OK response without return values
@@ -679,6 +647,11 @@ paths:
                         properties:
                           message:
                             type: string
+                  - type: object
+                    properties:
+                      fingerprint:
+                        type: integer
+                        format: uint32
   /check_keys:
     post:
       tags:
@@ -853,6 +826,308 @@ paths:
                     description: Success indicator and optional error message included in all responses
                     required: *ref_1
                     properties: *ref_2
+  /get_key:
+    post:
+      tags:
+        - Key Ring
+      summary: Locates and returns KeyData matching the provided fingerprint.
+      description: Locates and returns KeyData matching the provided fingerprint.
+      operationId: get_key
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+                include_secrets:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties: &ref_8
+                      fingerprint:
+                        type: integer
+                        example: 2473794447
+                        format: uint32
+                      public_key:
+                        type: string
+                        example: 0665913196501420c0fe2de6b5ce7b25f749d52dcbf997b069bb2ea8438c6c3c
+                        format: hex
+                      label:
+                        type: string
+                      secrets:
+                        type: object
+                        properties: &ref_14
+                          mnemonic:
+                            type: array
+                            items:
+                              type: string
+                              minLength: 24
+                              maxLength: 24
+                          bytes:
+                            type: string
+                            format: bytes
+                          label:
+                            type: string
+                          private_key:
+                            type: object
+                            properties: &ref_13
+                              fingerprint:
+                                type: integer
+                                example: 2473794447
+                                format: uint32
+                              sk:
+                                type: string
+                                example: 0665913196501420c0fe2de6b5ce7b25f749d52dcbf997b069bb2ea8438c6c3c
+                                format: hex
+                              pk:
+                                type: string
+                                example: b73cf2471b10a7ba839616aff0ab1cb319d9d3a77ee26ff88ec1c8e645468eb0b7653518b85e5dd0df7cf50d8612b978
+                                format: hex
+                              farmer_pk:
+                                type: string
+                                example: 8c65856685323f149a651e6cbe068ece36f87a84efa16246b0eef65ac586a30fb678878bd4364d52c432fbb77838cbf6
+                                format: hex
+                              pool_pk:
+                                type: string
+                                example: 845ff087376ffecf83950485d63ffed1cc73f36daf018deb4fbd2f05e7198b07521486274d82ecc4f5a2eaae63dfd0a7
+                                format: hex
+                              seed:
+                                type: string
+                                example: arrest legend bounce attend rebel blade palace bean dry shell nice bubble coil cook token nerve visa december hero garment grid attend nerve certain
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_keys:
+    post:
+      tags:
+        - Key Ring
+      summary: Returns the KeyData of all keys which can be retrieved.
+      description: Returns the KeyData of all keys which can be retrieved.
+      operationId: get_keys
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+                include_secrets:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      keys:
+                        type: array
+                        items:
+                          type: object
+                          properties: *ref_8
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /set_label:
+    post:
+      tags:
+        - Key Ring
+      summary: Assigns the given label to the first key with the given fingerprint.
+      description: Assigns the given label to the first key with the given fingerprint.
+      operationId: set_label
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+                - label
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+                label:
+                  type: string
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_3
+  /delete_label:
+    post:
+      tags:
+        - Key Ring
+      summary: Removes the label assigned to the key with the given fingerprint.
+      description: Removes the label assigned to the key with the given fingerprint.
+      operationId: delete_label
+      requestBody:
+        description: The fingerprint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fingerprint
+              properties:
+                fingerprint:
+                  type: integer
+                  format: uint32
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_3
+  /running_services:
+    post:
+      tags:
+        - Daemon
+      summary: Returns the list of running services.
+      description: Returns the list of running services.
+      operationId: running_services
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_4
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      running_services:
+                        type: array
+                        items:
+                          type: string
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_wallet_addresses:
+    post:
+      tags:
+        - Daemon
+      summary: Returns the list of addresses.
+      description: Returns the list of addresses.
+      operationId: get_wallet_addresses
+      requestBody:
+        description: Input parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fingerprints:
+                  type: array
+                  items:
+                    type: integer
+                    format: uint32
+                index:
+                  type: integer
+                  format: uint32
+                count:
+                  type: integer
+                  format: uint32
+                non_observer_derivation:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      wallet_addresses:
+                        additionalProperties:
+                          type: array
+                          items:
+                            type: string
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_1
+                    properties: *ref_2
+  /get_keys_for_plotting:
+    post:
+      tags:
+        - Plotter
+      summary: Returns a list of keys.
+      description: Returns the list of keys used for plotting.
+      operationId: get_keys_for_plotting
+      requestBody:
+        description: Input parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fingerprints:
+                  type: array
+                  items:
+                    type: integer
+                    format: uint32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      keys:
+                        description: The keys are uint32 - the fingerprint
+                        additionalProperties:
+                          type: object
+                          properties:
+                            pool_public_key:
+                              type: string
+                              format: hex
+                            farmer_public_key:
+                              type: string
+                              format: hex
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_1
+                    properties: *ref_2
 components:
   requestBodies:
     empty:
@@ -873,16 +1148,19 @@ components:
       description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
       enum: *ref_5
-    plotter_config:
+    key_data:
       type: object
       properties: *ref_8
-    plotter_info:
+    plotter_config:
       type: object
       properties: *ref_9
+    plotter_info:
+      type: object
+      properties: *ref_10
     queued_plot_info:
       type: object
       description: An entry in the plot queue.
-      properties: *ref_10
+      properties: *ref_11
     apiResponse:
       type: object
       description: Success indicator and optional error message included in all responses
@@ -894,10 +1172,16 @@ components:
       properties: *ref_6
     keyring_status:
       type: object
-      properties: *ref_11
+      properties: *ref_12
     private_key:
       type: object
       properties: *ref_7
+    private_key_private_key:
+      type: object
+      properties: *ref_13
+    key_data_secrets:
+      type: object
+      properties: *ref_14
   securitySchemes:
     bearerAuth:
       type: http

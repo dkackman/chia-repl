@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The full node uses port 8555 by default.
-  version: 1.8.2
+  version: 2.0.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -188,6 +188,7 @@ paths:
                                 - 4
                                 - 5
                                 - 6
+                                - 7
                               description: |-
                                 The type of node:
                                   * 1 FULL_NODE
@@ -196,6 +197,7 @@ paths:
                                   * 4 TIMELORD
                                   * 5 INTRODUCER
                                   * 6 WALLET
+                                  * 7 DATA_LAYER
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_2
@@ -1150,10 +1152,10 @@ paths:
                           mempool_size:
                             type: integer
                             example: 0
-                            format: int32
+                            format: uint32
                           mempool_cost:
                             type: integer
-                            format: int32
+                            format: uint32
                           mempool_fees:
                             type: integer
                             format: uint64
@@ -1165,10 +1167,10 @@ paths:
                                 format: double
                           mempool_max_total_cost:
                             type: integer
-                            format: int32
+                            format: uint32
                           block_max_cost:
                             type: integer
-                            format: int32
+                            format: uint32
                           peak:
                             nullable: true
                             type: object
@@ -1182,6 +1184,10 @@ paths:
                             type: integer
                             example: 136314880
                             format: uint64
+                          average_block_time:
+                            type: integer
+                            example: 2
+                            format: uint32
                           sync:
                             type: object
                             properties:
@@ -1940,6 +1946,7 @@ components:
           * 4 TIMELORD
           * 5 INTRODUCER
           * 6 WALLET
+          * 7 DATA_LAYER
     signage_point:
       type: object
       properties: *ref_26

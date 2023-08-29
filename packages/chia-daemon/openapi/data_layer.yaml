@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The data layer uses port 8561 by default.
-  version: 1.8.2
+  version: 2.0.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -139,7 +139,7 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: &ref_8
+                          properties: &ref_7
                             bytes_read:
                               type: integer
                               format: uint32
@@ -186,6 +186,7 @@ paths:
                                 - 4
                                 - 5
                                 - 6
+                                - 7
                               description: |-
                                 The type of node:
                                   * 1 FULL_NODE
@@ -194,6 +195,7 @@ paths:
                                   * 4 TIMELORD
                                   * 5 INTRODUCER
                                   * 6 WALLET
+                                  * 7 DATA_LAYER
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_2
@@ -667,7 +669,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: &ref_9
+                          properties: &ref_8
                             hash:
                               type: string
                               format: bytes32
@@ -725,7 +727,7 @@ paths:
                             format: bytes32
                           generation:
                             type: integer
-                            format: int32
+                            format: uint32
                           target_root_hash:
                             type: string
                             format: bytes32
@@ -1095,7 +1097,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          properties: &ref_10
+                          properties: &ref_9
                             coin_id:
                               type: string
                               example: b5756487c17fe3a2628e45a9d3d42e89231af718bb1735e6c8441e07ec005f9d
@@ -1116,7 +1118,6 @@ paths:
                               items:
                                 type: string
                                 example: http://www.example.com:8575
-                                format: bytes32
                             ours:
                               type: boolean
                               example: true
@@ -1342,7 +1343,7 @@ paths:
                             value: abc123
                         items:
                           type: object
-                          properties: &ref_6
+                          properties: &ref_18
                             key:
                               type: string
                               format: bytes32
@@ -1369,7 +1370,7 @@ paths:
                     properties:
                       offer:
                         type: object
-                        properties: &ref_7
+                        properties: &ref_6
                           trade_id:
                             type: string
                             format: bytes32
@@ -1377,7 +1378,7 @@ paths:
                             type: string
                           maker:
                             type: object
-                            properties: &ref_20
+                            properties: &ref_22
                               store_id:
                                 type: string
                                 example: 14d1c3042ef38d76796146e6248e02b73db7a0eeefb740fa2e8439dad15bca27
@@ -1397,7 +1398,7 @@ paths:
                                     value: abc123
                                 items:
                                   type: object
-                                  properties: &ref_19
+                                  properties: &ref_21
                                     key:
                                       type: string
                                       example: '9999'
@@ -1421,11 +1422,17 @@ paths:
                                           other_hash_side: left
                                       items:
                                         type: object
-                                        properties: &ref_18
+                                        properties: &ref_20
                                           other_hash_side:
-                                            type: string
-                                            example: left
-                                            format: bytes32
+                                            type: integer
+                                            format: uint8
+                                            enum: &ref_19
+                                              - 0
+                                              - 1
+                                            description: |-
+                                              The side:
+                                                * 0 LEFT
+                                                * 1 RIGHT
                                           other_hash:
                                             type: string
                                             example: cd4046b6c3b03e20afd506b50e552f1b698283d72566732134437fcb364c47a5
@@ -1434,9 +1441,6 @@ paths:
                                             type: string
                                             example: 0a3024099e40c27cfe294ce91bdabf727887fecd406d7208c53297f79d4e8902
                                             format: bytes32
-                                            items:
-                                              type: object
-                                              properties: *ref_6
                           taker:
                             type: object
                             properties: *ref_5
@@ -1462,7 +1466,7 @@ paths:
               properties:
                 offer:
                   type: object
-                  properties: *ref_7
+                  properties: *ref_6
                 fee:
                   type: integer
                   format: uint64
@@ -1501,7 +1505,7 @@ paths:
               properties:
                 offer:
                   type: object
-                  properties: *ref_7
+                  properties: *ref_6
                 fee:
                   type: integer
                   format: uint64
@@ -1576,18 +1580,67 @@ paths:
               schema:
                 allOf:
                   - type: object
-                    properties: &ref_11
-                      plugin_status:
+                    properties: &ref_10
+                      uploaders:
                         type: object
-                        properties:
-                          uploaders:
-                            type: object
-                            additionalProperties:
-                              type: string
-                          downloaders:
-                            type: object
-                            additionalProperties:
-                              type: string
+                        additionalProperties:
+                          type: object
+                          additionalProperties: true
+                      downloaders:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          additionalProperties: true
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_2
+                    properties: *ref_3
+  /clear_pending_roots:
+    post:
+      tags:
+        - Subscriptions
+      summary: Clears pending roots.
+      description: Clears pending roots.
+      operationId: clear_pending_roots
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - store_id
+              properties:
+                store_id:
+                  type: string
+                  format: bytes32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties: &ref_11
+                      tree_id:
+                        type: string
+                        format: hex
+                      node_hash:
+                        type: string
+                        format: hex
+                      generation:
+                        type: integer
+                        format: uint32
+                      status:
+                        type: integer
+                        enum: &ref_23
+                          - 1
+                          - 2
+                        description: |-
+                          The status:
+                            * 1 PENDING
+                            * 2 COMMITTED
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_2
@@ -1606,20 +1659,23 @@ components:
     connection_info:
       type: object
       description: Chia's representation of a connection from node to node.
-      properties: *ref_8
+      properties: *ref_7
     internal_node:
       type: object
-      properties: *ref_9
+      properties: *ref_8
     mirror:
       type: object
-      properties: *ref_10
+      properties: *ref_9
     offer:
       type: object
-      properties: *ref_7
+      properties: *ref_6
     offer_store:
       type: object
       properties: *ref_5
     plugin_status:
+      type: object
+      properties: *ref_10
+    root:
       type: object
       properties: *ref_11
     terminal_node:
@@ -1645,6 +1701,7 @@ components:
           * 4 TIMELORD
           * 5 INTRODUCER
           * 6 WALLET
+          * 7 DATA_LAYER
     coin:
       type: object
       properties: *ref_4
@@ -1668,16 +1725,31 @@ components:
           * 5 OUTGOING_TRADE
     key_value:
       type: object
-      properties: *ref_6
+      properties: *ref_18
+    side:
+      type: integer
+      format: uint8
+      enum: *ref_19
+      description: |-
+        The side:
+          * 0 LEFT
+          * 1 RIGHT
     layer:
       type: object
-      properties: *ref_18
+      properties: *ref_20
     proof:
       type: object
-      properties: *ref_19
+      properties: *ref_21
     store_proofs:
       type: object
-      properties: *ref_20
+      properties: *ref_22
+    status:
+      type: integer
+      enum: *ref_23
+      description: |-
+        The status:
+          * 1 PENDING
+          * 2 COMMITTED
   securitySchemes:
     bearerAuth:
       type: http

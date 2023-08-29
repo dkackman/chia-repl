@@ -3,7 +3,7 @@ info:
   description: |-
     The Chia node and services come with a JSON RPC API server that allows you to access information and control the services.  These are accessible via HTTPS, WebSockets, or via client SDKs. The ports can be configured in `~/.chia/mainnet/config/config.yaml`.  The RPC ports should not be exposed to the internet. TLS certificates are used to secure the communication  [using mutualTLS](https://github.com/dkackman/chia-api/wiki/Mutual-TLS).
     The harvester uses port 8560 by default.
-  version: 1.8.2
+  version: 2.0.0
   title: Chia RPC
   termsOfService: https://www.chia.net/assets/legal/Guidelines-for-Using-Chia-Network.pdf
   contact:
@@ -133,7 +133,7 @@ paths:
                         items:
                           type: object
                           description: Chia's representation of a connection from node to node.
-                          properties: &ref_4
+                          properties: &ref_5
                             bytes_read:
                               type: integer
                               format: uint32
@@ -173,13 +173,14 @@ paths:
                               format: int32
                             type:
                               type: integer
-                              enum: &ref_7
+                              enum: &ref_8
                                 - 1
                                 - 2
                                 - 3
                                 - 4
                                 - 5
                                 - 6
+                                - 7
                               description: |-
                                 The type of node:
                                   * 1 FULL_NODE
@@ -188,6 +189,7 @@ paths:
                                   * 4 TIMELORD
                                   * 5 INTRODUCER
                                   * 6 WALLET
+                                  * 7 DATA_LAYER
                   - type: object
                     description: Success indicator and optional error message included in all responses
                     required: *ref_2
@@ -363,7 +365,7 @@ paths:
                         items:
                           type: object
                           description: Info about a plot file
-                          properties: &ref_6
+                          properties: &ref_7
                             file_size:
                               type: integer
                               format: uint64
@@ -383,7 +385,7 @@ paths:
                               type: integer
                               description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
                               default: 32
-                              enum: &ref_5
+                              enum: &ref_6
                                 - 25
                                 - 32
                                 - 33
@@ -421,6 +423,71 @@ paths:
         '200':
           description: OK response without return values
           content: *ref_0
+  /get_harvester_config:
+    post:
+      tags:
+        - Harvester
+      summary: Gets harvester configuration.
+      description: Gets harvester configuration.
+      operationId: get_harvester_config
+      requestBody:
+        description: Empty request body
+        required: true
+        content: *ref_1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: Harvester configuration
+                    properties: &ref_4
+                      use_gpu_harvesting:
+                        type: boolean
+                      gpu_index:
+                        type: integer
+                        format: int
+                      enforce_gpu_index:
+                        type: boolean
+                      disable_cpu_affinity:
+                        type: boolean
+                      parallel_decompressor_count:
+                        type: integer
+                        format: int
+                      decompressor_thread_count:
+                        type: integer
+                        format: int
+                      recursive_plot_scan:
+                        type: boolean
+                      refresh_parameter_interval_seconds:
+                        type: integer
+                        format: uint32
+                  - type: object
+                    description: Success indicator and optional error message included in all responses
+                    required: *ref_2
+                    properties: *ref_3
+  /update_harvester_config:
+    post:
+      tags:
+        - Harvester
+      summary: Updates the harvester configuration.
+      description: Updates the harvester configuration.
+      operationId: update_harvester_config
+      requestBody:
+        description: Config details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Harvester configuration
+              properties: *ref_4
+      responses:
+        '200':
+          description: OK response without return values
+          content: *ref_0
 components:
   requestBodies:
     empty:
@@ -435,16 +502,20 @@ components:
     connection_info:
       type: object
       description: Chia's representation of a connection from node to node.
+      properties: *ref_5
+    harvester_config:
+      type: object
+      description: Harvester configuration
       properties: *ref_4
     k_size:
       type: integer
       description: Defines the size of a plot. 25 is used for testing only. https://github.com/Chia-Network/chia-blockchain/wiki/k-sizes
       default: 32
-      enum: *ref_5
+      enum: *ref_6
     plot_info:
       type: object
       description: Info about a plot file
-      properties: *ref_6
+      properties: *ref_7
     apiResponse:
       type: object
       description: Success indicator and optional error message included in all responses
@@ -452,7 +523,7 @@ components:
       properties: *ref_3
     node_type:
       type: integer
-      enum: *ref_7
+      enum: *ref_8
       description: |-
         The type of node:
           * 1 FULL_NODE
@@ -461,6 +532,7 @@ components:
           * 4 TIMELORD
           * 5 INTRODUCER
           * 6 WALLET
+          * 7 DATA_LAYER
   securitySchemes:
     bearerAuth:
       type: http
