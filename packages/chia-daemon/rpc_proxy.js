@@ -1,5 +1,5 @@
-import ChiaHttps from "./chia_https.js";
-import { makePayload, getPayloadDescriptor } from "./payload_generator.js";
+import { makePayload, getPayloadDescriptor } from "chia-payload-helper";
+
 // This might be evil and generally abusive of the javascript type system but...
 // This here will allow us to call an arbitrary method-like thing on any object
 // and transform it into an rpc invocation though we don't know the endpoint name until runtime.
@@ -11,7 +11,7 @@ import { makePayload, getPayloadDescriptor } from "./payload_generator.js";
 //
 /**
  * Returns a proxy object that transforms any method into an RPC invocation.
- * @param {ChiaDaemon|ChiaHttps} chia - The chia daemon service that will execute the RPC.
+ * @param {ChiaDaemon} chia - The chia daemon service that will execute the RPC.
  * @param {string} service - The name of the chia endpoint service.
  * @returns {Proxy} The proxy that will route methods calls.
  */
