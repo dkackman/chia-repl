@@ -1,5 +1,3 @@
-import { makePayload, getPayloadDescriptor } from "chia-payload-helper";
-
 // This might be evil and generally abusive of the javascript type system but...
 // This here will allow us to call an arbitrary method-like thing on any object
 // and transform it into an rpc invocation though we don't know the endpoint name until runtime.
