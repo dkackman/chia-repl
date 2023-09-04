@@ -118,7 +118,7 @@ describe("chia-daemon", () => {
             const timer = (ms) => new Promise((res) => setTimeout(res, ms));
             const start = Date.now();
 
-            ///stay here intil we receive an event or timeout
+            ///stay here until we receive an event or timeout
             while (!event_received) {
                 await timer(100);
                 const elapsed = Date.now() - start;
