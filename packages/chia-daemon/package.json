@@ -1,6 +1,6 @@
 {
     "name": "chia-daemon",
-    "version": "0.11.5",
+    "version": "0.12.0",
     "description": "A JS daemon client for chia rpc with dynamically generated end points",
     "main": "index.js",
     "scripts": {

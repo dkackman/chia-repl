@@ -36,7 +36,21 @@ if (connected) {
     const state = await daemon.services.full_node.get_blockchain_state();
     console.log(state);
 }
+```
 
+Also supports `https` connections:
+
+```javascript
+import { createHttpsService, createConnection } from "chia-daemon";
+
+const connection = createConnection(
+    "wallet",
+    "localhost",
+);
+const wallet = createHttpsService(connection);
+const response = await wallet.get_wallets({ include_data: true });
+
+console.log(`You have ${response.wallets.length} wallets`);
 ```
 
 ## Payload Helpers

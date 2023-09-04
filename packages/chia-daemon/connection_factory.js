@@ -21,7 +21,12 @@ export const ServicePorts = {
     data_layer: 8562,
 };
 
-export function createConnection(serviceName, host, chiaRoot, timeoutSeconds) {
+export function createConnection(
+    serviceName,
+    host,
+    chiaRoot,
+    timeoutSeconds = 30
+) {
     if (chiaRoot === undefined) {
         chiaRoot = getChiaRoot();
     }
@@ -32,6 +37,6 @@ export function createConnection(serviceName, host, chiaRoot, timeoutSeconds) {
         ServicePorts[serviceName],
         `${chiaRoot}/config/ssl/${serviceName}/private_${serviceName}.key`,
         `${chiaRoot}/config/ssl/${serviceName}/private_${serviceName}.crt`,
-        timeoutSeconds ?? 30
+        timeoutSeconds
     );
 }
