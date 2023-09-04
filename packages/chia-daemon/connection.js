@@ -2,7 +2,9 @@ import { readFileSync } from "fs";
 import untildify from "./untildify.js";
 
 export default class Connection {
-    constructor(host, port, key_path, cert_path, timeout_seconds) {
+    constructor(service, host, port, key_path, cert_path, timeout_seconds) {
+        this.service = service;
+        this.host = host;
         this.host = host;
         this.port = port;
         this.key_path = key_path;
@@ -18,7 +20,7 @@ export default class Connection {
         };
     }
 
-    get wssAddress() {
+    get daemonAddress() {
         return `wss://${this.host}:${this.port}`;
     }
 }

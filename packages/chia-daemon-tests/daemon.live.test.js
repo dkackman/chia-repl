@@ -1,29 +1,29 @@
 import chai from "chai";
-import { ChiaDaemon } from "chia-daemon";
+import { ChiaDaemon, createConnection } from "chia-daemon";
 import _utils from "chia-utils";
 
 const expect = chai.expect;
 
-const bad_connection = {
-    host: "localhost",
-    port: 44444,
-    key_path: "~/.chia/mainnet/config/ssl/daemon/private_daemon.key",
-    cert_path: "~/.chia/mainnet/config/ssl/daemon/private_daemon.crt",
-    timeout_seconds: 5,
-};
-
 // some tests assume that a daemon is reachable with these details
-const valid_connection = {
-    host: "localhost",
-    port: 55400,
-    key_path: "e:/chia/mainnet/config/ssl/daemon/private_daemon.key",
-    cert_path: "e:/chia/mainnet/config/ssl/daemon/private_daemon.crt",
-    timeout_seconds: 60,
-};
+const valid_connection = createConnection(
+    "daemon",
+    "localhost",
+    "e:/chia/mainnet",
+    60
+);
 
 describe("chia-daemon", () => {
     describe("connection", () => {
         it("should raise socket-error event on invalid connection", async () => {
+            const bad_connection = {
+                host: "localhost",
+                port: 44444,
+                key_path:
+                    "~/.chia/mainnet/config/ssl/daemon/private_daemon.key",
+                cert_path:
+                    "~/.chia/mainnet/config/ssl/daemon/private_daemon.crt",
+                timeout_seconds: 5,
+            };
             let error = false;
 
             const chia = new ChiaDaemon(bad_connection, "tests");
@@ -52,6 +52,7 @@ describe("chia-daemon", () => {
     describe("invocation", () => {
         it("should get all the way to the rpc endpoint _DEBUG_", async function () {
             this.timeout(valid_connection.timeout_seconds * 1000);
+
             const chia = new ChiaDaemon(valid_connection, "tests");
 
             const connected = await chia.connect();

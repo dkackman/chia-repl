@@ -6,6 +6,8 @@ import _ from "lodash";
 import Connection from "./connection.js";
 
 /** This can be found in the config but here for convenience. */
+//
+// deprecated - moved to connection_factory.js
 export let localDaemonConnection = {
     host: "localhost",
     port: 55400,
@@ -28,15 +30,16 @@ export default class ChiaDaemon extends EventEmitter {
      * @param {string} connection.key_path - File path to the certificate key file used to secure the connection.
      * @param {string} connection.cert_path - File path to the certificate crt file used to secure the connection.
      * @param {number} connection.timeout_seconds - Timeout, in seconds, for each call to the daemon.
-     * @param {string} serviceName - the name of the client application or service talking to the daemon.
+     * @param {string} originServiceName - the name of the client application or service talking to the daemon.
      */
-    constructor(connection, serviceName = "my_chia_app") {
+    constructor(connection, originServiceName = "my_chia_app") {
         super();
         if (connection === undefined) {
             throw new Error("Connection meta data must be provided");
         }
 
         this.connection = new Connection(
+            "daemon",
             connection.host,
             connection.port,
             connection.key_path,
@@ -44,14 +47,14 @@ export default class ChiaDaemon extends EventEmitter {
             connection.timeout_seconds
         );
 
-        this._serviceName = serviceName;
+        this._originServiceName = originServiceName;
         this.outgoing = new Map(); // outgoing messages awaiting a response
         this.incoming = new Map(); // incoming responses not yet consumed
     }
 
     /** The service_name passed to the daemon as the message origin */
-    get serviceName() {
-        return this._serviceName;
+    get originServiceName() {
+        return this._originServiceName;
     }
 
     /**
@@ -93,11 +96,11 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error("Already connected");
         }
 
-        this.emit("connecting", this.connection.wssAddress);
+        this.emit("connecting", this.connection.daemonAddress);
 
         // the lifetime of the websocket is between connect and disconnect
         const ws = new WebSocket(
-            this.connection.wssAddress,
+            this.connection.daemonAddress,
             this.connection.createClientOptions()
         );
 
@@ -105,8 +108,8 @@ export default class ChiaDaemon extends EventEmitter {
             const msg = formatMessage(
                 "daemon",
                 "register_service",
-                this._serviceName,
-                { service: this._serviceName }
+                this._originServiceName,
+                { service: this._originServiceName }
             );
             ws.send(JSON.stringify(msg));
         });
@@ -130,6 +133,7 @@ export default class ChiaDaemon extends EventEmitter {
             }
         });
 
+        // this is used below to wait for the socket to connect
         let error = false;
         ws.on("error", (e) => {
             error = true;
@@ -185,7 +189,7 @@ export default class ChiaDaemon extends EventEmitter {
         const outgoingMsg = formatMessage(
             destination,
             command,
-            this._serviceName,
+            this._originServiceName,
             data
         );
 
