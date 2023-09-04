@@ -96,11 +96,11 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error("Already connected");
         }
 
-        this.emit("connecting", this.connection.daemonAddress);
+        this.emit("connecting", this.connection.serviceAddress);
 
         // the lifetime of the websocket is between connect and disconnect
         const ws = new WebSocket(
-            this.connection.daemonAddress,
+            this.connection.serviceAddress,
             this.connection.createClientOptions()
         );
 

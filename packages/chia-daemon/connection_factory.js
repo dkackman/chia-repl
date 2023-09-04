@@ -11,7 +11,10 @@ export const ServiceNames = {
     DataLayer: "data_layer",
 };
 
-export const ServicePorts = {
+/**
+ * The default ports for the services. (https://docs.chia.net/rpc)
+ */
+export const DefaultServicePorts = {
     daemon: 55400,
     full_node: 8555,
     wallet: 9256,
@@ -21,22 +24,39 @@ export const ServicePorts = {
     data_layer: 8562,
 };
 
+/**
+ * Creates a connection to a service.
+ * @param {string} serviceName - The service for the command. One of the ServiceNames constants.
+ * @param {string} host - The host (ip or hostname) of the chia service.
+ * @param {string} root - The path to the chia root directory. (can also be a path to the ssl directory)
+ * @param {int} timeoutSeconds - The timeout in seconds for the connection.
+ * @param {object} portMap - The port map for the services. Defaults to DefaultServicePorts.
+ * @returns {Connection} The connection object
+ */
 export function createConnection(
     serviceName,
     host,
-    chiaRoot,
-    timeoutSeconds = 30
+    root,
+    timeoutSeconds = 30,
+    portMap = DefaultServicePorts
 ) {
-    if (chiaRoot === undefined) {
-        chiaRoot = getChiaRoot();
+    // if the user didn't specify a root, try to find it
+    if (root === undefined) {
+        root = getChiaRoot();
+    }
+
+    // if the root isn't an ssl path, assume it's the
+    // chia root and append the ssl path
+    if (!root.endsWith("/config/ssl")) {
+        root = `${root}/config/ssl`;
     }
 
     return new Connection(
         serviceName,
         host,
-        ServicePorts[serviceName],
-        `${chiaRoot}/config/ssl/${serviceName}/private_${serviceName}.key`,
-        `${chiaRoot}/config/ssl/${serviceName}/private_${serviceName}.crt`,
+        portMap[serviceName],
+        `${root}/${serviceName}/private_${serviceName}.key`,
+        `${root}/${serviceName}/private_${serviceName}.crt`,
         timeoutSeconds
     );
 }

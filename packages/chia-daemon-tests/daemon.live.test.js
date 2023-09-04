@@ -35,7 +35,7 @@ describe("chia-daemon", () => {
             expect(error).to.equal(true);
             expect(connected).to.equal(false);
         });
-        it("should return true on valid connection", async function () {
+        it("should return true on valid connection _DEBUG_", async function () {
             const chia = new ChiaDaemon(valid_connection, "tests");
             let error = false;
             chia.on("socket-error", (e) => {
