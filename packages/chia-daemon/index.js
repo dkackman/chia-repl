@@ -1,5 +1,5 @@
 import ChiaDaemon from "./chia_daemon.js";
-import ChiaHttps from "./chia_https.js";
+import { ChiaHttps, createHttpsService } from "./chia_https.js";
 import { localDaemonConnection } from "./chia_daemon.js";
 import { getPayloadDescriptor, makePayload } from "./payload_generator.js";
 import createRpcProxy from "./rpc_proxy.js";
@@ -15,4 +15,5 @@ export {
     createRpcProxy,
     loadUIConfig,
     createConnection,
+    createHttpsService,
 };

@@ -15,6 +15,7 @@ export default class Connection {
     createClientOptions() {
         return {
             rejectUnauthorized: false,
+            keepAlive: true,
             key: readFileSync(untildify(this.key_path)),
             cert: readFileSync(untildify(this.cert_path)),
         };
@@ -22,5 +23,9 @@ export default class Connection {
 
     get daemonAddress() {
         return `wss://${this.host}:${this.port}`;
+    }
+
+    get serviceAddress() {
+        return `https://${this.host}:${this.port}`;
     }
 }
