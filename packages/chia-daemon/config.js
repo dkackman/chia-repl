@@ -36,6 +36,7 @@ export default function loadUIConfig() {
     );
 
     return {
+        service: "daemon",
         host: selfHostname,
         port: daemonPort,
         key_path: keyPath,
