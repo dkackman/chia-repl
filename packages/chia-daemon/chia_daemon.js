@@ -1,10 +1,9 @@
 import { randomBytes } from "crypto";
 import { WebSocket } from "ws";
-import { readFileSync } from "fs";
 import createRpcProxy from "./rpc_proxy.js";
 import { EventEmitter } from "events";
-import untildify from "./untildify.js";
 import _ from "lodash";
+import Connection from "./connection.js";
 
 /** This can be found in the config but here for convenience. */
 export let localDaemonConnection = {
@@ -29,23 +28,30 @@ export default class ChiaDaemon extends EventEmitter {
      * @param {string} connection.key_path - File path to the certificate key file used to secure the connection.
      * @param {string} connection.cert_path - File path to the certificate crt file used to secure the connection.
      * @param {number} connection.timeout_seconds - Timeout, in seconds, for each call to the daemon.
-     * @param {string} service_name - the name of the client application or service talking to the daemon.
+     * @param {string} serviceName - the name of the client application or service talking to the daemon.
      */
-    constructor(connection, service_name = "my_chia_app") {
+    constructor(connection, serviceName = "my_chia_app") {
         super();
         if (connection === undefined) {
             throw new Error("Connection meta data must be provided");
         }
 
-        this.connection = connection;
-        this._service_name = service_name;
+        this.connection = new Connection(
+            connection.host,
+            connection.port,
+            connection.key_path,
+            connection.cert_path,
+            connection.timeout_seconds
+        );
+
+        this._serviceName = serviceName;
         this.outgoing = new Map(); // outgoing messages awaiting a response
         this.incoming = new Map(); // incoming responses not yet consumed
     }
 
     /** The service_name passed to the daemon as the message origin */
     get serviceName() {
-        return this._service_name;
+        return this._serviceName;
     }
 
     /**
@@ -87,22 +93,20 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error("Already connected");
         }
 
-        const address = `wss://${this.connection.host}:${this.connection.port}`;
-        this.emit("connecting", address);
+        this.emit("connecting", this.connection.wssAddress);
 
         // the lifetime of the websocket is between connect and disconnect
-        const ws = new WebSocket(address, {
-            rejectUnauthorized: false,
-            key: readFileSync(untildify(this.connection.key_path)),
-            cert: readFileSync(untildify(this.connection.cert_path)),
-        });
+        const ws = new WebSocket(
+            this.connection.wssAddress,
+            this.connection.createClientOptions()
+        );
 
         ws.once("open", () => {
             const msg = formatMessage(
                 "daemon",
                 "register_service",
-                this._service_name,
-                { service: this._service_name }
+                this._serviceName,
+                { service: this._serviceName }
             );
             ws.send(JSON.stringify(msg));
         });
@@ -181,7 +185,7 @@ export default class ChiaDaemon extends EventEmitter {
         const outgoingMsg = formatMessage(
             destination,
             command,
-            this._service_name,
+            this._serviceName,
             data
         );
 
