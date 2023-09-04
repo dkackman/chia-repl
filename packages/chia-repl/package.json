@@ -1,52 +1,52 @@
 {
-  "name": "chia-repl",
-  "version": "0.19.4",
-  "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environment.",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "node index.js test",
-    "prepublishOnly": "copyfiles ../../README.md ./chia-repl/README.md"
-  },
-  "bin": {
-    "chia-repl": "index.js"
-  },
-  "author": "dkackman",
-  "license": "Apache-2.0",
-  "type": "module",
-  "keywords": [
-    "chia",
-    "repl",
-    "cli",
-    "crypto",
-    "cryptocurrency"
-  ],
-  "dependencies": {
-    "@rigidity/bls-signatures": "^2.0.3",
-    "axios": "^0.27.2",
-    "chalk": "^5.0.1",
-    "chia-bot": "^0.0.2",
-    "chia-daemon": "^0.10.0",
-    "chia-nft-minter": "^0.9.0",
-    "chia-utils": "^1.0.10",
-    "clvm": "^2.0.0",
-    "clvm_tools": "^0.9.5",
-    "keypress": "^0.2.1",
-    "lodash": "^4.17.21",
-    "mmmagic": "^0.5.3"
-  },
-  "devDependencies": {
-    "copyfiles": "^2.4.1",
-    "eslint": "^8.21.0",
-    "jshint": "^2.13.5"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dkackman/chia-repl.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dkackman/chia-repl/issues"
-  },
-  "homepage": "https://github.com/dkackman/chia-repl",
-  "readme": "https://github.com/dkackman/chia-repl#readme"
+    "name": "chia-repl",
+    "version": "0.19.4",
+    "description": "A REPL tool for Chia that incorporates various chia and crypto utilities in a single, interactive node environment.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "node index.js test",
+        "prepublishOnly": "copyfiles ../../README.md ./chia-repl/README.md"
+    },
+    "bin": {
+        "chia-repl": "index.js"
+    },
+    "author": "dkackman",
+    "license": "Apache-2.0",
+    "type": "module",
+    "keywords": [
+        "chia",
+        "repl",
+        "cli",
+        "crypto",
+        "cryptocurrency"
+    ],
+    "dependencies": {
+        "@rigidity/bls-signatures": "^2.0.3",
+        "axios": "^0.27.2",
+        "chalk": "^5.0.1",
+        "chia-bot": "^0.0.2",
+        "chia-daemon": "^0.11.5",
+        "chia-nft-minter": "^0.9.0",
+        "chia-utils": "^1.0.10",
+        "clvm": "^2.0.0",
+        "clvm_tools": "^0.9.5",
+        "keypress": "^0.2.1",
+        "lodash": "^4.17.21",
+        "mmmagic": "^0.5.3"
+    },
+    "devDependencies": {
+        "copyfiles": "^2.4.1",
+        "eslint": "^8.21.0",
+        "jshint": "^2.13.5"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dkackman/chia-repl.git"
+    },
+    "bugs": {
+        "url": "https://github.com/dkackman/chia-repl/issues"
+    },
+    "homepage": "https://github.com/dkackman/chia-repl",
+    "readme": "https://github.com/dkackman/chia-repl#readme"
 }
