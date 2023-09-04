@@ -10,7 +10,7 @@ import { makePayload, getPayloadDescriptor } from "./payload_generator.js";
 //
 /**
  * Returns a proxy object that transforms any method into an RPC invocation.
- * @param {ChiaDaemon} chia - The chia daemon service that will execute the RPC.
+ * @param {ChiaDaemon | ChiaHttps} chia - The chia endpoint service that will execute the RPC.
  * @param {string} service - The name of the chia endpoint service.
  * @returns {Proxy} The proxy that will route methods calls.
  */

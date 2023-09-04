@@ -1,36 +1,38 @@
 {
-  "name": "chia-daemon",
-  "version": "0.11.5",
-  "description": "A JS daemon client for chia rpc with dynamically generated end points",
-  "main": "index.js",
-  "scripts": {
-    "doc": "jsdoc . -d ../../docs/chia-daemon -R README.md"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dkackman/chia-repl.git"
-  },
-  "keywords": [
-    "chia",
-    "rpc",
-    "js",
-    "daemon"
-  ],
-  "type": "module",
-  "author": "dkackman",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/dkackman/chia-repl/issues"
-  },
-  "homepage": "https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon#readme",
-  "devDependencies": {
-    "eslint": "^8.21.0",
-    "jsdoc": "^3.6.10",
-    "jshint": "^2.13.5"
-  },
-  "dependencies": {
-    "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21",
-    "ws": "^8.8.0"
-  }
+    "name": "chia-daemon",
+    "version": "0.11.5",
+    "description": "A JS daemon client for chia rpc with dynamically generated end points",
+    "main": "index.js",
+    "scripts": {
+        "doc": "jsdoc . -d ../../docs/chia-daemon -R README.md"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dkackman/chia-repl.git"
+    },
+    "keywords": [
+        "chia",
+        "rpc",
+        "js",
+        "daemon"
+    ],
+    "type": "module",
+    "author": "dkackman",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/dkackman/chia-repl/issues"
+    },
+    "homepage": "https://github.com/dkackman/chia-repl/tree/main/packages/chia-daemon#readme",
+    "devDependencies": {
+        "eslint": "^8.21.0",
+        "jsdoc": "^4.0.2",
+        "jshint": "^2.13.5"
+    },
+    "dependencies": {
+        "axios": "^1.5.0",
+        "chia-root-resolver": "^1.0.0",
+        "js-yaml": "^4.1.0",
+        "lodash": "^4.17.21",
+        "ws": "^8.8.0"
+    }
 }
