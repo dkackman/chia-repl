@@ -1,5 +1,5 @@
 import _ from "lodash";
-import Connection from "./connection.js";
+import { ChiaConnection } from "chia-root-resolver";
 import axios from "axios";
 import https from "https";
 import createRpcProxy from "./rpc_proxy.js";
@@ -24,7 +24,7 @@ export class ChiaHttps {
         }
 
         // just in case the user didn't pass in a Connection object
-        this.connection = new Connection(
+        this.connection = new ChiaConnection(
             connection.service,
             connection.host,
             connection.port,

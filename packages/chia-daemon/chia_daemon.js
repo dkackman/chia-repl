@@ -3,7 +3,7 @@ import { WebSocket } from "ws";
 import createRpcProxy from "./rpc_proxy.js";
 import { EventEmitter } from "events";
 import _ from "lodash";
-import Connection from "./connection.js";
+import { ChiaConnection } from "chia-root-resolver";
 
 /** This can be found in the config but here for convenience. */
 //
@@ -38,7 +38,7 @@ export default class ChiaDaemon extends EventEmitter {
             throw new Error("Connection meta data must be provided");
         }
 
-        this.connection = new Connection(
+        this.connection = new ChiaConnection(
             "daemon",
             connection.host,
             connection.port,

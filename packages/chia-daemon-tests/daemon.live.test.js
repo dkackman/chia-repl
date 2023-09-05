@@ -1,5 +1,6 @@
 import chai from "chai";
-import { ChiaDaemon, createConnection } from "chia-daemon";
+import { ChiaDaemon } from "chia-daemon";
+import { createConnection } from "chia-root-resolver";
 import _utils from "chia-utils";
 
 const expect = chai.expect;
