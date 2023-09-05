@@ -12,12 +12,18 @@ export function createHttpsService(connection) {
     return createRpcProxy(new ChiaHttps(connection), connection.service);
 }
 
+/**
+ * A class that encapsulates the details of connecting
+ * to a chia service via https instead of wss
+ * @param {object|Connection} connection - The connection details
+ */
 export class ChiaHttps {
     constructor(connection) {
         if (connection === undefined) {
             throw new Error("Connection meta data must be provided");
         }
 
+        // just in case the user didn't pass in a Connection object
         this.connection = new Connection(
             connection.service,
             connection.host,
