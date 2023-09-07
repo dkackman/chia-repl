@@ -3,7 +3,7 @@ import { WebSocket } from "ws";
 import createRpcProxy from "./rpc_proxy.js";
 import { EventEmitter } from "events";
 import _ from "lodash";
-import { ChiaConnection } from "chia-root-resolver";
+import { ChiaConnection } from "chia-service-connector";
 
 /** This can be found in the config but here for convenience. */
 //

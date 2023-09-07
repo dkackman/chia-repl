@@ -3,7 +3,7 @@ import yaml from "js-yaml";
 import fs from "fs";
 import path from "path";
 import _ from "lodash";
-import { getChiaRoot } from "chia-root-resolver";
+import { getChiaRoot } from "chia-service-connector";
 
 /**
  * Loads the daemon connection details from the default config's ui section.

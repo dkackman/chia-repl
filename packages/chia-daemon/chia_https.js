@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { ChiaConnection } from "chia-root-resolver";
+import { ChiaConnection } from "chia-service-connector";
 import axios from "axios";
 import https from "https";
 import createRpcProxy from "./rpc_proxy.js";
@@ -48,7 +48,6 @@ export class ChiaHttps {
 
         // lazily create an axios instance
         if (this.axios === undefined) {
-            const clientOptions = this.connection.createClientOptions();
             this.axios = axios.create({
                 baseURL: this.connection.serviceAddress,
                 timeout: this.connection.timeout_seconds * 1000,
@@ -56,7 +55,9 @@ export class ChiaHttps {
                     accepts: "application/json",
                     "content-type": "application/json",
                 },
-                httpsAgent: new https.Agent(clientOptions),
+                httpsAgent: new https.Agent(
+                    this.connection.createClientOptions()
+                ),
             });
         }
 
