@@ -1,11 +1,12 @@
 import chai from "chai";
-import { ChiaDaemon, createConnection } from "chia-daemon";
+import { ChiaDaemon } from "chia-daemon";
+import { createChiaConnection } from "chia-service-connector";
 import _utils from "chia-utils";
 
 const expect = chai.expect;
 
 // some tests assume that a daemon is reachable with these details
-const valid_connection = createConnection(
+const valid_connection = createChiaConnection(
     "daemon",
     "localhost",
     "e:/chia/mainnet",

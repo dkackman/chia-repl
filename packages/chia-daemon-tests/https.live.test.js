@@ -1,5 +1,6 @@
 import chai from "chai";
-import { createHttpsService, createConnection } from "chia-daemon";
+import { createHttpsService } from "chia-daemon";
+import { createChiaConnection } from "chia-service-connector";
 import _utils from "chia-utils";
 
 const expect = chai.expect;
@@ -7,11 +8,10 @@ const expect = chai.expect;
 describe("chia-https", () => {
     describe("invocation", () => {
         it("should get all the way to the rpc endpoint", async function () {
-            const connection = createConnection(
+            const connection = createChiaConnection(
                 "full_node",
                 "localhost",
-                "e:/chia/mainnet",
-                60
+                "e:/chia/mainnet"
             );
             this.timeout(connection.timeout_seconds * 1000);
 
@@ -22,7 +22,7 @@ describe("chia-https", () => {
             expect(state).to.not.equal(null);
         });
         it("should pass arguments _DEBUG_", async function () {
-            const connection = createConnection(
+            const connection = createChiaConnection(
                 "wallet",
                 "localhost",
                 "e:/chia/mainnet",
