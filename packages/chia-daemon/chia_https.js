@@ -15,7 +15,7 @@ export function createHttpsService(connection) {
 /**
  * A class that encapsulates the details of connecting
  * to a chia service via https instead of wss
- * @param {object|Connection} connection - The connection details
+ * @param {object|ChiaConnection} connection - The connection details
  */
 export class ChiaHttps {
     constructor(connection) {
