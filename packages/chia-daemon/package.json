@@ -1,6 +1,6 @@
 {
     "name": "chia-daemon",
-    "version": "0.12.2",
+    "version": "0.12.3",
     "description": "A JS daemon client for chia rpc with dynamically generated end points",
     "main": "index.js",
     "scripts": {
@@ -30,7 +30,7 @@
     },
     "dependencies": {
         "axios": "^1.5.0",
-        "chia-service-connector": "^0.0.4",
+        "chia-service-connector": "^0.1.0",
         "js-yaml": "^4.1.0",
         "lodash": "^4.17.21",
         "ws": "^8.8.0"

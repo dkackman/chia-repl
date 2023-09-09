@@ -1,6 +1,6 @@
 {
     "name": "chia-nft-minter",
-    "version": "0.10.1",
+    "version": "0.10.2",
     "description": "Utility to ease minting of Chia NFTs",
     "main": "index.js",
     "scripts": {},
@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "axios": "^0.27.2",
-        "chia-daemon": "^0.11.5",
+        "chia-daemon": "^0.12.3",
         "lodash": "^4.17.21",
         "nft.storage": "^7.0.0",
         "secure-string": "^1.2.1",

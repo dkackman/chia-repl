@@ -31,7 +31,6 @@
     "dependencies": {
         "chai": "^4.3.6",
         "chia-daemon": "file:../chia-daemon/package.json",
-        "chia-root-resolver": "^1.0.0",
         "chia-utils": "^1.0.10",
         "lodash": "^4.17.21",
         "mocha": "^10.0.0"
