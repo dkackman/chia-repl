@@ -37,7 +37,7 @@ export default async function getMintingWallet(wallet, fullNode, did) {
             const did_coin = await getDidWalletCoin(wallet, fullNode, did);
 
             return {
-                wallet_id: response.wallets[0].id,
+                wallet_id: nftWalletsWithDid[0].id,
                 is_did: true,
                 did_coin,
             };
